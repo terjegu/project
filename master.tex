@@ -1,0 +1,119 @@
+%
+%  Title
+%
+%  Created by Terje Gundersen on 2008-12-01.
+%  Copyright (c) 2008 NTNU. All rights reserved.
+%
+\documentclass[12pt,a4paper,english,twoside]{report} 
+
+\usepackage[utf8]{inputenc} 
+\usepackage{babel} 
+\usepackage{geometry}
+\usepackage[pdftex]{graphicx}
+\usepackage{booktabs} 
+\usepackage{topcapt}
+\usepackage{multirow} 	
+\usepackage{amsmath,amssymb,amsfonts,amsthm} 
+\usepackage{subfigure}	
+%\usepackage{sidecap} 
+\usepackage[matrix]{xypic}
+% \NoCompileMatrices
+%\usepackage[all]{xy}  	
+%\usepackage{listings} 	
+%\usepackage{textcomp} 
+%\usepackage{latexsym}
+%\usepackage{fullpage}
+%\usepackage{boxedminipage} 
+%\usepackage{minitoc}
+
+% i.e. \begin{itemize*}
+%\usepackage{mdwtools}	
+
+% inline lists. \begin{inparaenum}[\itshape a\upshape)]
+%\usepackage{paralist} 
+
+% \appendix \appendixpage
+%\usepackage{appendix} 	
+
+%\usepackage{makeidx} 
+%\makeindex
+
+%
+% Abbreviation
+%
+% complile with makeindex yourfilename.nlo -s nomencl.ist -o yourfilename.nls
+% use: \abbrev{MAF}{Minimum audible field}
+%\usepackage[intoc]{nomencl} \let\abbrev\nomenclature 
+%\renewcommand{\nomname}{Abbreviations} \setlength{\nomlabelwidth}{.25\hsize} 
+%\renewcommand{\nomlabel}[1]{\textbf{#1} \dotfill}
+%\renewcommand{\nomlabel}[1]{\textbf{#1}}
+%\setlength{\nomitemsep}{-\parsep}
+%\makenomenclature 
+% use this command to display the list 
+%\newcommand{\Listofabbrev}{
+%\printnomenclature 
+%\newpage }
+
+\usepackage[pdftex,bookmarks,colorlinks,breaklinks]{hyperref} \hypersetup{ a4paper, linkcolor=black, citecolor=black, filecolor=black, urlcolor=black, pdftitle={Paper}, pdfauthor={Terje Gundersen}, pdfcreator={$ $ Terje Gundersen 
+\date$ $}, pdfsubject={Paper}, pdfkeywords={NTNU Terje Gundersen} }
+
+%
+% THEOREMS
+%
+\theoremstyle{theorem} 
+\newtheorem{thm}{Theorem}[section] 
+%\newtheorem{cor}[thm]{Corollary} 
+%\newtheorem{lem}[thm]{Lemma} 
+%\newtheorem{prop}[thm]{Proposition} 
+%\newtheorem{bigthm}{Theorem} 
+
+% Numbered separately, as A, B, etc.
+%\renewcommand{\thebigthm}{\Alph{bigthm}} 
+
+\theoremstyle{definition} 
+\newtheorem{defn}[thm]{Definition}
+%\theoremstyle{remark} 
+%\newtheorem{rem}[thm]{Remark} 
+\newtheorem{ex}[thm]{Example} 
+%\newtheorem{notation}{Notation} 
+%\newtheorem{terminology}{Terminology} 
+% to make the notation/terminology environment unnumbered
+%\renewcommand{\thenotation}{} 
+%\renewcommand{\theterminology}{} 
+
+%
+% Aliases
+%
+\newcommand{\ie}{i.e.~\/} 
+\newcommand{\eg}{e.g.~\/} 
+\newcommand{\degree}{$^{\circ }$} 
+\newcommand{\HRule}{\rule{\linewidth}{0.5mm}}
+
+%
+% ABBREVIATIONS
+%
+% \def\aso{and so on} 
+% \def\wrt{with respect to} 
+% \def\DSP{digital signal processing}
+
+% \DeclareMathOperator{\sinc}{sinc} 
+% \providecommand{\abs}[1]{\lvert#1\rvert} 
+% \providecommand{\norm}[1]{\lVert#1\rVert}
+
+\title{Title} 
+\author{Terje Gundersen}
+
+%\date{}
+
+
+\begin{document}
+\pagenumbering{roman}
+\input{tex/titlepage.tex}
+\input{tex/abstract.tex}
+\tableofcontents
+\pagenumbering{arabic}
+\input{tex/intro.tex}
+%\bibliographystyle{alpha}
+%\bibliography{../bibliografi}
+
+\end{document} 

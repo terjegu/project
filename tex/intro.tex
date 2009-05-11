@@ -1,0 +1,36 @@
+\chapter{Introduction} % (fold)
+\label{cha:introduction}
+\begin{figure}[htbp]
+  \centering
+  \begin{tabular}[h]{c}
+\xymatrix{ 
+  x[n] \ar[r] &*+<5mm>[F]{ 1- A(z)} \ar[rr]^{e[n]} & *-{} &*+<5mm>[F]{ \frac{1}{1- A(z)} } \ar[r] & x_r[n] = x[n]}    
+  \end{tabular}
+  \caption{\it Cascaded coder and decoder in the ideal case }
+  \label{fig:linear-prediction}
+\end{figure}
+
+\begin{figure}[htbp]
+  \centering
+   \begin{tabular}[h]{c}
+\xymatrix{ 
+              &                      & \ar[d]^{q[n] } & \\
+  x[n] \ar[r] &*+<5mm>[F]{ 1- A(z)} \ar[r]^-{e[n]} & *+<2mm>[Fo]{+} \ar[r]^-{e_q[n]}
+  &*+<5mm>[F]{ \frac{1}{1- A(z)} } \ar[r] & x_r[n] = x[n] + q_{r}[n]}    
+  \end{tabular}
+  \caption{\it Ideal dpcm system in noisy conditions}
+  \label{fig:linear-prediction-reconstruction-noisy}
+\end{figure}
+
+\begin{figure}[htbp]
+  \centering
+   \begin{tabular}[h]{c}
+\xymatrix{ 
+& \ar[d] &*+<5mm>[F]{\text{Adaption}}\ar@{-}[l]_{\nabla[n]} &*+<5mm>[F]{z^{-1}}\ar[l] & \\
+  e[n] \ar[r] &*+<5mm>[F]{Q} \ar[rrr] && \ar[u] & e_q[n]} 
+  \end{tabular}
+  \caption{APDCM encoder}
+  \label{fig:ADPCM}
+\end{figure}
+
+% chapter Introduction (end)
