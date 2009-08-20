@@ -1,10 +1,10 @@
 %
-%  Title
+%  Speech Morphing
 %
 %  Created by Terje Gundersen on 2008-12-01.
 %  Copyright (c) 2008 NTNU. All rights reserved.
 %
-\documentclass[12pt,a4paper,english,twoside]{report} 
+\documentclass[12pt,a4paper,english,twoside,draft]{report} 
 
 \usepackage[utf8]{inputenc} 
 \usepackage{babel} 
@@ -15,8 +15,9 @@
 \usepackage{multirow} 	
 \usepackage{amsmath,amssymb,amsfonts,amsthm} 
 \usepackage{subfigure}	
+\usepackage{appendix} 	
 %\usepackage{sidecap} 
-\usepackage[matrix]{xypic}
+% \usepackage[matrix]{xypic}
 % \NoCompileMatrices
 %\usepackage[all]{xy}  	
 %\usepackage{listings} 	
@@ -25,37 +26,38 @@
 %\usepackage{fullpage}
 %\usepackage{boxedminipage} 
 %\usepackage{minitoc}
-
-% i.e. \begin{itemize*}
-%\usepackage{mdwtools}	
-
 % inline lists. \begin{inparaenum}[\itshape a\upshape)]
 %\usepackage{paralist} 
 
-% \appendix \appendixpage
-%\usepackage{appendix} 	
-
-%\usepackage{makeidx} 
-%\makeindex
 
 %
 % Abbreviation
 %
 % complile with makeindex yourfilename.nlo -s nomencl.ist -o yourfilename.nls
 % use: \abbrev{MAF}{Minimum audible field}
-%\usepackage[intoc]{nomencl} \let\abbrev\nomenclature 
-%\renewcommand{\nomname}{Abbreviations} \setlength{\nomlabelwidth}{.25\hsize} 
-%\renewcommand{\nomlabel}[1]{\textbf{#1} \dotfill}
-%\renewcommand{\nomlabel}[1]{\textbf{#1}}
-%\setlength{\nomitemsep}{-\parsep}
-%\makenomenclature 
-% use this command to display the list 
-%\newcommand{\Listofabbrev}{
-%\printnomenclature 
-%\newpage }
+\usepackage[intoc]{nomencl} \let\abbrev\nomenclature 
+\renewcommand{\nomname}{Abbreviations} \setlength{\nomlabelwidth}{.25\hsize} 
+\renewcommand{\nomlabel}[1]{\textbf{#1} \dotfill}
+\renewcommand{\nomlabel}[1]{\textbf{#1}}
+\setlength{\nomitemsep}{-\parsep}
+\makenomenclature 
+%use this command to display the list 
+\newcommand{\Listofabbrev}{
+\printnomenclature 
+\newpage }
 
-\usepackage[pdftex,bookmarks,colorlinks,breaklinks]{hyperref} \hypersetup{ a4paper, linkcolor=black, citecolor=black, filecolor=black, urlcolor=black, pdftitle={Paper}, pdfauthor={Terje Gundersen}, pdfcreator={$ $ Terje Gundersen 
-\date$ $}, pdfsubject={Paper}, pdfkeywords={NTNU Terje Gundersen} }
+\usepackage[pdftex,bookmarks,colorlinks,breaklinks]{hyperref} 
+\hypersetup{a4paper,
+ 			linkcolor=black, 
+			citecolor=black, 
+			filecolor=black, 
+			urlcolor=black, 
+			pdftitle={Paper}, 
+			pdfauthor={Terje Gundersen}, 
+			pdfcreator={Terje Gundersen}, 
+			pdfsubject={Paper}, 
+			pdfkeywords={NTNU Terje Gundersen}
+			}
 
 %
 % THEOREMS
@@ -100,8 +102,8 @@
 % \providecommand{\abs}[1]{\lvert#1\rvert} 
 % \providecommand{\norm}[1]{\lVert#1\rVert}
 
-\title{Title} 
-\author{Terje Gundersen}
+% \title{Title} 
+% \author{Terje Gundersen}
 
 %\date{}
 
@@ -111,9 +113,20 @@
 \input{tex/titlepage.tex}
 \input{tex/abstract.tex}
 \tableofcontents
+% \listoffigures
+% \listoftables
+% \Listofabbrev
 \pagenumbering{arabic}
 \input{tex/intro.tex}
-%\bibliographystyle{alpha}
-%\bibliography{../bibliografi}
+\input{tex/theory.tex}
+% Metode
+% Diskusjon
+% Konklusjon og videre arbeid
+\input{tex/conclusion.tex}
+\bibliographystyle{ieeetr}
+\bibliography{../../bibliografi}
+
+% Appendix
+% \appendix
 
 \end{document} 
