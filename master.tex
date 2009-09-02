@@ -4,7 +4,7 @@
 %  Created by Terje Gundersen on 2008-12-01.
 %  Copyright (c) 2008 NTNU. All rights reserved.
 %
-\documentclass[12pt,a4paper,english,twoside,draft]{report} 
+\documentclass[12pt,a4paper,english,twoside]{report} 
 
 \usepackage[utf8]{inputenc} 
 \usepackage{babel} 
@@ -36,7 +36,7 @@
 % complile with makeindex yourfilename.nlo -s nomencl.ist -o yourfilename.nls
 % use: \abbrev{MAF}{Minimum audible field}
 \usepackage[intoc]{nomencl} \let\abbrev\nomenclature 
-\renewcommand{\nomname}{Abbreviations} \setlength{\nomlabelwidth}{.25\hsize} 
+\renewcommand{\nomname}{List of Abbreviations} \setlength{\nomlabelwidth}{.25\hsize} 
 \renewcommand{\nomlabel}[1]{\textbf{#1} \dotfill}
 \renewcommand{\nomlabel}[1]{\textbf{#1}}
 \setlength{\nomitemsep}{-\parsep}
@@ -99,8 +99,8 @@
 % \def\DSP{digital signal processing}
 
 % \DeclareMathOperator{\sinc}{sinc} 
-% \providecommand{\abs}[1]{\lvert#1\rvert} 
-% \providecommand{\norm}[1]{\lVert#1\rVert}
+\providecommand{\abs}[1]{\lvert#1\rvert} 
+\providecommand{\norm}[1]{\lVert#1\rVert}
 
 % \title{Title} 
 % \author{Terje Gundersen}
@@ -111,12 +111,16 @@
 \begin{document}
 \pagenumbering{roman}
 \input{tex/titlepage.tex}
+\cleardoublepage
 \input{tex/abstract.tex}
+\cleardoublepage
 \tableofcontents
-% \listoffigures
-% \listoftables
-% \Listofabbrev
-\clearpage
+\listoffigures
+\addcontentsline{toc}{chapter}{List of Figures}
+\listoftables
+\addcontentsline{toc}{chapter}{List of Tables}
+\Listofabbrev
+\cleardoublepage
 \pagenumbering{arabic}
 \input{tex/intro.tex}
 \input{tex/theory.tex}

@@ -1,9 +1,31 @@
 \chapter{Theory} % (fold)
 \label{cha:theory}
-Gaussian Mixture Model
+\section{Gaussian Mixture Model} % (fold)
+\label{sec:gaussian_mixture_model}
+The GMM is a classical parametric model used in many pattern recognition techniques \cite{stylianou98}. The GMM assumes that the probability distribution of the observed parameters takes the following parametric form
 \begin{equation}
-	p(\mathbf{x} \vert \mathbf{\Theta}) = \sum_{i=1}^{m} \alpha_i p_i(\mathbf{x} \vert \Theta_i)
+	\label{eq:gmm}
+	p(\mathbf{x}) = \sum_{i=1}^{m} \alpha_i N(\mathbf{x}; \boldsymbol{\mu}_i, \mathbf{\Sigma}_i)
 \end{equation}
+where $N(\mathbf{x}; \mathbf{\mu}_i, \mathbf{\Sigma}_i)$ denotes the p-dimensional normal distribution with the mean vector $\boldsymbol{\mu}$ and covariance matrix $\mathbf{\Sigma}$ defined by
+\begin{equation}
+	N(\mathbf{x}; \boldsymbol{\mu}_i, \mathbf{\Sigma}_i) = \frac{1}{\sqrt{(2\pi)^p\abs{\mathbf{\Sigma}}}} \exp\left[ -\frac{1}{2} (\mathbf{x} -\boldsymbol{\mu})^T \mathbf{\Sigma}^{-1} (\mathbf{x} -\boldsymbol{\mu})\right]
+\end{equation}
+and the $\alpha_i$ in \eqref{eq:gmm} is a normalised positive scalar; $\sum_{i=1}^{M}\alpha_i = 1$ and $\alpha_i \geq 0$. The $\mathbf{x_i}$ vectors are assumed to be independent.
+
+In the GMM, each class is described by its center, $\boldsymbol{\mu}_i$, and the spreading around the center of the class, $\mathbf{\Sigma_i}$. The frequency of each class in the observation is represented by mixture weights, $\alpha_i$ \cite{stylianou98}. The conditional probability that a given observation vector $\mathbf{x}$ belongs to the class $C_i$ of the GMM is given by Bayes' rule \cite{statistikk} as
+\begin{equation}
+	\label{eq:bayes}
+	P(C_i\vert \mathbf{x}) = \frac{\alpha_i N(\mathbf{x}; \boldsymbol{\mu}_i, \mathbf{\Sigma}_i)}{\sum_{j=1}^{m}\alpha_j N(\mathbf{x}; \boldsymbol{\mu}_j, \mathbf{\Sigma}_j)}.
+\end{equation}
+
+TODO: BESKRIV PARAMETER ESTIMERING (EM)
+% section Gaussian Mixture Model (end)
+
+\section{Harmonic + Noise Model} % (fold)
+\label{sec:harmonic_noise_model}
+Harmonica + noise model, HNM\abbrev{HNM}{Harmonic + Noise Model}, is a model for high-quality modifications of speech signals.
+% section Harmonic + Noise Model (end)
 
 \section{Time-scale modification} % (fold)
 \label{sec:time_scale_modification}
