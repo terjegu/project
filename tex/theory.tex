@@ -1,5 +1,17 @@
 \chapter{Theory} % (fold)
 \label{cha:theory}
+
+\begin{figure}[htbp]
+  \centering
+   \begin{tabular}[h]{c}
+\xymatrix{ 
+x[n] \ar[r] &*+<5mm>[F]{\text{Buffer}} \ar[d]\ar[r] &*+<5mm>[F]{1-A(z)}\ar[rr]& &*+<5mm>[F]{\frac{1}{1-A(z)}} \ar[r] & y(x)\\
+  &*+<5mm>[F]{LP} \ar[r]& \ar[u]\ar[r]&*+<5mm>[F]{\text{VC}}\ar[r]^{\tilde{A}(z)}& \ar[u]&}
+  \end{tabular}
+  \caption{Voice Conversion}
+  \label{fig:ADPCM}
+\end{figure}
+
 \section{Gaussian Mixture Model} % (fold)
 \label{sec:gaussian_mixture_model}
 The GMM is a classical parametric model used in many pattern recognition techniques \cite{stylianou98}. The GMM assumes that the probability distribution of the observed parameters takes the following parametric form
@@ -18,9 +30,12 @@ In the GMM, each class is described by its center, $\boldsymbol{\mu}_i$, and the
 	\label{eq:bayes}
 	P(C_i\vert \mathbf{x}) = \frac{\alpha_i N(\mathbf{x}; \boldsymbol{\mu}_i, \mathbf{\Sigma}_i)}{\sum_{j=1}^{m}\alpha_j N(\mathbf{x}; \boldsymbol{\mu}_j, \mathbf{\Sigma}_j)}.
 \end{equation}
-
-TODO: BESKRIV PARAMETER ESTIMERING (EM)
 % section Gaussian Mixture Model (end)
+
+\section{Expectation Maximisation} % (fold)
+\label{sec:expectation_maximisation}
+The Expectation maximisation, EM \abbrev{EM}{Expectation Maximisation}, algorithm is an iterative algorithm for unsupervised learning in which class information is unavailable or only partly available \cite{taletek}.
+% section Estimation Maximasation (end)
 
 \section{Harmonic + Noise Model} % (fold)
 \label{sec:harmonic_noise_model}

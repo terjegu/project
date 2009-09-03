@@ -19,7 +19,7 @@
 %\usepackage{sidecap} 
 % \usepackage[matrix]{xypic}
 % \NoCompileMatrices
-%\usepackage[all]{xy}  	
+\usepackage[all]{xy}  	
 %\usepackage{listings} 	
 %\usepackage{textcomp} 
 %\usepackage{latexsym}
@@ -29,16 +29,15 @@
 % inline lists. \begin{inparaenum}[\itshape a\upshape)]
 %\usepackage{paralist} 
 
-
 %
 % Abbreviation
 %
-% complile with makeindex yourfilename.nlo -s nomencl.ist -o yourfilename.nls
+% complile with makeindex master.nlo -s nomencl.ist -o master.nls
 % use: \abbrev{MAF}{Minimum audible field}
 \usepackage[intoc]{nomencl} \let\abbrev\nomenclature 
 \renewcommand{\nomname}{List of Abbreviations} \setlength{\nomlabelwidth}{.25\hsize} 
 \renewcommand{\nomlabel}[1]{\textbf{#1} \dotfill}
-\renewcommand{\nomlabel}[1]{\textbf{#1}}
+% \renewcommand{\nomlabel}[1]{\textbf{#1}}
 \setlength{\nomitemsep}{-\parsep}
 \makenomenclature 
 %use this command to display the list 
