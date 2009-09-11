@@ -6,7 +6,7 @@
    \begin{tabular}[h]{c}
 \xymatrix{ 
 x[n] \ar[r] &*+<5mm>[F]{\text{Buffer}} \ar[d]\ar[r] &*+<5mm>[F]{1-A(z)}\ar[rr]& &*+<5mm>[F]{\frac{1}{1-A(z)}} \ar[r] & y(x)\\
-  &*+<5mm>[F]{LP} \ar[r]& \ar[u]\ar[r]&*+<5mm>[F]{\text{VC}}\ar[r]^{\tilde{A}(z)}& \ar[u]&}
+  &*+<5mm>[F]{LP} \ar[r]^{A(z)}& \ar[u]\ar[r]&*+<5mm>[F]{\text{VC}}\ar[r]^{\tilde{A}(z)}& \ar[u]&}
   \end{tabular}
   \caption{Voice Conversion}
   \label{fig:ADPCM}
@@ -36,11 +36,6 @@ In the GMM, each class is described by its center, $\boldsymbol{\mu}_i$, and the
 \label{sec:expectation_maximisation}
 The Expectation maximisation, EM \abbrev{EM}{Expectation Maximisation}, algorithm is an iterative algorithm for unsupervised learning in which class information is unavailable or only partly available \cite{taletek}.
 % section Estimation Maximasation (end)
-
-\section{Harmonic + Noise Model} % (fold)
-\label{sec:harmonic_noise_model}
-Harmonica + noise model, HNM\abbrev{HNM}{Harmonic + Noise Model}, is a model for high-quality modifications of speech signals.
-% section Harmonic + Noise Model (end)
 
 \section{Time-scale modification} % (fold)
 \label{sec:time_scale_modification}
