@@ -59,5 +59,19 @@ The Expectation maximisation, EM \abbrev{EM}{Expectation Maximisation}, algorith
 \label{sub:statistical}
 
 % subsection Statistical (end)
+
+\subsection{Conversion function} % (fold)
+\label{sub:conversion_function}
+Conversion function \cite{stylianou95}
+\begin{equation}
+	\label{eq:conversion_function}
+	F(\mathbf{x}_t) = \sum_{i=1}^{m}P(C_i \vert \mathbf{x}_t)[v_i + \boldsymbol{\Gamma}_i \mathbf{\Sigma}_i^{-1}(\mathbf{x}_t)-\mu_i]
+\end{equation}
+
+Squared conversion error should be minimised.
+\begin{equation}
+	\epsilon=\sum_{t=1}^{n}\norm{\mathbf{y}_t - F(\mathbf{y}_t)}^2
+\end{equation}
+% subsection Conversion function (end)
 % section Spectral modification (end)
 % chapter Theory (end)
