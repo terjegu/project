@@ -1,25 +1,35 @@
 \chapter{Introduction} % (fold)
 \label{cha:introduction}
-One of the earliest implementations of speech conversion utilised vector quantisation \cite{abe88} with discrete source and target classes. In contrast the Gaussian mixture model, GMM\abbrev{GMM}{Gaussian Mixture Model}, method \cite{stylianou98} which uses continuous probability density mapping.
+
 
 \section{Definition} % (fold)
 \label{sec:definition}
-Speech transformation is the process of modifying the speech signal from one speaker so that it sounds like it has been pronounced by a different speaker \cite{stylianou98}.
+Voice transformation or conversion refers to the various modifications one may apply to the sound produced by a person, speaking or singing \cite{stylianou08}. More specifically, in this papers voice transformation refers to the process of modifying the speech signal from a speaker so that it sounds like it has been pronounced by a different speaker. 
 % section Definition (end)
 
 \section{Motivation} % (fold)
 \label{sec:motivation}
-
+In text-to-speech (TTS\abbrev{TTS}{test-to-speech}) systems the users may want to have a choice between several voices to which they find most soothing to listen to. To create a new voice for a TTS system from scratch requires a lot of work and money, which may not be in the system providers best interest. If it were possible to only create one synthetic voice and then transform that voice to other voices with only limited training data, say 10 minutes, the system provider could produce any number of voices with ease. 
 % section Motivation (end)
 
 \section{Modification methods} % (fold)
 \label{sec:synthesis_methods}
-Speech modification can be classified into three categories \cite{nguyen09}.
-\begin{description}
-	\item[Time-scale modification: ] The process of altering the duration of the speech signal without modifying the pitch and other qualities.
-	\item[Pitch-scale modification: ] The goal of pitch modification is to change the fundamental frequency while maintaining the speed and spectral properties of the speech signal.
-	\item[Spectral modification: ] Spectral modification alters the spectral attributes without modifying the duration and spectral properties.
-\end{description}
+One of the earliest implementations of speech conversion utilised vector quantisation (VQ\abbrev{VQ}{vector quantisation}) for mapping spectral properties with discrete source and target classes \cite{abe88}. In contrast to the Gaussian mixture model (GMM\abbrev{GMM}{Gaussian mixture model}) method which uses continuous probability density mapping \cite{stylianou98}. These methods maps speaker specific features from the source speaker to the target speaker according to a transformation function. Another mapping approach is the use of Artificial Neural Networks (ANN\abbrev{ANN}{Artificial Neural Networks}) \cite{desai09}. 
+
+
+When working on a speech signal it is often convenient to refer to the source-filter model \cite{taletek}. This model says that speech is produced by passing a glottal excitation (source) through a time-varying linear filter that models the resonant characteristics of the vocal tract (filter).
+
+\subsection{Source Modification} % (fold)
+\label{sub:source_modification}
+The source, which can be modelled as white noise for unvoiced speech and a pulse train for voice speech, can modify the pace, pitch and loudness of a voice. 
+
+Time- and pitch-scale modifications can be done with the pitch-synchronous overlap-add (PSOLA\abbrev{PSOLA}{pitch-synchronous overlap-add}) procedure. PSOLA splits the signals into windowed parts and re-synthesises the parts with the overlap-add procedure with duplicating or deleting frames to alter the pace of the voice and adjusting the spacing of windows to alter the pitch.
+% subsection Source Modification (end)
+
+\subsection{Filter Modification} % (fold)
+\label{sub:filter_modification}
+The filter can modify the spectral content of the voice without modifying the duration and spectral properties \cite{nguyen09}. The filter is often modelled as a linear predictive (LP\abbrev{LP}{linear predictive}) filter with a small set of filter coefficients. These coefficients can be altered to change the formant frequencies and so on.
+% subsection Filter Modification (end)
 % section Synthesis methods (end)
 
 % chapter Introduction (end)
