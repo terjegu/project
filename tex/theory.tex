@@ -60,18 +60,101 @@ The Expectation maximisation, EM \abbrev{EM}{Expectation Maximisation}, algorith
 
 % subsection Statistical (end)
 
-\subsection{Conversion function} % (fold)
-\label{sub:conversion_function}
+% section Spectral modification (end)
+
+\section{Conversion function} % (fold)
+\label{sec:conversion_function}
 Conversion function \cite{stylianou95}
 \begin{equation}
 	\label{eq:conversion_function}
-	F(\mathbf{x}_t) = \sum_{i=1}^{m}P(C_i \vert \mathbf{x}_t)[v_i + \boldsymbol{\Gamma}_i \mathbf{\Sigma}_i^{-1}(\mathbf{x}_t)-\mu_i]
+	\mathcal{F}(\mathbf{x}_t) = \sum_{i=1}^{m}P(C_i \vert \mathbf{x}_t)[v_i + \boldsymbol{\Gamma}_i \mathbf{\Sigma}_i^{-1}(\mathbf{x}_t)-\mu_i]
 \end{equation}
 
 Squared conversion error should be minimised.
 \begin{equation}
-	\epsilon=\sum_{t=1}^{n}\norm{\mathbf{y}_t - F(\mathbf{y}_t)}^2
+	\epsilon=\sum_{t=1}^{n}\norm{\mathbf{y}_t - \mathcal{F}(\mathbf{y}_t)}^2
 \end{equation}
-% subsection Conversion function (end)
-% section Spectral modification (end)
+
+The optimal values of the parameters can be computed by solving the following set of normal equations \cite{stylianou95}:
+\begin{equation}
+	\label{eq:param_computed}
+	\begin{split}
+		\left( 
+		\begin{bmatrix}
+			\mathbf{P}^T \\
+			\dots \\
+			\mathbf{D}_x^T
+		\end{bmatrix}
+		\begin{bmatrix}
+			\mathbf{P} & \vdots & \mathbf{D}_x
+		\end{bmatrix}
+		 \right)
+		\begin{bmatrix}
+			\mathbf{v} \\
+			\dots \\
+			\mathbf{\Gamma}
+		\end{bmatrix}
+		= &
+		\begin{bmatrix}
+			\mathbf{P}^T \\
+			\dots \\
+			\mathbf{D}_x^T
+		\end{bmatrix}
+		\mathbf{y} \\ % end line 1
+		\begin{bmatrix}
+			\mathbf{v} \\
+			\dots \\
+			\mathbf{\Gamma}
+		\end{bmatrix}
+		= &
+		\left( 
+		\begin{bmatrix}
+			\mathbf{P}^T \\
+			\dots \\
+			\mathbf{D}_x^T
+		\end{bmatrix}
+		\begin{bmatrix}
+			\mathbf{P} & \vdots & \mathbf{D}_x
+		\end{bmatrix}
+		 \right)^{-1}
+		\begin{bmatrix}
+			\mathbf{P}^T \\
+			\dots \\
+			\mathbf{D}_x^T
+		\end{bmatrix}
+		\mathbf{y} \\ % end line 2
+	\end{split}
+\end{equation}
+where $\mathbf{y}$ is the target spectral vectors and $\mathbf{P}$ is a $n \times m$ matrix with the conditional probabilities
+\begin{equation}
+	\mathbf{P} = \begin{bmatrix}
+		P(C_1\vert \mathbf{x}_1) & \dots & P(C_m\vert \mathbf{x}_1) \\
+		P(C_1\vert \mathbf{x}_2) & \dots & P(C_m\vert \mathbf{x}_2) \\
+		\vdots & & \vdots \\
+		P(C_1\vert \mathbf{x}_n) & \dots & P(C_m\vert \mathbf{x}_n) \\
+	\end{bmatrix}
+\end{equation}
+$\mathbf{D}_x$ is a $n \times pm$ matrix defined as
+\begin{equation}
+	\mathbf{D}_x = \begin{bmatrix}
+		P(C_1\vert \mathbf{x}_1)(\mathbf{x}_1 - \boldsymbol{\mu}_1)^T\mathbf{\Sigma}_1^{-1} & \dots & P(C_m\vert \mathbf{x}_1)(\mathbf{x}_1 - \boldsymbol{\mu}_m)^T\mathbf{\Sigma}_m^{-1} \\
+		P(C_1\vert \mathbf{x}_2)(\mathbf{x}_2 - \boldsymbol{\mu}_1)^T\mathbf{\Sigma}_1^{-1} & \dots & P(C_m\vert \mathbf{x}_2)(\mathbf{x}_2 - \boldsymbol{\mu}_m)^T\mathbf{\Sigma}_m^{-1} \\
+		\vdots & & \vdots \\
+		P(C_1\vert \mathbf{x}_n)(\mathbf{x}_n - \boldsymbol{\mu}_1)^T\mathbf{\Sigma}_1^{-1} & \dots & P(C_m\vert \mathbf{x}_n)(\mathbf{x}_n - \boldsymbol{\mu}_m)^T\mathbf{\Sigma}_m^{-1} \\
+	\end{bmatrix}
+\end{equation}
+The two unknown matrices are $\mathbf{v}$ and $ \mathbf{\Gamma}$ with dimensions $(m\times p)$ and $((m\times p) \times p)$ 
+\begin{equation}
+	\mathbf{v} = 
+	\begin{bmatrix}
+		\mathbf{v}_1 \vdots \mathbf{v}_2 \vdots \dots \vdots \mathbf{v}_m
+	\end{bmatrix}^T
+\end{equation}
+\begin{equation}
+	\mathbf{\Gamma} = 
+	\begin{bmatrix}
+		\mathbf{\Gamma}_1 \vdots \mathbf{\Gamma}_2 \vdots \dots \vdots \mathbf{\Gamma}_m
+	\end{bmatrix}^T
+\end{equation}
+% section Transfer function (end)
 % chapter Theory (end)

@@ -1,4 +1,97 @@
 \chapter{Method} % (fold)
 \label{cha:method}
+\section{Alignment} % (fold)
+\label{sec:alignment}
 
+% section Alignment (end)
+
+\section{Classification} % (fold)
+\label{sec:classification}
+
+% section Classification (end)
+
+\section{Training Data} % (fold)
+\label{sec:training_data}
+
+% section Training data (end)
+
+\section{Conversion Function} % (fold)
+\label{sec:conversion_function}
+To compute the parameters in the transfer function the dimensions in \eqref{eq:param_computed} will be
+\begin{equation}
+	\begin{split}
+		\left(  
+	\begin{bmatrix}
+		m \times n \\
+		\dots \\
+		pm \times n
+	\end{bmatrix}
+	\begin{bmatrix}
+		n \times m & \vdots & n\times pm
+	\end{bmatrix} \right)
+	\begin{bmatrix}
+		m \times p \\
+		\dots \\
+		\left(  m \times p \right) p
+	\end{bmatrix}
+	= & 
+	\begin{bmatrix}
+		m \times n \\
+		\dots \\
+		pm \times n
+	\end{bmatrix} \mathbf{y}\\ % end line 1
+	\biggl( \begin{bmatrix}
+		m(1+p) \times n 
+	\end{bmatrix}
+	\begin{bmatrix}
+		n \times m(1+p)
+	\end{bmatrix} \biggr) 
+	\begin{bmatrix}
+		\left(  m \times p \right) (1+p)
+	\end{bmatrix}
+	= & 
+	\begin{bmatrix}
+		m(1+p) \times n 
+	\end{bmatrix} \mathbf{y} \\ % end line 2
+	\biggl( \begin{bmatrix}
+		m(1+p) \times  m(1+p)
+	\end{bmatrix} \biggr) 
+	\begin{bmatrix}
+		m (1+p) \times p 
+	\end{bmatrix}
+	= &
+	\begin{bmatrix}
+		m(1+p) \times n 
+	\end{bmatrix} \mathbf{y} \\ % end line 3
+	\begin{bmatrix}
+		m (1+p) \times p
+	\end{bmatrix}
+	= &
+	\biggl(\begin{bmatrix}
+		m(1+p) \times  m(1+p)
+	\end{bmatrix} \biggr)^{-1} \\ &
+	\begin{bmatrix}
+		m(1+p) \times n 
+	\end{bmatrix} \mathbf{y} \\ % end line 4
+	\begin{bmatrix}
+		m (1+p) \times p
+	\end{bmatrix}
+	= &
+	\begin{bmatrix}
+		m(1+p) \times n 
+	\end{bmatrix} \mathbf{y} \\ % end line 5
+	& \\
+	\Downarrow & \; Dim(\mathbf{y}) = n \times p \\ % end line 6
+	& \\
+	\begin{bmatrix}
+		m (1+p) \times p
+	\end{bmatrix}
+	= &
+	\begin{bmatrix}
+		m(1+p) \times p 
+	\end{bmatrix} \\ % end line 7
+	\end{split}
+\end{equation}
+where $m$ is the number of classes, $n$ is the number of vectors with $p$ coefficients.
+% section Conversion Function (end)
 % chapter Method (end)
