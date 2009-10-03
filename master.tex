@@ -1,8 +1,8 @@
 %
 %  Speech Morphing
 %
-%  Created by Terje Gundersen on 2008-12-01.
-%  Copyright (c) 2008 NTNU. All rights reserved.
+%  Created by Terje Gundersen on 2009-09-01.
+%  Copyright (c) 2009 NTNU. All rights reserved.
 %
 \documentclass[12pt,a4paper,english,twoside,draft]{report} 
 
@@ -19,30 +19,6 @@
 %\usepackage{sidecap} 
 \usepackage[matrix]{xypic}
 % \usepackage[all]{xy}  	
-%\usepackage{listings}
-%\usepackage{textcomp}
-%\usepackage{latexsym}
-%\usepackage{fullpage}
-%\usepackage{boxedminipage} 
-%\usepackage{minitoc}
-% inline lists. \begin{inparaenum}[\itshape a\upshape)]
-%\usepackage{paralist} 
-
-%
-% Abbreviation
-%
-% complile with makeindex master.nlo -s nomencl.ist -o master.nls
-% use: \abbrev{MAF}{Minimum audible field}
-\usepackage[intoc]{nomencl} \let\abbrev\nomenclature 
-\renewcommand{\nomname}{List of Abbreviations} \setlength{\nomlabelwidth}{.25\hsize} 
-\renewcommand{\nomlabel}[1]{\textbf{#1} \dotfill}
-% \renewcommand{\nomlabel}[1]{\textbf{#1}}
-\setlength{\nomitemsep}{-\parsep}
-\makenomenclature 
-%use this command to display the list 
-\newcommand{\Listofabbrev}{
-\printnomenclature 
-\newpage }
 
 \usepackage[pdftex,bookmarks,colorlinks,breaklinks]{hyperref} 
 \hypersetup{a4paper,
@@ -58,42 +34,51 @@
 			}
 
 %
+% ABBREVIATIONS
+%
+% complile with makeindex master.nlo -s nomencl.ist -o master.nls
+% use: \abbrev{MAF}{Minimum audible field}
+\usepackage[intoc]{nomencl} \let\abbrev\nomenclature 
+\renewcommand{\nomname}{List of Abbreviations} \setlength{\nomlabelwidth}{.25\hsize} 
+\renewcommand{\nomlabel}[1]{\textbf{#1} \dotfill}
+% \renewcommand{\nomlabel}[1]{\textbf{#1}}
+\setlength{\nomitemsep}{-\parsep}
+\makenomenclature 
+%use this command to display the list 
+\newcommand{\Listofabbrev}{
+\printnomenclature 
+\newpage }
+			
+%
 % THEOREMS
 %
-\theoremstyle{theorem} 
+\theoremstyle{plain} 
 \newtheorem{thm}{Theorem}[section] 
-%\newtheorem{cor}[thm]{Corollary} 
-%\newtheorem{lem}[thm]{Lemma} 
-%\newtheorem{prop}[thm]{Proposition} 
-%\newtheorem{bigthm}{Theorem} 
-
-% Numbered separately, as A, B, etc.
-%\renewcommand{\thebigthm}{\Alph{bigthm}} 
 
 \theoremstyle{definition} 
 \newtheorem{defn}[thm]{Definition}
-%\theoremstyle{remark} 
-%\newtheorem{rem}[thm]{Remark} 
 \newtheorem{ex}[thm]{Example} 
-%\newtheorem{notation}{Notation} 
-%\newtheorem{terminology}{Terminology} 
-% to make the notation/terminology environment unnumbered
-%\renewcommand{\thenotation}{} 
-%\renewcommand{\theterminology}{} 
+
+\theoremstyle{remark} 
+\newtheorem{rem}[thm]{Remark} 
 
 %
-% Aliases
+% ALIASES
 %
 \newcommand{\ie}{i.e.~\/} 
 \newcommand{\eg}{e.g.~\/} 
-\newcommand{\degree}{$^{\circ }$} 
 \newcommand{\HRule}{\rule{\linewidth}{0.5mm}}
 
+%
+% MATH OPERATORS
+%
 % \DeclareMathOperator{\sinc}{sinc} 
 \providecommand{\abs}[1]{\lvert#1\rvert} 
 \providecommand{\norm}[1]{\lVert#1\rVert}
 
-
+%
+% DOCUMENT
+%
 \begin{document}
 \pagenumbering{roman}
 \input{tex/titlepage.tex}
@@ -114,9 +99,11 @@
 \input{tex/results.tex}
 \input{tex/conclusion.tex}
 \bibliographystyle{ieeetr}
-\bibliography{bibliografi}
+\bibliography{bibliografi.bib}
 
-% Appendix
+%
+% APPENDIX
+%
 % \appendix
 
 \end{document} 

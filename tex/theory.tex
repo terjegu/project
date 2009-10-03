@@ -19,7 +19,7 @@ The GMM is a classical parametric model used in many pattern recognition techniq
 	\label{eq:gmm}
 	p(\mathbf{x}) = \sum_{i=1}^{m} \alpha_i N(\mathbf{x}; \boldsymbol{\mu}_i, \mathbf{\Sigma}_i)
 \end{equation}
-where $N(\mathbf{x}; \mathbf{\mu}_i, \mathbf{\Sigma}_i)$ denotes the p-dimensional normal distribution with the mean vector $\boldsymbol{\mu}$ and covariance matrix $\mathbf{\Sigma}$ defined by
+where $m$ is the number of mixture models and $N(\mathbf{x}; \boldsymbol{\mu}_i, \mathbf{\Sigma}_i)$ denotes the p-dimensional normal distribution with the mean vector $\boldsymbol{\mu}$ and covariance matrix $\mathbf{\Sigma}$ defined by
 \begin{equation}
 	N(\mathbf{x}; \boldsymbol{\mu}_i, \mathbf{\Sigma}_i) = \frac{1}{\sqrt{(2\pi)^p\abs{\mathbf{\Sigma}}}} \exp\left[ -\frac{1}{2} (\mathbf{x} -\boldsymbol{\mu})^T \mathbf{\Sigma}^{-1} (\mathbf{x} -\boldsymbol{\mu})\right]
 \end{equation}
@@ -34,45 +34,32 @@ In the GMM, each class is described by its center, $\boldsymbol{\mu}_i$, and the
 
 \section{Expectation Maximisation} % (fold)
 \label{sec:expectation_maximisation}
-The Expectation maximisation, EM \abbrev{EM}{Expectation Maximisation}, algorithm is an iterative algorithm for unsupervised learning in which class information is unavailable or only partly available \cite{taletek}.
+The expectation maximisation, EM \abbrev{EM}{Expectation Maximisation}, algorithm is an iterative algorithm for unsupervised learning in which class information is unavailable or only partly available \cite{taletek}. It estimates the model parameters by maximising the log-likelihood of incomplete data and maximising the expectation of log-likelihood from complete data.
+
+We need to determine the parameter $\mathbf{\Phi}$ which maximises $P(Y=y\vert \mathbf{\Phi})$ where $y$ is the observed training data. We assume some parameter vector $\mathbf{\Phi}$ end estimate the probability of some unknown data $x$ occurred in the generation of $y$. We then compute a new $\bar{\mathbf{\Phi}}$ which is the maximum likelihood of $\mathbf{\Phi}$ and set $\mathbf{\Phi}$ to be the new $\bar{\mathbf{\Phi}}$ and repeat the process iteratively until the process converges \cite{taletek}. The process will converge if we choose $\bar{\mathbf{\Phi}}$ such that 
+\begin{equation}
+	Q(\mathbf{\Phi},\bar{\mathbf{\Phi}})\geq Q(\mathbf{\Phi},\mathbf{\Phi})
+\end{equation}
+where 
+\begin{equation}
+	Q(\mathbf{\Phi},\bar{\mathbf{\Phi}}) = E[\log P(X,Y=y\vert \bar{\mathbf{\Phi}})].
+\end{equation}
 % section Estimation Maximasation (end)
 
-\section{Time-scale modification} % (fold)
-\label{sec:time_scale_modification}
-
-% section Time-scale modification (end)
-
-\section{Pitch-scale modification} % (fold)
-\label{sec:pitch_scale_modification}
-
-% section Pitch-scale modification (end)
-
-\section{Spectral modification} % (fold)
-\label{sec:spectral_modification}
-
-\subsection{Rule-based} % (fold)
-\label{sub:rule_based}
-
-% subsection Rule-based (end)
-
-\subsection{Statistical} % (fold)
-\label{sub:statistical}
-
-% subsection Statistical (end)
-
-% section Spectral modification (end)
 
 \section{Conversion function} % (fold)
 \label{sec:conversion_function}
-Conversion function \cite{stylianou95}
+The available data for the conversion function is two aligned vectors, source and target, which are of the same length $n$. The conversion function suggested by \cite{stylianou95} is described as
 \begin{equation}
 	\label{eq:conversion_function}
-	\mathcal{F}(\mathbf{x}_t) = \sum_{i=1}^{m}P(C_i \vert \mathbf{x}_t)[v_i + \boldsymbol{\Gamma}_i \mathbf{\Sigma}_i^{-1}(\mathbf{x}_t)-\mu_i]
+	\mathcal{F}(\mathbf{x}_t) = \sum_{i=1}^{m}P(C_i \vert \mathbf{x}_t)[\mathbf{v}_i + \boldsymbol{\Gamma}_i \mathbf{\Sigma}_i^{-1}(\mathbf{x}_t)-\boldsymbol{\mu}_i]
 \end{equation}
+where the term between the brackets is the conditional expectation of the target $\mathbf{y}_t$ given the observed value of $\mathbf{x}_t$. If the gaussian components of the mixture could be seperated, the conversion function $\mathcal{F}()$ is modifying the posterior mean and covariance of each component. Since this is not the case in pratice the term is weighted by the conditional probability that the observed data $\mathbf{x}_t$ belongs to the class $C_i$.
 
-Squared conversion error should be minimised.
+The variables $\mathbf{v}$ and $\mathbf{\Gamma}$ are unknown and need to be estimated such as the squared conversion error are minimised
 \begin{equation}
-	\epsilon=\sum_{t=1}^{n}\norm{\mathbf{y}_t - \mathcal{F}(\mathbf{y}_t)}^2
+	\label{eq:conversion_error}
+	\epsilon=\sum_{t=1}^{n}\norm{\mathbf{y}_t - \mathcal{F}(\mathbf{y}_t)}^2.
 \end{equation}
 
 The optimal values of the parameters can be computed by solving the following set of normal equations \cite{stylianou95}:
@@ -132,7 +119,7 @@ where $\mathbf{y}$ is the target spectral vectors and $\mathbf{P}$ is a $n \time
 		P(C_1\vert \mathbf{x}_2) & \dots & P(C_m\vert \mathbf{x}_2) \\
 		\vdots & & \vdots \\
 		P(C_1\vert \mathbf{x}_n) & \dots & P(C_m\vert \mathbf{x}_n) \\
-	\end{bmatrix}
+	\end{bmatrix}.
 \end{equation}
 $\mathbf{D}_x$ is a $n \times pm$ matrix defined as
 \begin{equation}
@@ -141,9 +128,9 @@ $\mathbf{D}_x$ is a $n \times pm$ matrix defined as
 		P(C_1\vert \mathbf{x}_2)(\mathbf{x}_2 - \boldsymbol{\mu}_1)^T\mathbf{\Sigma}_1^{-1} & \dots & P(C_m\vert \mathbf{x}_2)(\mathbf{x}_2 - \boldsymbol{\mu}_m)^T\mathbf{\Sigma}_m^{-1} \\
 		\vdots & & \vdots \\
 		P(C_1\vert \mathbf{x}_n)(\mathbf{x}_n - \boldsymbol{\mu}_1)^T\mathbf{\Sigma}_1^{-1} & \dots & P(C_m\vert \mathbf{x}_n)(\mathbf{x}_n - \boldsymbol{\mu}_m)^T\mathbf{\Sigma}_m^{-1} \\
-	\end{bmatrix}
+	\end{bmatrix}.
 \end{equation}
-The two unknown matrices are $\mathbf{v}$ and $ \mathbf{\Gamma}$ with dimensions $(m\times p)$ and $((m\times p) \times p)$ 
+The two unknown matrices $\mathbf{v}$ and $ \mathbf{\Gamma}$ will have dimensions $(m\times p)$ and $((m\times p) \times p)$ 
 \begin{equation}
 	\mathbf{v} = 
 	\begin{bmatrix}
@@ -154,7 +141,7 @@ The two unknown matrices are $\mathbf{v}$ and $ \mathbf{\Gamma}$ with dimensions
 	\mathbf{\Gamma} = 
 	\begin{bmatrix}
 		\mathbf{\Gamma}_1 \vdots \mathbf{\Gamma}_2 \vdots \dots \vdots \mathbf{\Gamma}_m
-	\end{bmatrix}^T
+	\end{bmatrix}^T.
 \end{equation}
 % section Transfer function (end)
 % chapter Theory (end)

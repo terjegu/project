@@ -2,23 +2,24 @@
 \label{cha:method}
 \section{Alignment} % (fold)
 \label{sec:alignment}
-
+different alignment methods.
 % section Alignment (end)
 
 \section{Classification} % (fold)
 \label{sec:classification}
-
+number of classes
 % section Classification (end)
 
 \section{Training Data} % (fold)
 \label{sec:training_data}
-
+amount of data
 % section Training data (end)
 
-\section{Conversion Function} % (fold)
-\label{sec:conversion_function}
-To compute the parameters in the transfer function the dimensions in \eqref{eq:param_computed} will be
-\begin{equation}
+\section{Conversion Function parameters} % (fold)
+\label{sec:conversion_function_parameters}
+To compute the parameters in the transfer function the dimensions in \eqref{eq:param_computed} must add up.
+\begin{proof}
+\begin{equation*}
 	\begin{split}
 		\left(  
 	\begin{bmatrix}
@@ -91,7 +92,8 @@ To compute the parameters in the transfer function the dimensions in \eqref{eq:p
 		m(1+p) \times p 
 	\end{bmatrix} \\ % end line 7
 	\end{split}
-\end{equation}
+\end{equation*}
+\end{proof}
 where $m$ is the number of classes, $n$ is the number of vectors with $p$ coefficients.
 % section Conversion Function (end)
 % chapter Method (end)
