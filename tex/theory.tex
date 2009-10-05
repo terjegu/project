@@ -25,7 +25,7 @@ where $m$ is the number of mixture models and $N(\mathbf{x}; \boldsymbol{\mu}_i,
 \end{equation}
 and the $\alpha_i$ in \eqref{eq:gmm} is a normalised positive scalar; $\sum_{i=1}^{M}\alpha_i = 1$ and $\alpha_i \geq 0$. The $\mathbf{x_i}$ vectors are assumed to be independent.
 
-In the GMM, each class is described by its center, $\boldsymbol{\mu}_i$, and the spreading around the center of the class, $\mathbf{\Sigma_i}$. The frequency of each class in the observation is represented by mixture weights, $\alpha_i$ \cite{stylianou98}. The conditional probability that a given observation vector $\mathbf{x}$ belongs to the class $C_i$ of the GMM is given by Bayes' rule \cite{statistikk} as
+In the GMM, each component is described by its center, $\boldsymbol{\mu}_i$, and the spreading around the center of the component, $\mathbf{\Sigma_i}$. The frequency of each component in the observation is represented by mixture weights, $\alpha_i$ \cite{stylianou98}. The conditional probability that a given observation vector $\mathbf{x}$ belongs to the component $C_i$ of the GMM is given by Bayes' rule \cite{statistikk} as
 \begin{equation}
 	\label{eq:bayes}
 	P(C_i\vert \mathbf{x}) = \frac{\alpha_i N(\mathbf{x}; \boldsymbol{\mu}_i, \mathbf{\Sigma}_i)}{\sum_{j=1}^{m}\alpha_j N(\mathbf{x}; \boldsymbol{\mu}_j, \mathbf{\Sigma}_j)}.
@@ -34,32 +34,34 @@ In the GMM, each class is described by its center, $\boldsymbol{\mu}_i$, and the
 
 \section{Expectation Maximisation} % (fold)
 \label{sec:expectation_maximisation}
-The expectation maximisation, EM \abbrev{EM}{Expectation Maximisation}, algorithm is an iterative algorithm for unsupervised learning in which class information is unavailable or only partly available \cite{taletek}. It estimates the model parameters by maximising the log-likelihood of incomplete data and maximising the expectation of log-likelihood from complete data.
+The expectation maximisation, EM \abbrev{EM}{Expectation Maximisation}, algorithm is an iterative algorithm for unsupervised learning in which component information is unavailable or only partly available \cite{taletek}. It estimates the model parameters by maximising the log-likelihood of incomplete data and maximising the expectation of log-likelihood from complete data.
 
-We need to determine the parameter $\mathbf{\Phi}$ which maximises $P(Y=y\vert \mathbf{\Phi})$ where $y$ is the observed training data. We assume some parameter vector $\mathbf{\Phi}$ end estimate the probability of some unknown data $x$ occurred in the generation of $y$. We then compute a new $\bar{\mathbf{\Phi}}$ which is the maximum likelihood of $\mathbf{\Phi}$ and set $\mathbf{\Phi}$ to be the new $\bar{\mathbf{\Phi}}$ and repeat the process iteratively until the process converges \cite{taletek}. The process will converge if we choose $\bar{\mathbf{\Phi}}$ such that 
+We need to determine the parameter $\mathbf{\Phi}$ which maximises $P(Y=y\vert \mathbf{\Phi})$ where $y$ is the observed training data. We assume some parameter vector $\mathbf{\Phi}$ end estimate the probability of some unknown data $x$ occurred in the generation of $y$. We then compute a new $\bar{\mathbf{\Phi}}$ which is the maximum likelihood of $\mathbf{\Phi}$ and set the new $\bar{\mathbf{\Phi}}$ to be $\mathbf{\Phi}$ and repeat the process iteratively until the process converges \cite{taletek}. The process will converge if we choose $\bar{\mathbf{\Phi}}$ such that 
 \begin{equation}
+	\label{eq:q_criteria}
 	Q(\mathbf{\Phi},\bar{\mathbf{\Phi}})\geq Q(\mathbf{\Phi},\mathbf{\Phi})
 \end{equation}
 where 
 \begin{equation}
+	\label{eq:q_function}
 	Q(\mathbf{\Phi},\bar{\mathbf{\Phi}}) = E[\log P(X,Y=y\vert \bar{\mathbf{\Phi}})].
 \end{equation}
 % section Estimation Maximasation (end)
 
 
-\section{Conversion function} % (fold)
+\section{Conversion Function} % (fold)
 \label{sec:conversion_function}
-The available data for the conversion function is two aligned vectors, source and target, which are of the same length $n$. The conversion function suggested by \cite{stylianou95} is described as
+The available data for the conversion function is two aligned vectors, source and target, which are of the same length $n$ and the pre-trained gaussian mixture models. The conversion function suggested by \cite{stylianou95} is described as
 \begin{equation}
 	\label{eq:conversion_function}
-	\mathcal{F}(\mathbf{x}_t) = \sum_{i=1}^{m}P(C_i \vert \mathbf{x}_t)[\mathbf{v}_i + \boldsymbol{\Gamma}_i \mathbf{\Sigma}_i^{-1}(\mathbf{x}_t)-\boldsymbol{\mu}_i]
+	\mathcal{F}(\mathbf{x}_t) = \sum_{i=1}^{m}P(C_i \vert \mathbf{x}_t)[\mathbf{v}_i + \boldsymbol{\Gamma}_i \mathbf{\Sigma}_i^{-1}(\mathbf{x}_t-\boldsymbol{\mu}_i)]
 \end{equation}
-where the term between the brackets is the conditional expectation of the target $\mathbf{y}_t$ given the observed value of $\mathbf{x}_t$. If the gaussian components of the mixture could be seperated, the conversion function $\mathcal{F}()$ is modifying the posterior mean and covariance of each component. Since this is not the case in pratice the term is weighted by the conditional probability that the observed data $\mathbf{x}_t$ belongs to the class $C_i$.
+where the term between the brackets is the conditional expectation of the target $\mathbf{y}_t$ given the observed value of $\mathbf{x}_t$. If the gaussian components of the mixture could be separated, the conversion function $\mathcal{F}()$ is modifying the posterior mean and covariance of each component. Since this is not the case in practice the term is weighted by the conditional probability that the observed data $\mathbf{x}_t$ belongs to the component $C_i$.
 
-The variables $\mathbf{v}$ and $\mathbf{\Gamma}$ are unknown and need to be estimated such as the squared conversion error are minimised
+The variables $\mathbf{v}$ and $\mathbf{\Gamma}$ are unknown and need to be estimated such as the squared conversion error is minimised
 \begin{equation}
 	\label{eq:conversion_error}
-	\epsilon=\sum_{t=1}^{n}\norm{\mathbf{y}_t - \mathcal{F}(\mathbf{y}_t)}^2.
+	\epsilon=\sum_{t=1}^{n}\norm{\mathbf{y}_t - \mathcal{F}(\mathbf{x}_t)}^2.
 \end{equation}
 
 The optimal values of the parameters can be computed by solving the following set of normal equations \cite{stylianou95}:
@@ -114,6 +116,7 @@ The optimal values of the parameters can be computed by solving the following se
 \end{equation}
 where $\mathbf{y}$ is the target spectral vectors and $\mathbf{P}$ is a $n \times m$ matrix with the conditional probabilities
 \begin{equation}
+	\label{eq:P_matrix}
 	\mathbf{P} = \begin{bmatrix}
 		P(C_1\vert \mathbf{x}_1) & \dots & P(C_m\vert \mathbf{x}_1) \\
 		P(C_1\vert \mathbf{x}_2) & \dots & P(C_m\vert \mathbf{x}_2) \\
@@ -123,6 +126,7 @@ where $\mathbf{y}$ is the target spectral vectors and $\mathbf{P}$ is a $n \time
 \end{equation}
 $\mathbf{D}_x$ is a $n \times pm$ matrix defined as
 \begin{equation}
+	\label{eq:D_matrix}
 	\mathbf{D}_x = \begin{bmatrix}
 		P(C_1\vert \mathbf{x}_1)(\mathbf{x}_1 - \boldsymbol{\mu}_1)^T\mathbf{\Sigma}_1^{-1} & \dots & P(C_m\vert \mathbf{x}_1)(\mathbf{x}_1 - \boldsymbol{\mu}_m)^T\mathbf{\Sigma}_m^{-1} \\
 		P(C_1\vert \mathbf{x}_2)(\mathbf{x}_2 - \boldsymbol{\mu}_1)^T\mathbf{\Sigma}_1^{-1} & \dots & P(C_m\vert \mathbf{x}_2)(\mathbf{x}_2 - \boldsymbol{\mu}_m)^T\mathbf{\Sigma}_m^{-1} \\
@@ -130,14 +134,16 @@ $\mathbf{D}_x$ is a $n \times pm$ matrix defined as
 		P(C_1\vert \mathbf{x}_n)(\mathbf{x}_n - \boldsymbol{\mu}_1)^T\mathbf{\Sigma}_1^{-1} & \dots & P(C_m\vert \mathbf{x}_n)(\mathbf{x}_n - \boldsymbol{\mu}_m)^T\mathbf{\Sigma}_m^{-1} \\
 	\end{bmatrix}.
 \end{equation}
-The two unknown matrices $\mathbf{v}$ and $ \mathbf{\Gamma}$ will have dimensions $(m\times p)$ and $((m\times p) \times p)$ 
+The two unknown matrices $\mathbf{v}$ and $ \mathbf{\Gamma}$ will have dimensions $(m\times p)$ and $( m \times (p\times p))$ 
 \begin{equation}
+	\label{eq:v_matrix}
 	\mathbf{v} = 
 	\begin{bmatrix}
 		\mathbf{v}_1 \vdots \mathbf{v}_2 \vdots \dots \vdots \mathbf{v}_m
 	\end{bmatrix}^T
 \end{equation}
 \begin{equation}
+	\label{gamma_matrix}
 	\mathbf{\Gamma} = 
 	\begin{bmatrix}
 		\mathbf{\Gamma}_1 \vdots \mathbf{\Gamma}_2 \vdots \dots \vdots \mathbf{\Gamma}_m

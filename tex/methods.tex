@@ -1,5 +1,5 @@
-\chapter{Method} % (fold)
-\label{cha:method}
+\chapter{Implementation} % (fold)
+\label{cha:implementation}
 \section{Alignment} % (fold)
 \label{sec:alignment}
 different alignment methods.
@@ -15,7 +15,7 @@ number of classes
 amount of data
 % section Training data (end)
 
-\section{Conversion Function parameters} % (fold)
+\section{Conversion Function Parameters} % (fold)
 \label{sec:conversion_function_parameters}
 To compute the parameters in the transfer function the dimensions in \eqref{eq:param_computed} must add up.
 \begin{proof}
@@ -33,7 +33,7 @@ To compute the parameters in the transfer function the dimensions in \eqref{eq:p
 	\begin{bmatrix}
 		m \times p \\
 		\dots \\
-		\left(  m \times p \right) p
+		m \left(  p \times p \right)
 	\end{bmatrix}
 	= & 
 	\begin{bmatrix}
@@ -42,17 +42,17 @@ To compute the parameters in the transfer function the dimensions in \eqref{eq:p
 		pm \times n
 	\end{bmatrix} \mathbf{y}\\ % end line 1
 	\biggl( \begin{bmatrix}
-		m(1+p) \times n 
+		(m+mp) \times n 
 	\end{bmatrix}
 	\begin{bmatrix}
-		n \times m(1+p)
+		n \times (m+pm)
 	\end{bmatrix} \biggr) 
 	\begin{bmatrix}
-		\left(  m \times p \right) (1+p)
+		(m+mp) \times p
 	\end{bmatrix}
 	= & 
 	\begin{bmatrix}
-		m(1+p) \times n 
+		(m+pm) \times n 
 	\end{bmatrix} \mathbf{y} \\ % end line 2
 	\biggl( \begin{bmatrix}
 		m(1+p) \times  m(1+p)
@@ -74,6 +74,7 @@ To compute the parameters in the transfer function the dimensions in \eqref{eq:p
 	\begin{bmatrix}
 		m(1+p) \times n 
 	\end{bmatrix} \mathbf{y} \\ % end line 4
+	& \\
 	\begin{bmatrix}
 		m (1+p) \times p
 	\end{bmatrix}
