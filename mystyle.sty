@@ -1,0 +1,71 @@
+\ProvidesPackage{mystyle}
+
+\usepackage[utf8]{inputenc} 
+\usepackage{babel} 
+\usepackage{geometry}
+\usepackage[pdftex]{graphicx}
+\usepackage{booktabs} 
+\usepackage{topcapt}
+\usepackage{multirow} 	
+\usepackage{amsmath,amssymb,amsfonts,amsthm} 
+\usepackage{subfigure}	
+\usepackage{appendix} 	
+%\usepackage{sidecap} 
+\usepackage[matrix]{xypic}
+% \usepackage[all]{xy}  	
+
+\usepackage[pdftex,bookmarks,colorlinks,breaklinks]{hyperref} 
+\hypersetup{a4paper,
+ 			linkcolor=black, 
+			citecolor=black, 
+			filecolor=black, 
+			urlcolor=black, 
+			pdftitle={Paper}, 
+			pdfauthor={Terje Gundersen}, 
+			pdfcreator={Terje Gundersen}, 
+			pdfsubject={Paper}, 
+			pdfkeywords={NTNU, Terje Gundersen, Speech Technology, Speech Conversion, Speech Morphing}
+			}
+			
+%
+% ABBREVIATIONS
+%
+% complile with makeindex master.nlo -s nomencl.ist -o master.nls
+% use: \abbrev{MAF}{Minimum audible field}
+\usepackage[intoc]{nomencl} \let\abbrev\nomenclature 
+\renewcommand{\nomname}{List of Abbreviations} \setlength{\nomlabelwidth}{.25\hsize} 
+\renewcommand{\nomlabel}[1]{\textbf{#1} \dotfill}
+% \renewcommand{\nomlabel}[1]{\textbf{#1}}
+\setlength{\nomitemsep}{-\parsep}
+\makenomenclature 
+%use this command to display the list 
+\newcommand{\Listofabbrev}{
+\printnomenclature 
+\newpage }
+
+%
+% THEOREMS
+%
+\theoremstyle{plain} 
+\newtheorem{thm}{Theorem}[section] 
+
+\theoremstyle{definition} 
+\newtheorem{defn}[thm]{Definition}
+\newtheorem{ex}[thm]{Example} 
+
+\theoremstyle{remark} 
+\newtheorem{rem}[thm]{Remark} 
+
+%
+% ALIASES
+%
+\newcommand{\ie}{i.e.~\/} 
+\newcommand{\eg}{e.g.~\/} 
+\newcommand{\HRule}{\rule{\linewidth}{0.5mm}}
+
+%
+% MATH OPERATORS
+%
+% \DeclareMathOperator{\sinc}{sinc} 
+\providecommand{\abs}[1]{\lvert#1\rvert} 
+\providecommand{\norm}[1]{\lVert#1\rVert}
