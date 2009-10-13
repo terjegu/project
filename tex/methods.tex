@@ -3,6 +3,20 @@
 \section{Alignment} % (fold)
 \label{sec:alignment}
 different alignment methods.
+
+\subsection{Dynamic Time Warping} % (fold)
+\label{sub:dynamic_time_warping}
+Dynamic time warping (DTW\abbrev{DTW}{Dynamic Time Warping}).
+\begin{figure}[htbp]
+	\begin{center}
+		\includegraphics[width=.9\textwidth]{fig/dtw.pdf}
+		\caption{Dynamic time warping}
+		\label{fig:dtw}
+	\end{center}
+\end{figure}
+
+
+% subsection Dynamic Time Warping (end)
 % section Alignment (end)
 
 \section{Classification} % (fold)
@@ -17,7 +31,27 @@ amount of data
 
 \section{Conversion Function Parameters} % (fold)
 \label{sec:conversion_function_parameters}
-To compute the parameters in the transfer function the dimensions in \eqref{eq:param_computed} must add up.
+The matrices in \eqref{eq:param_computed} could get really huge with a large amount of mixture models and long signal vectors. To simplify the computational complexity we can constrain the covariance matrices to be diagonal \cite{stylianou98}. $\mathbf{\Sigma}^{yx}$ will become a $m\times p$ matrix and $\mathbf{D}$ will have dimensions $n\times m$. The new transfer function will then become
+\begin{equation}
+	\mathcal{F}(x_t^{(k)}) = \sum_{i=1}^{m}P(C_i \vert \mathbf{x}_t)[\mu_i^{y^{(k)}} + \sigma_i^{yx^{(k)}}  (x_t^{(k)}-\mu_i^{x^{(k)}})/\sigma_i^{xx^{(k)}}]
+\end{equation}
+where $k=1,\dots,p$ and denotes one vector parameter.
+
+We split the optimisation problem into $p$ independent problems which means we have to calculate the unknown vectors $\boldsymbol{\sigma}^{yx}$ and $\boldsymbol{\mu}^{y}$ for each $k$. They both will have dimensions $m\times 1$ for each $k$.
+
+The $\mathbf{D}^{(k)}$ must also be modified to fit this new scheme.
+\begin{equation}
+	\label{eq:D_matrix_new}
+	\mathbf{D}^{(k)} = \begin{bmatrix}
+		p_1(1)(x_1^{(k)} - \mu_1^{x^{(k)}})/\sigma_1^{xx^{(k)}} & \dots & p_1(m)(x_1^{(k)} - \mu_m^{x^{(k)}})/\sigma_m^{xx^{(k)}} \\
+		p_2(1)(x_2^{(k)} - \mu_1^{x^{(k)}})/\sigma_1^{xx^{(k)}} & \dots & p_2(m)(x_2^{(k)} - \mu_m^{x^{(k)}})/\sigma_m^{xx^{(k)}} \\
+		\vdots & & \vdots \\
+		p_n(1)(x_n^{(k)} - \mu_1^{x^{(k)}})/\sigma_1^{xx^{(k)}} & \dots & p_n(m)(x_n^{(k)} - \mu_m^{x^{(k)}})/\sigma_m^{xx^{(k)}} \\
+	\end{bmatrix}
+\end{equation}
+where $p_n(m)=P(C_m\vert \mathbf{x}_n)$.
+
+To compute the parameters in the transfer function the dimensions in \eqref{eq:param_computed} with the new variables $\boldsymbol{\mu^y}$, $\boldsymbol{\sigma}^{yx}$ and $\mathbf{D}^{(k)}$ must add up.
 \begin{proof}
 \begin{equation*}
 	\begin{split}
@@ -25,76 +59,77 @@ To compute the parameters in the transfer function the dimensions in \eqref{eq:p
 	\begin{bmatrix}
 		m \times n \\
 		\dots \\
-		pm \times n
+		m \times n
 	\end{bmatrix}
 	\begin{bmatrix}
-		n \times m & \vdots & n\times pm
+		n \times m & \vdots & n\times m
 	\end{bmatrix} \right)
 	\begin{bmatrix}
-		m \times p \\
+		m \times 1 \\
 		\dots \\
-		m \left(  p \times p \right)
+		m \times 1 
 	\end{bmatrix}
 	= & 
 	\begin{bmatrix}
 		m \times n \\
 		\dots \\
-		pm \times n
-	\end{bmatrix} \mathbf{y}\\ % end line 1
+		m \times n
+	\end{bmatrix} \mathbf{y^{(k)}}\\ % end line 1
 	\biggl( \begin{bmatrix}
-		(m+mp) \times n 
+		2m \times n 
 	\end{bmatrix}
 	\begin{bmatrix}
-		n \times (m+pm)
+		n \times 2m
 	\end{bmatrix} \biggr) 
 	\begin{bmatrix}
-		(m+mp) \times p
+		2m \times 1
 	\end{bmatrix}
 	= & 
 	\begin{bmatrix}
-		(m+pm) \times n 
-	\end{bmatrix} \mathbf{y} \\ % end line 2
+		2m \times n 
+	\end{bmatrix} \mathbf{y^{(k)}} \\ % end line 2
 	\biggl( \begin{bmatrix}
-		m(1+p) \times  m(1+p)
+		2m \times  2m
 	\end{bmatrix} \biggr) 
 	\begin{bmatrix}
-		m (1+p) \times p 
+		2m \times 1 
 	\end{bmatrix}
 	= &
 	\begin{bmatrix}
-		m(1+p) \times n 
-	\end{bmatrix} \mathbf{y} \\ % end line 3
+		2m \times n 
+	\end{bmatrix} \mathbf{y^{(k)}} \\ % end line 3
 	\begin{bmatrix}
-		m (1+p) \times p
+		2m \times 1
 	\end{bmatrix}
 	= &
 	\biggl(\begin{bmatrix}
-		m(1+p) \times  m(1+p)
-	\end{bmatrix} \biggr)^{-1} \\ &
+		2m \times  2m
+	\end{bmatrix} \biggr)^{-1} 
 	\begin{bmatrix}
-		m(1+p) \times n 
-	\end{bmatrix} \mathbf{y} \\ % end line 4
-	& \\
+		2m \times n 
+	\end{bmatrix} \mathbf{y^{(k)}} \\ % end line 4
 	\begin{bmatrix}
-		m (1+p) \times p
+		2m \times p
 	\end{bmatrix}
 	= &
 	\begin{bmatrix}
-		m(1+p) \times n 
-	\end{bmatrix} \mathbf{y} \\ % end line 5
+		2m \times n 
+	\end{bmatrix} \mathbf{y^{(k)}} \\ % end line 5
 	& \\
-	\Downarrow & \; Dim(\mathbf{y}) = n \times p \\ % end line 6
+	\Downarrow & \; Dim(\mathbf{y^{(k)}}) = n \times 1 \\ % end line 6
 	& \\
 	\begin{bmatrix}
-		m (1+p) \times p
+		2m \times 1
 	\end{bmatrix}
 	= &
 	\begin{bmatrix}
-		m(1+p) \times p 
+		2m \times 1 
 	\end{bmatrix} \\ % end line 7
 	\end{split}
 \end{equation*}
 \end{proof}
-where $m$ is the number of classes, $n$ is the number of vectors with $p$ coefficients.
+where $m$ is the number of classes and $n$ is the number of vectors.
+
+The number of calculations has been reduced by $p/4$.
 % section Conversion Function (end)
 % chapter Method (end)

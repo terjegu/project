@@ -5,12 +5,13 @@
   \centering
    \begin{tabular}[h]{c}
 \xymatrix{ 
-x[n] \ar[r] &*+<5mm>[F]{\text{Buffer}} \ar[d]\ar[r] &*+<5mm>[F]{1-A(z)}\ar[rr]^{e[n]}& &*+<5mm>[F]{\frac{1}{1-A(z)}} \ar[r] & y(x)\\
+x[n] \ar[r] &*+<5mm>[F]{\text{Buffer}} \ar[d]\ar[r] &*+<5mm>[F]{1-A(z)}\ar[rr]^{e[n]}& &*+<5mm>[F]{\frac{1}{1-\tilde{A}(z)}} \ar[r] & y(x)\\
   &*+<5mm>[F]{\text{LP}} \ar[r]^{A(z)}& \ar[u]\ar[r]&*+<5mm>[F]{\text{VC}}\ar[r]^{\tilde{A}(z)}& \ar[u]&}
   \end{tabular}
   \caption{Voice Conversion}
   \label{fig:ADPCM}
 \end{figure}
+Buffer amount, LP type, VC function, re-estimate signal.
 
 \section{Gaussian Mixture Model} % (fold)
 \label{sec:gaussian_mixture_model}
@@ -19,11 +20,11 @@ The GMM is a classical parametric model used in many pattern recognition techniq
 	\label{eq:gmm}
 	p(\mathbf{x}) = \sum_{i=1}^{m} \alpha_i N(\mathbf{x}; \boldsymbol{\mu}_i, \mathbf{\Sigma}_i)
 \end{equation}
-where $m$ is the number of mixture models and $N(\mathbf{x}; \boldsymbol{\mu}_i, \mathbf{\Sigma}_i)$ denotes the p-dimensional normal distribution with the mean vector $\boldsymbol{\mu}$ and covariance matrix $\mathbf{\Sigma}$ defined by
+where $m$ is the number of mixture models and $N(\mathbf{x}; \boldsymbol{\mu}_i, \mathbf{\Sigma}_i)$ denotes the p-dimensional normal distribution with the mean vector $\boldsymbol{\mu}_i$ and covariance matrix $\mathbf{\Sigma}_i$ defined by
 \begin{equation}
-	N(\mathbf{x}; \boldsymbol{\mu}_i, \mathbf{\Sigma}_i) = \frac{1}{\sqrt{(2\pi)^p\abs{\mathbf{\Sigma}}}} \exp\left[ -\frac{1}{2} (\mathbf{x} -\boldsymbol{\mu})^T \mathbf{\Sigma}^{-1} (\mathbf{x} -\boldsymbol{\mu})\right]
+	N(\mathbf{x}; \boldsymbol{\mu}, \mathbf{\Sigma}) = \frac{1}{\sqrt{(2\pi)^p\abs{\mathbf{\Sigma}}}} \exp\left[ -\frac{1}{2} (\mathbf{x} -\boldsymbol{\mu})^T \mathbf{\Sigma}^{-1} (\mathbf{x} -\boldsymbol{\mu})\right]
 \end{equation}
-and the $\alpha_i$ in \eqref{eq:gmm} is a normalised positive scalar; $\sum_{i=1}^{M}\alpha_i = 1$ and $\alpha_i \geq 0$. The $\mathbf{x_i}$ vectors are assumed to be independent.
+and the $\alpha_i$ in \eqref{eq:gmm} is a normalised positive scalar; $\sum_{i=1}^{M}\alpha_i = 1$ and $\alpha_i \geq 0$. The input vectors, $\mathbf{x_i}$, are assumed to be independent.
 
 In the GMM, each component is described by its center, $\boldsymbol{\mu}_i$, and the spreading around the center of the component, $\mathbf{\Sigma_i}$. The frequency of each component in the observation is represented by mixture weights, $\alpha_i$ \cite{stylianou98}. The conditional probability that a given observation vector $\mathbf{x}$ belongs to the component $C_i$ of the GMM is given by Bayes' rule \cite{statistikk} as
 \begin{equation}
@@ -36,7 +37,7 @@ In the GMM, each component is described by its center, $\boldsymbol{\mu}_i$, and
 \label{sec:expectation_maximisation}
 The expectation maximisation, EM \abbrev{EM}{Expectation Maximisation}, algorithm is an iterative algorithm for unsupervised learning in which component information is unavailable or only partly available \cite{taletek}. It estimates the model parameters by maximising the log-likelihood of incomplete data and maximising the expectation of log-likelihood from complete data.
 
-We need to determine the parameter $\mathbf{\Phi}$ which maximises $P(Y=y\vert \mathbf{\Phi})$ where $y$ is the observed training data. We assume some parameter vector $\mathbf{\Phi}$ end estimate the probability of some unknown data $x$ occurred in the generation of $y$. We then compute a new $\bar{\mathbf{\Phi}}$ which is the maximum likelihood of $\mathbf{\Phi}$ and set the new $\bar{\mathbf{\Phi}}$ to be $\mathbf{\Phi}$ and repeat the process iteratively until the process converges \cite{taletek}. The process will converge if we choose $\bar{\mathbf{\Phi}}$ such that 
+We need to determine the parameter $\mathbf{\Phi} = \{\boldsymbol{\alpha}, \boldsymbol{\mu}, \mathbf{\Sigma}\}$ which maximises $P(Y=y\vert \mathbf{\Phi})$ where $y$ is the observed training data. We assume some parameter vector $\mathbf{\Phi}$ end estimate the probability of some unknown data $x$ occurred in the generation of $y$. We then compute a new $\bar{\mathbf{\Phi}}$ which is the maximum likelihood of $\mathbf{\Phi}$ and set the new $\bar{\mathbf{\Phi}}$ to be $\mathbf{\Phi}$ and repeat the process iteratively until the process converges \cite{taletek}. The process will converge if we choose $\bar{\mathbf{\Phi}}$ such that 
 \begin{equation}
 	\label{eq:q_criteria}
 	Q(\mathbf{\Phi},\bar{\mathbf{\Phi}})\geq Q(\mathbf{\Phi},\mathbf{\Phi})
@@ -51,14 +52,34 @@ where
 
 \section{Conversion Function} % (fold)
 \label{sec:conversion_function}
-The available data for the conversion function is two aligned vectors, source and target, which are of the same length $n$ and the pre-trained gaussian mixture models. The conversion function suggested by \cite{stylianou95} is described as
+The available data for the conversion function is two time-aligned vectors, source and target, which are of the same length $n$ and the pre-trained gaussian mixture models. A conversion function suggested by Y. Stylianou \cite{stylianou95} is used in this paper:
+\begin{defn}
+	\label{defn:conversion_function}
+	\begin{equation}
+		\label{eq:conversion_function}
+		\begin{split}
+		\mathcal{F}(\mathbf{x}_t) =& E[\mathbf{y}\vert \mathbf{x}_t]\\
+		 =& \sum_{i=1}^{m}P(C_i \vert \mathbf{x}_t)[\boldsymbol{\mu}_i^y + \mathbf{\Sigma}_i^{yx} \mathbf{\Sigma}_i^{xx^{-1}} (\mathbf{x}_t-\boldsymbol{\mu}_i^x)]
+		\end{split}
+	\end{equation}	
+\end{defn}
+The conversion function is a weighted sum of minimum mean square error (MMSE\abbrev{MMSE}{Minimum Mean Square Error}) estimate of the target vector $\mathbf{y}_t$ given the observed value of $\mathbf{x}_t$, which are jointly Gaussian \cite{stylianou98}. The MMSE is given by \cite{taletek}
 \begin{equation}
-	\label{eq:conversion_function}
-	\mathcal{F}(\mathbf{x}_t) = \sum_{i=1}^{m}P(C_i \vert \mathbf{x}_t)[\mathbf{v}_i + \boldsymbol{\Gamma}_i \mathbf{\Sigma}_i^{-1}(\mathbf{x}_t-\boldsymbol{\mu}_i)]
+	\label{eq:mmse}
+	E[\mathbf{y}\vert \mathbf{x}=\mathbf{x}_t] = \boldsymbol{\mu}^y + \mathbf{\Sigma}^{yx} \mathbf{\Sigma}^{xx^{-1}} (\mathbf{x}_t-\boldsymbol{\mu}^x)
 \end{equation}
-where the term between the brackets is the conditional expectation of the target $\mathbf{y}_t$ given the observed value of $\mathbf{x}_t$. If the gaussian components of the mixture could be separated, the conversion function $\mathcal{F}()$ is modifying the posterior mean and covariance of each component. Since this is not the case in practice the term is weighted by the conditional probability that the observed data $\mathbf{x}_t$ belongs to the component $C_i$.
+where $E[]$ denotes the expectation, $\boldsymbol{\mu}$ is the mean
+\begin{equation}
+	\boldsymbol{\mu}^y = E[\mathbf{y}]
+\end{equation}
+and $\mathbf{\Sigma}$ is the cross-covariance matrix
+\begin{equation}
+	\mathbf{\Sigma}^{yx} = E[(\mathbf{y}-\boldsymbol{\mu}^y)(\mathbf{x}-\boldsymbol{\mu}^x)^T].
+\end{equation}
 
-The variables $\mathbf{v}$ and $\mathbf{\Gamma}$ are unknown and need to be estimated such as the squared conversion error is minimised
+If the gaussian components of the mixture could be separated, the conversion function $\mathcal{F}()$ is modifying the posterior mean and covariance of each component. Since this is not the case in practice the term is weighted by the conditional probability that the observed data $\mathbf{x}_t$ belongs to the component $C_i$.
+
+The variables $\boldsymbol{\mu}^y$ and $\mathbf{\Sigma}^{yx}$ are unknown and need to be estimated such as the squared conversion error is minimised
 \begin{equation}
 	\label{eq:conversion_error}
 	\epsilon=\sum_{t=1}^{n}\norm{\mathbf{y}_t - \mathcal{F}(\mathbf{x}_t)}^2.
@@ -66,50 +87,63 @@ The variables $\mathbf{v}$ and $\mathbf{\Gamma}$ are unknown and need to be esti
 
 The optimal values of the parameters can be computed by solving the following set of normal equations \cite{stylianou95}:
 \begin{equation}
+	\begin{split}
+		\mathbf{y} = &\mathbf{P}\boldsymbol{\mu^y} + \mathbf{D}\mathbf{\Sigma}^{yx} \\
+		= & \begin{bmatrix}
+			\mathbf{P}& \vdots &\mathbf{D}
+		\end{bmatrix}
+		\begin{bmatrix}
+			\boldsymbol{\mu^y} \\
+			\dots \\
+			\mathbf{\Sigma}^{yx}
+		\end{bmatrix}
+	\end{split}
+\end{equation}
+\begin{equation}
 	\label{eq:param_computed}
 	\begin{split}
 		\left( 
 		\begin{bmatrix}
 			\mathbf{P}^T \\
 			\dots \\
-			\mathbf{D}_x^T
+			\mathbf{D}^T
 		\end{bmatrix}
 		\begin{bmatrix}
-			\mathbf{P} & \vdots & \mathbf{D}_x
+			\mathbf{P} & \vdots & \mathbf{D}
 		\end{bmatrix}
 		 \right)
 		\begin{bmatrix}
-			\mathbf{v} \\
+			\boldsymbol{\mu}^y \\
 			\dots \\
-			\mathbf{\Gamma}
+			\mathbf{\Sigma}^{yx}
 		\end{bmatrix}
 		= &
 		\begin{bmatrix}
 			\mathbf{P}^T \\
 			\dots \\
-			\mathbf{D}_x^T
+			\mathbf{D}^T
 		\end{bmatrix}
 		\mathbf{y} \\ % end line 1
 		\begin{bmatrix}
-			\mathbf{v} \\
+			\boldsymbol{\mu}^y \\
 			\dots \\
-			\mathbf{\Gamma}
+			\mathbf{\Sigma}^{yx}
 		\end{bmatrix}
 		= &
 		\left( 
 		\begin{bmatrix}
 			\mathbf{P}^T \\
 			\dots \\
-			\mathbf{D}_x^T
+			\mathbf{D}^T
 		\end{bmatrix}
 		\begin{bmatrix}
-			\mathbf{P} & \vdots & \mathbf{D}_x
+			\mathbf{P} & \vdots & \mathbf{D}
 		\end{bmatrix}
 		 \right)^{-1}
 		\begin{bmatrix}
 			\mathbf{P}^T \\
 			\dots \\
-			\mathbf{D}_x^T
+			\mathbf{D}^T
 		\end{bmatrix}
 		\mathbf{y} \\ % end line 2
 	\end{split}
@@ -124,30 +158,35 @@ where $\mathbf{y}$ is the target spectral vectors and $\mathbf{P}$ is a $n \time
 		P(C_1\vert \mathbf{x}_n) & \dots & P(C_m\vert \mathbf{x}_n) \\
 	\end{bmatrix}.
 \end{equation}
-$\mathbf{D}_x$ is a $n \times pm$ matrix defined as
+$\mathbf{D}$ is a $n \times pm$ matrix defined as
 \begin{equation}
 	\label{eq:D_matrix}
-	\mathbf{D}_x = \begin{bmatrix}
-		P(C_1\vert \mathbf{x}_1)(\mathbf{x}_1 - \boldsymbol{\mu}_1)^T\mathbf{\Sigma}_1^{-1} & \dots & P(C_m\vert \mathbf{x}_1)(\mathbf{x}_1 - \boldsymbol{\mu}_m)^T\mathbf{\Sigma}_m^{-1} \\
-		P(C_1\vert \mathbf{x}_2)(\mathbf{x}_2 - \boldsymbol{\mu}_1)^T\mathbf{\Sigma}_1^{-1} & \dots & P(C_m\vert \mathbf{x}_2)(\mathbf{x}_2 - \boldsymbol{\mu}_m)^T\mathbf{\Sigma}_m^{-1} \\
+	\mathbf{D} = \begin{bmatrix}
+		P(C_1\vert \mathbf{x}_1)(\mathbf{x}_1 - \boldsymbol{\mu}_1^x)^T\mathbf{\Sigma}_1^{xx^{-1}} & \dots & P(C_m\vert \mathbf{x}_1)(\mathbf{x}_1 - \boldsymbol{\mu}_m^x)^T\mathbf{\Sigma}_m^{xx^{-1}} \\
+		P(C_1\vert \mathbf{x}_2)(\mathbf{x}_2 - \boldsymbol{\mu}_1^x)^T\mathbf{\Sigma}_1^{xx^{-1}} & \dots & P(C_m\vert \mathbf{x}_2)(\mathbf{x}_2 - \boldsymbol{\mu}_m^x)^T\mathbf{\Sigma}_m^{xx^{-1}} \\
 		\vdots & & \vdots \\
-		P(C_1\vert \mathbf{x}_n)(\mathbf{x}_n - \boldsymbol{\mu}_1)^T\mathbf{\Sigma}_1^{-1} & \dots & P(C_m\vert \mathbf{x}_n)(\mathbf{x}_n - \boldsymbol{\mu}_m)^T\mathbf{\Sigma}_m^{-1} \\
+		P(C_1\vert \mathbf{x}_n)(\mathbf{x}_n - \boldsymbol{\mu}_1^x)^T\mathbf{\Sigma}_1^{xx^{-1}} & \dots & P(C_m\vert \mathbf{x}_n)(\mathbf{x}_n - \boldsymbol{\mu}_m^x)^T\mathbf{\Sigma}_m^{xx^{-1}} \\
 	\end{bmatrix}.
 \end{equation}
-The two unknown matrices $\mathbf{v}$ and $ \mathbf{\Gamma}$ will have dimensions $(m\times p)$ and $( m \times (p\times p))$ 
+The two unknown matrices $\boldsymbol{\mu}^x$ and $\mathbf{\Sigma}^{xx}$ will have dimensions $m\times p$ and $m \times (p\times p)$ 
 \begin{equation}
 	\label{eq:v_matrix}
-	\mathbf{v} = 
+	\boldsymbol{\mu}^x = 
 	\begin{bmatrix}
-		\mathbf{v}_1 \vdots \mathbf{v}_2 \vdots \dots \vdots \mathbf{v}_m
+		\boldsymbol{\mu}^x_1 \vdots \boldsymbol{\mu}^x_2 \vdots \dots \vdots \boldsymbol{\mu}^x_m
 	\end{bmatrix}^T
 \end{equation}
 \begin{equation}
 	\label{gamma_matrix}
-	\mathbf{\Gamma} = 
+	\mathbf{\Sigma}^{xx} = 
 	\begin{bmatrix}
-		\mathbf{\Gamma}_1 \vdots \mathbf{\Gamma}_2 \vdots \dots \vdots \mathbf{\Gamma}_m
+		\mathbf{\Sigma}_1^{xx} \vdots \mathbf{\Sigma}_2^{xx} \vdots \dots \vdots \mathbf{\Sigma}_m^{xx}
 	\end{bmatrix}^T.
 \end{equation}
 % section Transfer function (end)
 % chapter Theory (end)
+
+\section{Signal Representation} % (fold)
+\label{sec:signal_representation}
+LPC, RC, MFCC.
+% section Signal Representation (end)
