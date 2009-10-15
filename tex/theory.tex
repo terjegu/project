@@ -13,6 +13,18 @@ x[n] \ar[r] &*+<5mm>[F]{\text{Buffer}} \ar[d]\ar[r] &*+<5mm>[F]{1-A(z)}\ar[rr]^{
 \end{figure}
 Buffer amount, LP type, VC function, re-estimate signal.
 
+\section{Dynamic Time Warping} % (fold)
+\label{sec:dynamic_time_warping}
+The Euclidean distance between two LPC cepstral coefficients is defined as the norm of the difference between the ceofficients \cite{atal74}
+\begin{equation}
+	\label{eq:dtw_distance}
+	\begin{split}
+		d_{cep} = & \norm{c_s-c_t} \\
+		d_{cep}^2 = & \sum_{i=1}^{n} (c_s(i)-c_t(i))^2.
+	\end{split}
+\end{equation}
+% section Dynamic Time Warping (end)
+
 \section{Gaussian Mixture Model} % (fold)
 \label{sec:gaussian_mixture_model}
 The GMM is a classical parametric model used in many pattern recognition techniques \cite{stylianou98}. The GMM assumes that the probability distribution of the observed parameters takes the following parametric form
