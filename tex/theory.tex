@@ -1,6 +1,5 @@
 \chapter{Theory} % (fold)
 \label{cha:theory}
-
 \begin{figure}[htbp]
   \centering
    \begin{tabular}[h]{c}
@@ -9,62 +8,17 @@ x[n] \ar[r] &*+<5mm>[F]{\text{Buffer}} \ar[d]\ar[r] &*+<5mm>[F]{1-A(z)}\ar[rr]^{
   &*+<5mm>[F]{\text{LP}} \ar[r]^{A(z)}& \ar[u]\ar[r]&*+<5mm>[F]{\text{VC}}\ar[r]^{\tilde{A}(z)}& \ar[u]&}
   \end{tabular}
   \caption{Voice Conversion}
-  \label{fig:ADPCM}
+  \label{fig:VC}
 \end{figure}
-Buffer amount, LP type, VC function, re-estimate signal.
 
-\section{Dynamic Time Warping} % (fold)
-\label{sec:dynamic_time_warping}
-The Euclidean distance between two LPC cepstral coefficients is defined as the norm of the difference between the ceofficients \cite{atal74}
-\begin{equation}
-	\label{eq:dtw_distance}
-	\begin{split}
-		d_{cep} = & \norm{c_s-c_t} \\
-		d_{cep}^2 = & \sum_{i=1}^{n} (c_s(i)-c_t(i))^2.
-	\end{split}
-\end{equation}
-% section Dynamic Time Warping (end)
+The basic idea of the voice conversion is to make a LPC analysis of the signal, extract the estimate from the real signal, adapt the coefficients to the new voice and reestimate the signal with the new coefficients as depicted in Figure~\ref{fig:VC}.
 
-\section{Gaussian Mixture Model} % (fold)
-\label{sec:gaussian_mixture_model}
-The GMM is a classical parametric model used in many pattern recognition techniques \cite{stylianou98}. The GMM assumes that the probability distribution of the observed parameters takes the following parametric form
-\begin{equation}
-	\label{eq:gmm}
-	p(\mathbf{x}) = \sum_{i=1}^{m} \alpha_i N(\mathbf{x}; \boldsymbol{\mu}_i, \mathbf{\Sigma}_i)
-\end{equation}
-where $m$ is the number of mixture models and $N(\mathbf{x}; \boldsymbol{\mu}_i, \mathbf{\Sigma}_i)$ denotes the p-dimensional normal distribution with the mean vector $\boldsymbol{\mu}_i$ and covariance matrix $\mathbf{\Sigma}_i$ defined by
-\begin{equation}
-	N(\mathbf{x}; \boldsymbol{\mu}, \mathbf{\Sigma}) = \frac{1}{\sqrt{(2\pi)^p\abs{\mathbf{\Sigma}}}} \exp\left[ -\frac{1}{2} (\mathbf{x} -\boldsymbol{\mu})^T \mathbf{\Sigma}^{-1} (\mathbf{x} -\boldsymbol{\mu})\right]
-\end{equation}
-and the $\alpha_i$ in \eqref{eq:gmm} is a normalised positive scalar; $\sum_{i=1}^{M}\alpha_i = 1$ and $\alpha_i \geq 0$. The input vectors, $\mathbf{x_i}$, are assumed to be independent.
-
-In the GMM, each component is described by its center, $\boldsymbol{\mu}_i$, and the spreading around the center of the component, $\mathbf{\Sigma_i}$. The frequency of each component in the observation is represented by mixture weights, $\alpha_i$ \cite{stylianou98}. The conditional probability that a given observation vector $\mathbf{x}$ belongs to the component $C_i$ of the GMM is given by Bayes' rule \cite{statistikk} as
-\begin{equation}
-	\label{eq:bayes}
-	P(C_i\vert \mathbf{x}) = \frac{\alpha_i N(\mathbf{x}; \boldsymbol{\mu}_i, \mathbf{\Sigma}_i)}{\sum_{j=1}^{m}\alpha_j N(\mathbf{x}; \boldsymbol{\mu}_j, \mathbf{\Sigma}_j)}.
-\end{equation}
-% section Gaussian Mixture Model (end)
-
-\section{Expectation Maximisation} % (fold)
-\label{sec:expectation_maximisation}
-The expectation maximisation, EM \abbrev{EM}{Expectation Maximisation}, algorithm is an iterative algorithm for unsupervised learning in which component information is unavailable or only partly available \cite{taletek}. It estimates the model parameters by maximising the log-likelihood of incomplete data and maximising the expectation of log-likelihood from complete data.
-
-We need to determine the parameter $\mathbf{\Phi} = \{\boldsymbol{\alpha}, \boldsymbol{\mu}, \mathbf{\Sigma}\}$ which maximises $P(Y=y\vert \mathbf{\Phi})$ where $y$ is the observed training data. We assume some parameter vector $\mathbf{\Phi}$ end estimate the probability of some unknown data $x$ occurred in the generation of $y$. We then compute a new $\bar{\mathbf{\Phi}}$ which is the maximum likelihood of $\mathbf{\Phi}$ and set the new $\bar{\mathbf{\Phi}}$ to be $\mathbf{\Phi}$ and repeat the process iteratively until the process converges \cite{taletek}. The process will converge if we choose $\bar{\mathbf{\Phi}}$ such that 
-\begin{equation}
-	\label{eq:q_criteria}
-	Q(\mathbf{\Phi},\bar{\mathbf{\Phi}})\geq Q(\mathbf{\Phi},\mathbf{\Phi})
-\end{equation}
-where 
-\begin{equation}
-	\label{eq:q_function}
-	Q(\mathbf{\Phi},\bar{\mathbf{\Phi}}) = E[\log P(X,Y=y\vert \bar{\mathbf{\Phi}})].
-\end{equation}
-% section Estimation Maximasation (end)
+The challenge in this procedure is the find the conversion function explained in Section~\ref{sec:conversion_function}. In the training process of the conversion function the two input signals, source and target, needs to be time aligned, explain in Section~\ref{sec:dynamic_time_warping}. The LP analysis and the signal representation in the conversion procedure is explained in Section~\ref{sec:signal_representation}.
 
 
 \section{Conversion Function} % (fold)
 \label{sec:conversion_function}
-The available data for the conversion function is two time-aligned vectors, source and target, which are of the same length $n$ and the pre-trained gaussian mixture models. A conversion function suggested by Y. Stylianou \cite{stylianou95} is used in this paper:
+The available data for the conversion function is time-aligned source and target vectors, Section~\ref{sec:dynamic_time_warping}, which are of the same length $n$ and the pre-trained gaussian mixture models, Section~\ref{sec:gaussian_mixture_model}. A conversion function suggested by Yannis Stylianou \cite{stylianou95} is used in this paper:
 \begin{defn}
 	\label{defn:conversion_function}
 	\begin{equation}
@@ -75,7 +29,7 @@ The available data for the conversion function is two time-aligned vectors, sour
 		\end{split}
 	\end{equation}	
 \end{defn}
-The conversion function is a weighted sum of minimum mean square error (MMSE\abbrev{MMSE}{Minimum Mean Square Error}) estimate of the target vector $\mathbf{y}_t$ given the observed value of $\mathbf{x}_t$, which are jointly Gaussian \cite{stylianou98}. The MMSE is given by \cite{taletek}
+The conversion function is a weighted sum of minimum mean square error (MMSE\abbrev{MMSE}{minimum mean square error}) estimate of the target vector $\mathbf{y}_t$ given the observed value of $\mathbf{x}_t$, which are jointly Gaussian \cite{stylianou98}. The MMSE is given by \cite{taletek}
 \begin{equation}
 	\label{eq:mmse}
 	E[\mathbf{y}\vert \mathbf{x}=\mathbf{x}_t] = \boldsymbol{\mu}^y + \mathbf{\Sigma}^{yx} \mathbf{\Sigma}^{xx^{-1}} (\mathbf{x}_t-\boldsymbol{\mu}^x)
@@ -195,10 +149,144 @@ The two unknown matrices $\boldsymbol{\mu}^x$ and $\mathbf{\Sigma}^{xx}$ will ha
 		\mathbf{\Sigma}_1^{xx} \vdots \mathbf{\Sigma}_2^{xx} \vdots \dots \vdots \mathbf{\Sigma}_m^{xx}
 	\end{bmatrix}^T.
 \end{equation}
-% section Transfer function (end)
-% chapter Theory (end)
+% section Conversion Function (end)
+
+
+\section{Dynamic Time Warping} % (fold)
+\label{sec:dynamic_time_warping}
+One way to time align two signals is to utilise dynamic time warping (DTW\abbrev{DTW}{dynamic time warping}). DTW is an dynamic programming concept to warp two sequence such as the difference in the signals are minimised. The difference in the signals can be found by taking short-time Fourier transform (STFT\abbrev{STFT}{short-time Fourier transform}) and compute the distance between the components. By using Mel-frequency cepstral coefficients (MFCC\abbrev{MFCC}{Mel-frequency cepstral coefficients}) we can use an Euclidean distance metric defined as \cite{atal74}
+\begin{equation}
+	\label{eq:dtw_distance}
+	\begin{split}
+		d_{cep}(a,b) = & \norm{\mathbf{C}_s(a)-\mathbf{C}_t(b)} \\
+		d_{cep}^2(a,b) = & \sum_{i=1}^{n} (\mathbf{c}_{s,a}(i)-\mathbf{c}_{t,b}(i))^2.
+	\end{split}
+\end{equation}
+If the source signal has $n$ MFCC vectors in $\mathbf{C}_s$ and the target signal has $m$ vectors in $\mathbf{C}_t$ we can calculate the distance between all the vectors and get a $n\times m$ matrix of distance measures.
+
+The minimum distance between the two signals can be found by solving the recursion \cite{taletek}
+\begin{equation}
+	\label{eq:recursion}
+	D(i,j) = \min_k\left[D(i-1,k)+d_{cep}(k,j)\right],
+\end{equation}
+\ie the shortest path from $A$ to $C$ is the shortest path from $A$ to $B$ plus the shortest path from $B$ to $C$. The problem is broken down into simpler subproblems, hence dynamic programming.
+% section Dynamic Time Warping (end)
+
+\section{Gaussian Mixture Model} % (fold)
+\label{sec:gaussian_mixture_model}
+The GMM is a classical parametric model used in many pattern recognition techniques \cite{stylianou98}. The GMM assumes that the probability distribution of the observed parameters takes the following parametric form
+\begin{equation}
+	\label{eq:gmm}
+	p(\mathbf{x}) = \sum_{i=1}^{m} \alpha_i N(\mathbf{x}; \boldsymbol{\mu}_i, \mathbf{\Sigma}_i)
+\end{equation}
+where $m$ is the number of mixture models and $N(\mathbf{x}; \boldsymbol{\mu}_i, \mathbf{\Sigma}_i)$ denotes the p-dimensional normal distribution with the mean vector $\boldsymbol{\mu}_i$ and covariance matrix $\mathbf{\Sigma}_i$ defined by
+\begin{equation}
+	N(\mathbf{x}; \boldsymbol{\mu}, \mathbf{\Sigma}) = \frac{1}{\sqrt{(2\pi)^p\abs{\mathbf{\Sigma}}}} \exp\left[ -\frac{1}{2} (\mathbf{x} -\boldsymbol{\mu})^T \mathbf{\Sigma}^{-1} (\mathbf{x} -\boldsymbol{\mu})\right]
+\end{equation}
+and the $\alpha_i$ in \eqref{eq:gmm} is a normalised positive scalar; $\sum_{i=1}^{M}\alpha_i = 1$ and $\alpha_i \geq 0$. The input vectors, $\mathbf{x_i}$, are assumed to be independent.
+
+In the GMM, each component is described by its center, $\boldsymbol{\mu}_i$, and the spreading around the center of the component, $\mathbf{\Sigma_i}$. The frequency of each component in the observation is represented by mixture weights, $\alpha_i$ \cite{stylianou98}. The conditional probability that a given observation vector $\mathbf{x}$ belongs to the component $C_i$ of the GMM is given by Bayes' rule \cite{statistikk} as
+\begin{equation}
+	\label{eq:bayes}
+	P(C_i\vert \mathbf{x}) = \frac{\alpha_i N(\mathbf{x}; \boldsymbol{\mu}_i, \mathbf{\Sigma}_i)}{\sum_{j=1}^{m}\alpha_j N(\mathbf{x}; \boldsymbol{\mu}_j, \mathbf{\Sigma}_j)}.
+\end{equation}
+
+The parameters $\boldsymbol{\alpha}, \boldsymbol{\mu}$ and $ \mathbf{\Sigma}$ can be estimated with the expectation maximisation algorithm, Section~\ref{sec:expectation_maximisation}.
+
+% section Gaussian Mixture Model (end)
+
+\section{Expectation Maximisation} % (fold)
+\label{sec:expectation_maximisation}
+The expectation maximisation, EM \abbrev{EM}{expectation maximisation}, algorithm is an iterative algorithm for unsupervised learning in which component information is unavailable or only partly available \cite{taletek}. It estimates the model parameters by maximising the log-likelihood of incomplete data and maximising the expectation of log-likelihood from complete data.
+
+We need to determine the parameter $\mathbf{\Phi} = \{\boldsymbol{\alpha}, \boldsymbol{\mu}, \mathbf{\Sigma}\}$ which maximises $P(Y=y\vert \mathbf{\Phi})$ where $y$ is the observed training data. We assume some parameter vector $\mathbf{\Phi}$ end estimate the probability of some unknown data $x$ occurred in the generation of $y$. We then compute a new $\bar{\mathbf{\Phi}}$ which is the maximum likelihood of $\mathbf{\Phi}$ and set the new $\bar{\mathbf{\Phi}}$ to be $\mathbf{\Phi}$ and repeat the process iteratively until the process converges \cite{taletek}. The process will converge if we choose $\bar{\mathbf{\Phi}}$ such that 
+\begin{equation}
+	\label{eq:q_criteria}
+	Q(\mathbf{\Phi},\bar{\mathbf{\Phi}})\geq Q(\mathbf{\Phi},\mathbf{\Phi})
+\end{equation}
+where 
+\begin{equation}
+	\label{eq:q_function}
+	Q(\mathbf{\Phi},\bar{\mathbf{\Phi}}) = E[\log P(X,Y=y\vert \bar{\mathbf{\Phi}})].
+\end{equation}
+% section Estimation Maximasation (end)
 
 \section{Signal Representation} % (fold)
 \label{sec:signal_representation}
-LPC, RC, MFCC.
+\subsection{Linear Predictive Coding} % (fold)
+\label{sub:lpc}
+The main signal representation of choice is linear predictive coding (LPC\abbrev{LPC}{linear predictive coding}) also known as auto-regressive(AR \abbrev{AR}{auto-regressive}) modelling. 
+
+LPC approximates the signal as an all-pole filter with a sufficient number of poles, \eg $p=12$, by predicting the current sample as a linear combination of its last $p$ samples \cite{taletek}
+\begin{equation}
+	\tilde{x}[n] = \sum_{k=1}^{p}a_k x[n-k].
+\end{equation}
+The prediction error by this representation is 
+\begin{equation}
+	\begin{split}
+		e[n]= & x[n]-\tilde{x}[n]\\
+		= & x[n]-\sum_{k=1}^{p}a_k x[n-k].
+	\end{split}
+\end{equation}
+
+The predictor coefficients, $a_k$, can be estimated by the minimum mean square technique which chooses the coefficients that minimise the total prediction error $E_m$.
+\begin{equation}
+	\label{eq:prediction_error}
+	\begin{split}
+		E = & \sum_{n}e^2[n]\\
+		= & \sum_{n}\left( x[n]-\sum_{k=1}^{p}a_k x[n-k] \right)^2
+	\end{split}
+\end{equation}
+This can be obtained by taking the derivative of \eqref{eq:prediction_error} with respect to $a_i$ and equating to $0$. This yields a set of $p$ linear equations with $p$ unknown parameters \cite{taletek} which easily can be solved.
+% subsection LPC (end)
+
+\subsection{Line Spectral Frequencies} % (fold)
+\label{sub:line_spectral_frequencies}
+While the LPC representation is a delicate representations of speech signals, it is not the best choice when it comes to manipulating the parameters in the voice conversion because they are not necessarily stable. A number of equivalent representations can be used instead for this purpose such as line spectrum frequencies (LSF\abbrev{LSF}{line spectrum frequencies}) \cite{taletek}.
+
+LSF is an equivalent representation of LPC witch can be directly derived from the LP coefficients $A(z)$ and back again. It is derived from the roots of the polynomials $P(z)$ and $Q(z)$ 
+\begin{equation}
+	\label{eq:p_z}
+	P(z) = A(z)+z^{-(p+1)}A(z^{-1})
+\end{equation}
+\begin{equation}
+	\label{eq:q_z}
+	Q(z) = A(z)-z^{-(p+1)}A(z^{-1}).
+\end{equation}
+The derivation of the first LSF coefficients are shown in \cite[p. 304]{taletek}.
+
+In the voice conversion we can therefor transform the LP coefficients to LSF coefficients before the adaption and back agin before the re-estimation of the signal depicted in Figure~\ref{fig:lpc_to_lsf}.
+ \begin{figure}[htbp]
+  \centering
+  \begin{tabular}[h]{c}
+\xymatrix{ 
+  A(z) \ar[r] &*+<5mm>[F]{ LPC\rightarrow LSF} \ar[r] &*+<5mm>[F]{ VC}\ar[r] &*+<5mm>[F]{LSF\rightarrow LPC} \ar[r] & \hat{A}(z)}    
+  \end{tabular}
+  \caption{LPC to LSF transformation in the voice conversion}
+  \label{fig:lpc_to_lsf}
+\end{figure}
+% subsection Line Spectral Frequencies (end)
+
+\subsection{Mel-Frequency Cepstrum} % (fold)
+\label{sub:mel_frequency_cepstrum}
+In the dynamic time warping algorithm presented in Section~\ref{sec:dynamic_time_warping} MFC coefficients are used instead of LP coefficients because they have the feature of Euclidean measures.
+
+The cepstrum of a signal is a homomorphic transformation to the \emph{quefrency} domain \cite{taletek}. The Mel-frequency cepstrum is a real cepstrum with a nonlinear frequency scale which approximates the behaviour of the human auditory system. The process of computing the MFC coefficents are depicted in Figure~\ref{fig:mfcc}.
+
+The Mel-scale is defined as \cite{taletek}
+\begin{equation}
+	B(f) = 1125\ln(1+f/700).
+\end{equation}
+ \begin{figure}[htbp]
+  \centering
+  \begin{tabular}[h]{c}
+\xymatrix{ 
+  x[n] \ar[r] &*+<5mm>[F]{\text{DFT}}\ar[r] &*+<5mm>[F]{\abs{\cdot}^2}\ar[r] &*+<5mm>[F]{\text{MEL}} \ar[r] &*+<5mm>[F]{\log(\cdot)} \ar[r] &*+<5mm>[F]{\text{DCT}} \ar[r] & c[n]}    
+  \end{tabular}
+  \caption{Computation of Mel-frequency cepstrum coefficients}
+  \label{fig:mfcc}
+\end{figure}
+
+% subsection Mel-Frequency Cepstrum (end)
 % section Signal Representation (end)
+% chapter Theory (end)
