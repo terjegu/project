@@ -215,9 +215,9 @@ where
 \label{sec:signal_representation}
 \subsection{Linear Predictive Coding} % (fold)
 \label{sub:lpc}
-The main signal representation of choice is linear predictive coding (LPC\abbrev{LPC}{linear predictive coding}) also known as auto-regressive(AR \abbrev{AR}{auto-regressive}) modelling. 
+The main signal representation of choice is linear predictive coding (LPC\abbrev{LPC}{linear predictive coding}) also known as auto-regressive(AR\abbrev{AR}{auto-regressive}) modelling. 
 
-LPC approximates the signal as an all-pole filter with a sufficient number of poles, \eg $p=12$, by predicting the current sample as a linear combination of its last $p$ samples \cite{taletek}
+LPC approximates the signal as an all-pole filter with a sufficient number of poles, \eg $p=12$, by predicting the current sample as a linear combination of its last $p$ samples \cite{digsig}
 \begin{equation}
 	\tilde{x}[n] = \sum_{k=1}^{p}a_k x[n-k].
 \end{equation}
@@ -229,7 +229,7 @@ The prediction error by this representation is
 	\end{split}
 \end{equation}
 
-The predictor coefficients, $a_k$, can be estimated by the minimum mean square technique which chooses the coefficients that minimise the total prediction error $E_m$.
+The predictor coefficients, $a_k$, can be estimated by the minimum mean square technique which chooses the coefficients that minimise the total prediction error $E$.
 \begin{equation}
 	\label{eq:prediction_error}
 	\begin{split}
@@ -237,7 +237,7 @@ The predictor coefficients, $a_k$, can be estimated by the minimum mean square t
 		= & \sum_{n}\left( x[n]-\sum_{k=1}^{p}a_k x[n-k] \right)^2
 	\end{split}
 \end{equation}
-This can be obtained by taking the derivative of \eqref{eq:prediction_error} with respect to $a_i$ and equating to $0$. This yields a set of $p$ linear equations with $p$ unknown parameters \cite{taletek} which easily can be solved.
+This can be obtained by taking the derivative of \eqref{eq:prediction_error} with respect to $a_i$ and equating to $0$. This yields a set of $p$ linear equations with $p$ unknown parameters \cite{digsig} which easily can be solved.
 % subsection LPC (end)
 
 \subsection{Line Spectral Frequencies} % (fold)

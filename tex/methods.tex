@@ -33,7 +33,7 @@ amount of data
 \label{sec:conversion_function_parameters}
 The matrices in \eqref{eq:param_computed} could get really huge with a large amount of mixture models and long signal vectors. To simplify the computational complexity we can constrain the covariance matrices to be diagonal \cite{stylianou98}. $\mathbf{\Sigma}^{yx}$ will become a $m\times p$ matrix and $\mathbf{D}$ will have dimensions $n\times m$. The new transfer function will then become
 \begin{equation}
-	\mathcal{F}(x_t^{(k)}) = \sum_{i=1}^{m}P(C_i \vert \mathbf{x}_t)[\mu_i^{y^{(k)}} + \sigma_i^{yx^{(k)}}  (x_t^{(k)}-\mu_i^{x^{(k)}})/\sigma_i^{xx^{(k)}}]
+	\mathcal{F}(x_t^{(k)}) = \sum_{i=1}^{m}P(C_i \vert \mathbf{x}_t)[\mu_i^{y^{(k)}}+\sigma_i^{yx^{(k)}}  (x_t^{(k)}-\mu_i^{x^{(k)}})/\sigma_i^{xx^{(k)}}]
 \end{equation}
 where $k=1,\dots,p$ and denotes one vector parameter.
 
