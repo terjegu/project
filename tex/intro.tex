@@ -4,18 +4,19 @@
 
 \section{Definition} % (fold)
 \label{sec:definition}
-Voice transformation or conversion refers to the various modifications one may apply to the sound produced by a person, speaking or singing \cite{stylianou08}. More specifically, in this papers voice transformation refers to the process of modifying the speech signal from a speaker so that it sounds like it has been pronounced by a different speaker. 
+Voice transformation or conversion refers to the various modifications one may apply to the sound produced by a person, speaking or singing \cite{stylianou08}. More specifically, in this papers voice transformation refers to the process of modifying the speech signal from a speaker so that it sounds like it has been pronounced by a specific target speaker. 
 % section Definition (end)
 
 \section{Motivation} % (fold)
 \label{sec:motivation}
 In text-to-speech (TTS\abbrev{TTS}{test-to-speech}) systems the users may want to have a choice between several voices to which they find most soothing to listen to. To create a new voice for a TTS system from scratch requires a lot of work and money, which may not be in the system providers best interest. If it were possible to only create one synthetic voice and then transform that voice to other voices with only limited training data, say 10 minutes, the system provider could produce any number of voices with ease. 
+
+Voice transformation could also be used to disguise your voice if you wish to keep your identification secret during a conversation, like cryptography for your voice. 
 % section Motivation (end)
 
 \section{Modification Methods} % (fold)
 \label{sec:synthesis_methods}
 One of the earliest implementations of speech conversion utilised vector quantisation (VQ\abbrev{VQ}{vector quantisation}) for mapping spectral properties with discrete source and target classes \cite{abe88}. In contrast to the Gaussian mixture model (GMM\abbrev{GMM}{Gaussian mixture model}) method which uses continuous probability density mapping \cite{stylianou98}. These methods maps speaker specific features from the source speaker to the target speaker according to a transformation function. Another mapping approach is the use of Artificial Neural Networks (ANN\abbrev{ANN}{artificial neural networks}) \cite{desai09} which tries to mimic the computational mechanism of the human brain \cite{young75}. 
-
 
 When working on a speech signal it is often convenient to refer to the source-filter model \cite{taletek}. This model says that speech is produced by passing a glottal excitation (source) through a time-varying linear filter that models the resonant characteristics of the vocal tract (filter).
 
@@ -28,8 +29,13 @@ Time- and pitch-scale modifications can be done with the pitch-synchronous overl
 
 \subsection{Filter Modification} % (fold)
 \label{sub:filter_modification}
-The filter can modify the spectral content of the voice without modifying the duration and spectral properties \cite{nguyen09}. The filter is often modelled as a linear predictive (LP\abbrev{LP}{linear predictive}) filter with a small set of filter coefficients. These coefficients can be altered to change the formant frequencies and so on.
+The filter can modify the magnitude spectrum of the frequency response of the vocal tract \cite{nguyen09}. The filter is often modelled as a linear predictive (LP\abbrev{LP}{linear predictive}) filter with a small set of filter coefficients. These coefficients can be altered to change the formant frequencies and so on. The magnitude spectrum carries information of speaker individuality \cite{stylianou09}. If we alter the spectrum to match a curtain target speaker it is called \emph{Filter Mapping}. The phase is not altered in this approach which is unfortunate for the quality of the transformation.   
 % subsection Filter Modification (end)
+
+\subsection{Source and Filter Modifications} % (fold)
+\label{sub:source_and_filter_modifications}
+Voice transformation is usually done by a combination of source and filter modifications. However, this paper will not cover pitch and loudness modifications.
+% subsection Source and Filter Modifications (end)
 % section Synthesis methods (end)
 
 % chapter Introduction (end)

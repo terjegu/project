@@ -4,21 +4,32 @@
   \centering
    \begin{tabular}[h]{c}
 \xymatrix{ 
-x[n] \ar[r] &*+<5mm>[F]{\text{Buffer}} \ar[d]\ar[r] &*+<5mm>[F]{1-A(z)}\ar[rr]^{e[n]}& &*+<5mm>[F]{\frac{1}{1-\tilde{A}(z)}} \ar[r] & y(x)\\
-  &*+<5mm>[F]{\text{LP}} \ar[r]^{A(z)}& \ar[u]\ar[r]&*+<5mm>[F]{\text{VC}}\ar[r]^{\tilde{A}(z)}& \ar[u]&}
+x[n] \ar[r] &*+<5mm>[F-,]{\txt{Buffer}} \ar[d]\ar[r] &*+<5mm>[F-,]{1-A(z)}\ar[rr]^{e[n]}& &*+<5mm>[F-,]{\frac{1}{1-\tilde{A}(z)}} \ar[r] & y[n]\\
+  &*+<5mm>[F-,]{\txt{LPC}} \ar[rr]^<(0.25){A(z)} & \ar[u]&*+<5mm>[F-,]{\txt{VC}}\ar `[ru]^<(0.5){\tilde{A}(z)} [ur]&  &}
   \end{tabular}
   \caption{Voice Conversion}
   \label{fig:VC}
 \end{figure}
 
-The basic idea of the voice conversion is to make a LPC analysis of the signal, extract the estimate from the real signal, adapt the coefficients to the new voice and reestimate the signal with the new coefficients as depicted in Figure~\ref{fig:VC}.
+The basic idea of the voice conversion is to make a LP analysis of the signal, extract the estimate from the real signal, adapt the coefficients to the new voice and reestimate the signal with the new coefficients as depicted in Figure~\ref{fig:VC}.
 
-The challenge in this procedure is the find the conversion function explained in Section~\ref{sec:conversion_function}. In the training process of the conversion function the two input signals, source and target, needs to be time aligned, explain in Section~\ref{sec:dynamic_time_warping}. The LP analysis and the signal representation in the conversion procedure is explained in Section~\ref{sec:signal_representation}.
+The system includes two parts, training and transformation. The challenge in this procedure is the find the conversion function explained in Section~\ref{sec:conversion_function}. In the training process of the conversion function, depicted in Figure~\ref{fig:VC_training}, the two input signals, source $x$ and target $y$, first need to be time aligned by dynamic time warping, Section~\ref{sec:dynamic_time_warping}. Because of the wide variety of speech sound, a single global transform is not sufficient to capture all the different sounds. Instead we could classify the speech sound into probabilistic gaussian mixture models (GMM), Section~\ref{sec:gaussian_mixture_model}, and apply a class-specific transform \cite{stylianou09}. The GMM parameters are used in training of the conversion function explained in Section~\ref{sec:conversion_function}.
+\begin{figure}[htbp]
+	\centering
+	\begin{tabular}[h]{c}
+		\xymatrix{ 
+x[n] \ar[r] &*+<5mm>[F-,]{\txt{LPC}}\ar[d] &*+<5mm>[F-,]{\txt{GMM}}\ar `[rd]^{\boldsymbol{\Phi}} [dr] &\\ % end line 1
+&*+<5mm>[F-,]{\txt{DTW}} \ar @<3pt>[rr]^<(0.15){\tilde{x}[n]} \ar @<-3pt>[rr]_<(0.15){y[n]} & \ar[u] &*+<5mm>[F-,]{\txt{Train VC}}\\ % end line 2
+y[n] \ar[r] &*+<5mm>[F-,]{\txt{LPC}}\ar[u]&&}
+	\end{tabular}
+	\caption{Training of Voice Conversion Parameters}
+	\label{fig:VC_training}
+\end{figure}
 
 
 \section{Conversion Function} % (fold)
 \label{sec:conversion_function}
-The available data for the conversion function is time-aligned source and target vectors, Section~\ref{sec:dynamic_time_warping}, which are of the same length $n$ and the pre-trained gaussian mixture models, Section~\ref{sec:gaussian_mixture_model}. A conversion function suggested by Yannis Stylianou \cite{stylianou95} is used in this paper:
+The available data for the conversion function is time-aligned source and target vectors, Section~\ref{sec:dynamic_time_warping}, which are of the same length $n$ and the pre-trained gaussian mixture models. A conversion function suggested by Yannis Stylianou \cite{stylianou95} is used in this paper:
 \begin{defn}
 	\label{defn:conversion_function}
 	\begin{equation}
@@ -34,7 +45,7 @@ The conversion function is a weighted sum of minimum mean square error (MMSE\abb
 	\label{eq:mmse}
 	E[\mathbf{y}\vert \mathbf{x}=\mathbf{x}_t] = \boldsymbol{\mu}^y + \mathbf{\Sigma}^{yx} \mathbf{\Sigma}^{xx^{-1}} (\mathbf{x}_t-\boldsymbol{\mu}^x)
 \end{equation}
-where $E[]$ denotes the expectation, $\boldsymbol{\mu}$ is the mean
+where $E$ denotes the expectation, $\boldsymbol{\mu}$ is the mean
 \begin{equation}
 	\boldsymbol{\mu}^y = E[\mathbf{y}]
 \end{equation}
@@ -48,7 +59,7 @@ If the gaussian components of the mixture could be separated, the conversion fun
 The variables $\boldsymbol{\mu}^y$ and $\mathbf{\Sigma}^{yx}$ are unknown and need to be estimated such as the squared conversion error is minimised
 \begin{equation}
 	\label{eq:conversion_error}
-	\epsilon=\sum_{t=1}^{n}\norm{\mathbf{y}_t - \mathcal{F}(\mathbf{x}_t)}^2.
+	\epsilon_{MSE}=E \biggl[ \norm{\mathbf{y} - \mathcal{F}(\mathbf{x})}^2\biggr].
 \end{equation}
 
 The optimal values of the parameters can be computed by solving the following set of normal equations \cite{stylianou95}:
@@ -151,25 +162,22 @@ The two unknown matrices $\boldsymbol{\mu}^x$ and $\mathbf{\Sigma}^{xx}$ will ha
 \end{equation}
 % section Conversion Function (end)
 
-
 \section{Dynamic Time Warping} % (fold)
 \label{sec:dynamic_time_warping}
-One way to time align two signals is to utilise dynamic time warping (DTW\abbrev{DTW}{dynamic time warping}). DTW is an dynamic programming concept to warp two sequence such as the difference in the signals are minimised. The difference in the signals can be found by taking short-time Fourier transform (STFT\abbrev{STFT}{short-time Fourier transform}) and compute the distance between the components. By using Mel-frequency cepstral coefficients (MFCC\abbrev{MFCC}{Mel-frequency cepstral coefficients}) we can use an Euclidean distance metric defined as \cite{atal74}
+One way to time align two signals is to utilise dynamic time warping (DTW\abbrev{DTW}{dynamic time warping}). DTW is an dynamic programming concept to warp two sequence such as the difference in the signals are minimised. If we window the signal into small segments of \eg 20 ms we can make a LP analysis of the segments and use Itakura distance $d$ as a difference metric \cite{itakura90}.
 \begin{equation}
 	\label{eq:dtw_distance}
-	\begin{split}
-		d_{cep}(a,b) = & \norm{\mathbf{C}_s(a)-\mathbf{C}_t(b)} \\
-		d_{cep}^2(a,b) = & \sum_{i=1}^{n} (\mathbf{c}_{s,a}(i)-\mathbf{c}_{t,b}(i))^2.
-	\end{split}
+		d(\mathbf{a},\mathbf{b}) = \log\frac{\mathbf{a}^T \mathbf{R}_s \mathbf{a}}{\mathbf{b}^T \mathbf{R}_s \mathbf{b}}
 \end{equation}
-If the source signal has $n$ MFCC vectors in $\mathbf{C}_s$ and the target signal has $m$ vectors in $\mathbf{C}_t$ we can calculate the distance between all the vectors and get a $n\times m$ matrix of distance measures.
+where $\mathbf{a}$ is the LP coefficients of one segment from the source signal, $\mathbf{b}$ is the LP coefficients of one segments from the target vector and $\mathbf{R}_s$ is the autocorrelation matrix of the source signal. The nominator of \eqref{eq:dtw_distance} is the residual, or the energy of the error, from the LP of the source signal with the source coefficients $\mathbf{a}$ whilst the denominator is the residual from the LP of the \emph{source} signal with the \emph{target} coefficients $\mathbf{b}$. 
 
 The minimum distance between the two signals can be found by solving the recursion \cite{taletek}
 \begin{equation}
 	\label{eq:recursion}
-	D(i,j) = \min_k\left[D(i-1,k)+d_{cep}(k,j)\right],
+	D(i,j) = \min_k\left[D(i-1,k)+d(\mathbf{A}_k,\mathbf{B}_j)\right]
 \end{equation}
-\ie the shortest path from $A$ to $C$ is the shortest path from $A$ to $B$ plus the shortest path from $B$ to $C$. The problem is broken down into simpler subproblems, hence dynamic programming.
+where $\mathbf{A}_k$ denotes the LP coefficients of segment $k$.
+I.e. the shortest path from $A$ to $C$ is the shortest path from $A$ to $B$ plus the shortest path from $B$ to $C$. The problem is broken down into simpler subproblems, hence dynamic programming.
 % section Dynamic Time Warping (end)
 
 \section{Gaussian Mixture Model} % (fold)
@@ -217,7 +225,7 @@ where
 \label{sub:lpc}
 The main signal representation of choice is linear predictive coding (LPC\abbrev{LPC}{linear predictive coding}) also known as auto-regressive(AR\abbrev{AR}{auto-regressive}) modelling. 
 
-LPC approximates the signal as an all-pole filter with a sufficient number of poles, \eg $p=12$, by predicting the current sample as a linear combination of its last $p$ samples \cite{digsig}
+LPC approximates the signal as an all-pole filter with a sufficient number of poles, \eg $p=16$, by predicting the current sample as a linear combination of its last $p$ samples \cite{digsig}
 \begin{equation}
 	\tilde{x}[n] = \sum_{k=1}^{p}a_k x[n-k].
 \end{equation}
@@ -238,7 +246,7 @@ The predictor coefficients, $a_k$, can be estimated by the minimum mean square t
 	\end{split}
 \end{equation}
 This can be obtained by taking the derivative of \eqref{eq:prediction_error} with respect to $a_i$ and equating to $0$. This yields a set of $p$ linear equations with $p$ unknown parameters \cite{digsig} which easily can be solved.
-% subsection LPC (end)
+% subsection Linear Predictive Coding (end)
 
 \subsection{Line Spectral Frequencies} % (fold)
 \label{sub:line_spectral_frequencies}
@@ -256,37 +264,37 @@ LSF is an equivalent representation of LPC witch can be directly derived from th
 The derivation of the first LSF coefficients are shown in \cite[p. 304]{taletek}.
 
 In the voice conversion we can therefor transform the LP coefficients to LSF coefficients before the adaption and back agin before the re-estimation of the signal depicted in Figure~\ref{fig:lpc_to_lsf}.
- \begin{figure}[htbp]
-  \centering
-  \begin{tabular}[h]{c}
-\xymatrix{ 
-  A(z) \ar[r] &*+<5mm>[F]{ LPC\rightarrow LSF} \ar[r] &*+<5mm>[F]{ VC}\ar[r] &*+<5mm>[F]{LSF\rightarrow LPC} \ar[r] & \hat{A}(z)}    
-  \end{tabular}
-  \caption{LPC to LSF transformation in the voice conversion}
-  \label{fig:lpc_to_lsf}
+\begin{figure}[htbp]
+	\centering
+	\begin{tabular}[h]{c}
+		\xymatrix{ 
+		A(z) \ar[r] &*+<5mm>[F-,]{ LPC\rightarrow LSF} \ar[r] &*+<5mm>[F-,]{	VC}\ar[r] &*+<5mm>[F-,]{LSF\rightarrow LPC} \ar[r] & \hat{A}(z)}    
+	\end{tabular}
+	\caption{LPC to LSF transformation in the voice conversion}
+	\label{fig:lpc_to_lsf}
 \end{figure}
 % subsection Line Spectral Frequencies (end)
-
-\subsection{Mel-Frequency Cepstrum} % (fold)
-\label{sub:mel_frequency_cepstrum}
-In the dynamic time warping algorithm presented in Section~\ref{sec:dynamic_time_warping} MFC coefficients are used instead of LP coefficients because they have the feature of Euclidean measures.
-
-The cepstrum of a signal is a homomorphic transformation to the \emph{quefrency} domain \cite{taletek}. The Mel-frequency cepstrum is a real cepstrum with a nonlinear frequency scale which approximates the behaviour of the human auditory system. The process of computing the MFC coefficents are depicted in Figure~\ref{fig:mfcc}.
-
-The Mel-scale is defined as \cite{taletek}
-\begin{equation}
-	B(f) = 1125\ln(1+f/700).
-\end{equation}
- \begin{figure}[htbp]
-  \centering
-  \begin{tabular}[h]{c}
-\xymatrix{ 
-  x[n] \ar[r] &*+<5mm>[F]{\text{DFT}}\ar[r] &*+<5mm>[F]{\abs{\cdot}^2}\ar[r] &*+<5mm>[F]{\text{MEL}} \ar[r] &*+<5mm>[F]{\log(\cdot)} \ar[r] &*+<5mm>[F]{\text{DCT}} \ar[r] & c[n]}    
-  \end{tabular}
-  \caption{Computation of Mel-frequency cepstrum coefficients}
-  \label{fig:mfcc}
-\end{figure}
-
-% subsection Mel-Frequency Cepstrum (end)
 % section Signal Representation (end)
+
+% \subsection{Mel-Frequency Cepstrum} % (fold)
+% \label{sub:mel_frequency_cepstrum}
+% In the dynamic time warping algorithm presented in Section~\ref{sec:dynamic_time_warping} MFC coefficients are used instead of LP coefficients because they have the feature of Euclidean measures.
+% 
+% The cepstrum of a signal is a homomorphic transformation to the \emph{quefrency} domain \cite{taletek}. The Mel-frequency cepstrum is a real cepstrum with a nonlinear frequency scale which approximates the behaviour of the human auditory system. The process of computing the MFC coefficents are depicted in Figure~\ref{fig:mfcc}.
+% 
+% The Mel-scale is defined as \cite{taletek}
+% \begin{equation}
+% 	B(f) = 1125\ln(1+f/700).
+% \end{equation}
+%  \begin{figure}[htbp]
+%   \centering
+%   \begin{tabular}[h]{c}
+% \xymatrix{ 
+%   x[n] \ar[r] &*+<5mm>[F]{\text{DFT}}\ar[r] &*+<5mm>[F]{\abs{\cdot}^2}\ar[r] &*+<5mm>[F]{\text{MEL}} \ar[r] &*+<5mm>[F]{\log(\cdot)} \ar[r] &*+<5mm>[F]{\text{DCT}} \ar[r] & c[n]}    
+%   \end{tabular}
+%   \caption{Computation of Mel-frequency cepstrum coefficients}
+%   \label{fig:mfcc}
+% \end{figure}
+% 
+% % subsection Mel-Frequency Cepstrum (end)
 % chapter Theory (end)
