@@ -9,8 +9,8 @@ different alignment methods.
 Dynamic time warping (DTW).
 \begin{figure}[htbp]
 	\begin{center}
-		\includegraphics[width=.9\textwidth]{fig/dtw.pdf}
-		\caption{Dynamic time warping}
+		\includegraphics[width=.8\textwidth]{fig/dtw.pdf}
+		\caption{Distance Matrix used in Dynamic Time Warping}
 		\label{fig:dtw}
 	\end{center}
 \end{figure}
@@ -127,9 +127,21 @@ To compute the parameters in the transfer function the dimensions in \eqref{eq:p
 	\end{bmatrix} \\ % end line 7
 	\end{split}
 \end{equation*}
-\end{proof}
 where $m$ is the number of classes and $n$ is the number of vectors.
+\end{proof} 
+The number of calculations has been reduced by a factor of $p/4$ \cite{stylianou98}.
 
-The number of calculations has been reduced by $p/4$.
+The variables must be derived sequentially as depicted in Figure~\ref{fig:training_cf}  
+\begin{figure}[htbp]
+  \centering
+   \begin{tabular}[h]{c}
+	\xymatrix{ 
+\textbf{X}_{LSF}\ar[r] &*+<5mm>[F-,]{\txt{GMM}}\ar[r] &*+<5mm>[F-,]{\mathbf{P},\mathbf{D}} \ar[r] &*+<5mm>[F-,]{\mathbf{\Sigma}^{yx},\boldsymbol{\mu}^y} \\ % end line 1
+\textbf{Y}_{LSF}\ar`[rrru][urrr]&&&
+	}
+  \end{tabular}
+  \caption{Training Procedure of the Conversion Function}
+  \label{fig:training_cf}
+\end{figure}
 % section Conversion Function (end)
 % chapter Method (end)

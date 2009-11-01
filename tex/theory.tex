@@ -4,23 +4,23 @@
   \centering
    \begin{tabular}[h]{c}
 \xymatrix{ 
-x[n] \ar[r] &*+<5mm>[F-,]{\txt{Buffer}} \ar[d]\ar[r] &*+<5mm>[F-,]{1-A(z)}\ar[rr]^{e[n]}& &*+<5mm>[F-,]{\frac{1}{1-\tilde{A}(z)}} \ar[r] & y[n]\\
-  &*+<5mm>[F-,]{\txt{LPC}} \ar[rr]^<(0.25){A(z)} & \ar[u]&*+<5mm>[F-,]{\txt{VC}}\ar `[ru]^<(0.5){\tilde{A}(z)} [ur]&  &}
+\mathbf{x} \ar[r] &*+<5mm>[F-,]{\txt{Buffer}} \ar[d]\ar[r] &*+<5mm>[F-,]{1-A(z)}\ar[rr]^{\mathbf{e}}& &*+<5mm>[F-,]{\frac{1}{1-\tilde{A}(z)}} \ar[r] & \mathbf{y}\\
+  &*+<5mm>[F-,]{\txt{LPC}} \ar[rr]^<(0.25){A(z)} & \ar[u]&*+<5mm>[F-,]{\txt{CF}}\ar `[ru]^<(0.5){\tilde{A}(z)} [ur]&  &}
   \end{tabular}
-  \caption{Voice Conversion}
+  \caption{Conversion System}
   \label{fig:VC}
 \end{figure}
 
 The basic idea of the voice conversion is to make a LP analysis of the signal, extract the estimate from the real signal, adapt the coefficients to the new voice and reestimate the signal with the new coefficients as depicted in Figure~\ref{fig:VC}.
 
-The system includes two parts, training and transformation. The challenge in this procedure is the find the conversion function explained in Section~\ref{sec:conversion_function}. In the training process of the conversion function, depicted in Figure~\ref{fig:VC_training}, the two input signals, source $x$ and target $y$, first need to be time aligned by dynamic time warping, Section~\ref{sec:dynamic_time_warping}. Because of the wide variety of speech sound, a single global transform is not sufficient to capture all the different sounds. Instead we could classify the speech sound into probabilistic gaussian mixture models (GMM), Section~\ref{sec:gaussian_mixture_model}, and apply a class-specific transform \cite{stylianou09}. The GMM parameters are used in training of the conversion function explained in Section~\ref{sec:conversion_function}.
+The system includes two parts, training and transformation. The challenge in this procedure is to find the conversion function explained in Section~\ref{sec:conversion_function}. In the training process of the conversion function, depicted in Figure~\ref{fig:VC_training}, the two input signals, source $x$ and target $y$, first need to be time aligned by dynamic time warping, Section~\ref{sec:dynamic_time_warping}. Because of the wide variety of speech sound, a single global transform is not sufficient to capture all the different sounds. Instead we could classify the speech sound into probabilistic gaussian mixture models (GMM), Section~\ref{sec:gaussian_mixture_model}, and apply a class-specific transform \cite{stylianou09}. The GMM parameters are used in training of the conversion function explained in Section~\ref{sec:conversion_function}.
 \begin{figure}[htbp]
 	\centering
 	\begin{tabular}[h]{c}
 		\xymatrix{ 
-x[n] \ar[r] &*+<5mm>[F-,]{\txt{LPC}}\ar[d] &*+<5mm>[F-,]{\txt{GMM}}\ar `[rd]^{\boldsymbol{\Phi}} [dr] &\\ % end line 1
-&*+<5mm>[F-,]{\txt{DTW}} \ar @<3pt>[rr]^<(0.15){\tilde{x}[n]} \ar @<-3pt>[rr]_<(0.15){y[n]} & \ar[u] &*+<5mm>[F-,]{\txt{Train VC}}\\ % end line 2
-y[n] \ar[r] &*+<5mm>[F-,]{\txt{LPC}}\ar[u]&&}
+\mathbf{x} \ar[r] &*+<5mm>[F-,]{\txt{LPC}}\ar[d] &*+<5mm>[F-,]{\txt{GMM}}\ar `[rd]^{\boldsymbol{\Phi}} [dr] &\\ % end line 1
+&*+<5mm>[F-,]{\txt{DTW}} \ar @<3pt>[rr]^<(0.15){\tilde{\mathbf{x}}} \ar @<-3pt>[rr]_<(0.15){\mathbf{y}} & \ar[u] &*+<5mm>[F-,]{\txt{Train VC}}\\ % end line 2
+\mathbf{y} \ar[r] &*+<5mm>[F-,]{\txt{LPC}}\ar[u]&&}
 	\end{tabular}
 	\caption{Training of Voice Conversion Parameters}
 	\label{fig:VC_training}
@@ -29,13 +29,13 @@ y[n] \ar[r] &*+<5mm>[F-,]{\txt{LPC}}\ar[u]&&}
 
 \section{Conversion Function} % (fold)
 \label{sec:conversion_function}
-The available data for the conversion function is time-aligned source and target vectors, Section~\ref{sec:dynamic_time_warping}, which are of the same length $n$ and the pre-trained gaussian mixture models. A conversion function suggested by Yannis Stylianou \cite{stylianou95} is used in this paper:
+The available data for the conversion function is time-aligned source and target vectors, Section~\ref{sec:dynamic_time_warping}, which are of the same length $n$ and the pre-trained gaussian mixture models. A conversion function suggested by Yannis Stylianou \etal \cite{stylianou95} is used in this paper:
 \begin{defn}
 	\label{defn:conversion_function}
 	\begin{equation}
 		\label{eq:conversion_function}
 		\begin{split}
-		\mathcal{F}(\mathbf{x}_t) =& E[\mathbf{y}\vert \mathbf{x}_t]\\
+		\mathcal{F}(\mathbf{x}_t) =& E[\mathbf{x}_t\vert \mathbf{y}] = E[\mathbf{x}_t]E[\mathbf{y}\vert \mathbf{x}_t]\\
 		 =& \sum_{i=1}^{m}P(C_i \vert \mathbf{x}_t)[\boldsymbol{\mu}_i^y + \mathbf{\Sigma}_i^{yx} \mathbf{\Sigma}_i^{xx^{-1}} (\mathbf{x}_t-\boldsymbol{\mu}_i^x)]
 		\end{split}
 	\end{equation}	
@@ -56,14 +56,15 @@ and $\mathbf{\Sigma}$ is the cross-covariance matrix
 
 If the gaussian components of the mixture could be separated, the conversion function $\mathcal{F}()$ is modifying the posterior mean and covariance of each component. Since this is not the case in practice the term is weighted by the conditional probability that the observed data $\mathbf{x}_t$ belongs to the component $C_i$.
 
-The variables $\boldsymbol{\mu}^y$ and $\mathbf{\Sigma}^{yx}$ are unknown and need to be estimated such as the squared conversion error is minimised
+The variables $\boldsymbol{\mu}^y$ and $\mathbf{\Sigma}^{yx}$ are unknown and need to be estimated such as the total squared conversion error is minimised
 \begin{equation}
 	\label{eq:conversion_error}
-	\epsilon_{MSE}=E \biggl[ \norm{\mathbf{y} - \mathcal{F}(\mathbf{x})}^2\biggr].
+	\epsilon = \sum_{t} \norm{\mathbf{y}_t - \mathcal{F}(\mathbf{x}_t)}^2.
 \end{equation}
 
-The optimal values of the parameters can be computed by solving the following set of normal equations \cite{stylianou95}:
+Equation \eqref{eq:conversion_function} can be reformulated into a single matrix equation:
 \begin{equation}
+	\label{eq:least_square_problem}
 	\begin{split}
 		\mathbf{y} = &\mathbf{P}\boldsymbol{\mu^y} + \mathbf{D}\mathbf{\Sigma}^{yx} \\
 		= & \begin{bmatrix}
@@ -76,6 +77,44 @@ The optimal values of the parameters can be computed by solving the following se
 		\end{bmatrix}
 	\end{split}
 \end{equation}
+where $\mathbf{y}$ is the target spectral vectors and $\mathbf{P}$ is a $n \times m$ matrix with the conditional probabilities
+\begin{equation}
+	\label{eq:P_matrix}
+	\mathbf{P} = \begin{bmatrix}
+		P(C_1\vert \mathbf{x}_1) & \dots & P(C_m\vert \mathbf{x}_1) \\
+		P(C_1\vert \mathbf{x}_2) & \dots & P(C_m\vert \mathbf{x}_2) \\
+		\vdots & & \vdots \\
+		P(C_1\vert \mathbf{x}_n) & \dots & P(C_m\vert \mathbf{x}_n) \\
+	\end{bmatrix}.
+\end{equation}
+$\mathbf{D}$ is a $n \times pm$ matrix defined as
+\begin{equation}
+	\label{eq:D_matrix}
+	\mathbf{D} = \begin{bmatrix}
+		P(C_1\vert \mathbf{x}_1)(\mathbf{x}_1 - \boldsymbol{\mu}_1^x)^T\mathbf{\Sigma}_1^{xx^{-1}} & \dots & P(C_m\vert \mathbf{x}_1)(\mathbf{x}_1 - \boldsymbol{\mu}_m^x)^T\mathbf{\Sigma}_m^{xx^{-1}} \\
+		P(C_1\vert \mathbf{x}_2)(\mathbf{x}_2 - \boldsymbol{\mu}_1^x)^T\mathbf{\Sigma}_1^{xx^{-1}} & \dots & P(C_m\vert \mathbf{x}_2)(\mathbf{x}_2 - \boldsymbol{\mu}_m^x)^T\mathbf{\Sigma}_m^{xx^{-1}} \\
+		\vdots & & \vdots \\
+		P(C_1\vert \mathbf{x}_n)(\mathbf{x}_n - \boldsymbol{\mu}_1^x)^T\mathbf{\Sigma}_1^{xx^{-1}} & \dots & P(C_m\vert \mathbf{x}_n)(\mathbf{x}_n - \boldsymbol{\mu}_m^x)^T\mathbf{\Sigma}_m^{xx^{-1}} \\
+	\end{bmatrix}.
+\end{equation}
+
+The two unknown matrices $\boldsymbol{\mu}^y$ and $\mathbf{\Sigma}^{yx}$ will have dimensions $m\times p$ and $m \times (p\times p)$ 
+\begin{equation}
+	\label{eq:v_matrix}
+	\boldsymbol{\mu}^y = 
+	\begin{bmatrix}
+		\boldsymbol{\mu}^y_1 \vdots \boldsymbol{\mu}^y_2 \vdots \dots \vdots \boldsymbol{\mu}^y_m
+	\end{bmatrix}^T
+\end{equation}
+\begin{equation}
+	\label{gamma_matrix}
+	\mathbf{\Sigma}^{yx} = 
+	\begin{bmatrix}
+		\mathbf{\Sigma}_1^{yx} \vdots \mathbf{\Sigma}_2^{yx} \vdots \dots \vdots \mathbf{\Sigma}_m^{yx}
+	\end{bmatrix}^T.
+\end{equation}
+
+Equation \eqref{eq:least_square_problem} is a least-square problem which can be solved by the normal equations \cite{lawson74}
 \begin{equation}
 	\label{eq:param_computed}
 	\begin{split}
@@ -125,51 +164,16 @@ The optimal values of the parameters can be computed by solving the following se
 		\mathbf{y} \\ % end line 2
 	\end{split}
 \end{equation}
-where $\mathbf{y}$ is the target spectral vectors and $\mathbf{P}$ is a $n \times m$ matrix with the conditional probabilities
-\begin{equation}
-	\label{eq:P_matrix}
-	\mathbf{P} = \begin{bmatrix}
-		P(C_1\vert \mathbf{x}_1) & \dots & P(C_m\vert \mathbf{x}_1) \\
-		P(C_1\vert \mathbf{x}_2) & \dots & P(C_m\vert \mathbf{x}_2) \\
-		\vdots & & \vdots \\
-		P(C_1\vert \mathbf{x}_n) & \dots & P(C_m\vert \mathbf{x}_n) \\
-	\end{bmatrix}.
-\end{equation}
-$\mathbf{D}$ is a $n \times pm$ matrix defined as
-\begin{equation}
-	\label{eq:D_matrix}
-	\mathbf{D} = \begin{bmatrix}
-		P(C_1\vert \mathbf{x}_1)(\mathbf{x}_1 - \boldsymbol{\mu}_1^x)^T\mathbf{\Sigma}_1^{xx^{-1}} & \dots & P(C_m\vert \mathbf{x}_1)(\mathbf{x}_1 - \boldsymbol{\mu}_m^x)^T\mathbf{\Sigma}_m^{xx^{-1}} \\
-		P(C_1\vert \mathbf{x}_2)(\mathbf{x}_2 - \boldsymbol{\mu}_1^x)^T\mathbf{\Sigma}_1^{xx^{-1}} & \dots & P(C_m\vert \mathbf{x}_2)(\mathbf{x}_2 - \boldsymbol{\mu}_m^x)^T\mathbf{\Sigma}_m^{xx^{-1}} \\
-		\vdots & & \vdots \\
-		P(C_1\vert \mathbf{x}_n)(\mathbf{x}_n - \boldsymbol{\mu}_1^x)^T\mathbf{\Sigma}_1^{xx^{-1}} & \dots & P(C_m\vert \mathbf{x}_n)(\mathbf{x}_n - \boldsymbol{\mu}_m^x)^T\mathbf{\Sigma}_m^{xx^{-1}} \\
-	\end{bmatrix}.
-\end{equation}
-The two unknown matrices $\boldsymbol{\mu}^x$ and $\mathbf{\Sigma}^{xx}$ will have dimensions $m\times p$ and $m \times (p\times p)$ 
-\begin{equation}
-	\label{eq:v_matrix}
-	\boldsymbol{\mu}^x = 
-	\begin{bmatrix}
-		\boldsymbol{\mu}^x_1 \vdots \boldsymbol{\mu}^x_2 \vdots \dots \vdots \boldsymbol{\mu}^x_m
-	\end{bmatrix}^T
-\end{equation}
-\begin{equation}
-	\label{gamma_matrix}
-	\mathbf{\Sigma}^{xx} = 
-	\begin{bmatrix}
-		\mathbf{\Sigma}_1^{xx} \vdots \mathbf{\Sigma}_2^{xx} \vdots \dots \vdots \mathbf{\Sigma}_m^{xx}
-	\end{bmatrix}^T.
-\end{equation}
 % section Conversion Function (end)
 
 \section{Dynamic Time Warping} % (fold)
 \label{sec:dynamic_time_warping}
-One way to time align two signals is to utilise dynamic time warping (DTW\abbrev{DTW}{dynamic time warping}). DTW is an dynamic programming concept to warp two sequence such as the difference in the signals are minimised. If we window the signal into small segments of \eg 20 ms we can make a LP analysis of the segments and use Itakura distance $d$ as a difference metric \cite{itakura90}.
+One way to time align two signals is to utilise dynamic time warping (DTW\abbrev{DTW}{dynamic time warping}). DTW is an dynamic programming concept to warp two sequence such as the difference in the signals are minimised. If we window the signal into small segments of \eg 20 ms we can make a LP analysis of the segments and use Itakura distance $d$ as a difference measure \cite{itakura90}.
 \begin{equation}
 	\label{eq:dtw_distance}
 		d(\mathbf{a},\mathbf{b}) = \log\frac{\mathbf{a}^T \mathbf{R}_s \mathbf{a}}{\mathbf{b}^T \mathbf{R}_s \mathbf{b}}
 \end{equation}
-where $\mathbf{a}$ is the LP coefficients of one segment from the source signal, $\mathbf{b}$ is the LP coefficients of one segments from the target vector and $\mathbf{R}_s$ is the autocorrelation matrix of the source signal. The nominator of \eqref{eq:dtw_distance} is the residual, or the energy of the error, from the LP of the source signal with the source coefficients $\mathbf{a}$ whilst the denominator is the residual from the LP of the \emph{source} signal with the \emph{target} coefficients $\mathbf{b}$. 
+where $\mathbf{a}$ is a column vector of LP coefficients of one segment from the source signal, $\mathbf{b}$ is a column vector of LP coefficients of one segments from the target vector and $\mathbf{R}_s$ is the autocorrelation matrix of the source signal. The numerator of \eqref{eq:dtw_distance} is the residual, or the energy of the error, from the LP of the source signal with the source coefficients $\mathbf{a}$ whilst the denominator is the residual from the LP of the \emph{source} signal with the \emph{target} coefficients $\mathbf{b}$. 
 
 The minimum distance between the two signals can be found by solving the recursion \cite{taletek}
 \begin{equation}
@@ -270,7 +274,7 @@ In the voice conversion we can therefor transform the LP coefficients to LSF coe
 		\xymatrix{ 
 		A(z) \ar[r] &*+<5mm>[F-,]{ LPC\rightarrow LSF} \ar[r] &*+<5mm>[F-,]{	VC}\ar[r] &*+<5mm>[F-,]{LSF\rightarrow LPC} \ar[r] & \hat{A}(z)}    
 	\end{tabular}
-	\caption{LPC to LSF transformation in the voice conversion}
+	\caption{LPC to LSF Transformation in Voice Conversion}
 	\label{fig:lpc_to_lsf}
 \end{figure}
 % subsection Line Spectral Frequencies (end)
