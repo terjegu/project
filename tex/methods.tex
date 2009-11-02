@@ -1,12 +1,24 @@
 \chapter{Implementation} % (fold)
 \label{cha:implementation}
+The first step of implementation is to fit the source data to a Gaussian mixture model. Obviously the more data the better. However, the choice of number of mixtures is not trivial. When the source data is fitted to the GMM the posterior matrix $\mathbf{P}$ and the $\mathbf{D}$ matrix can be computed to a specific source speech segment ($\mathbf{x}$) which we want to transform. The next step is the compute the unknown parameters $\boldsymbol{\mu}^y$ and $\mathbf{\Sigma}^{yx}$ with $\mathbf{P}$, $\mathbf{D}$ and the target speech segment ($\mathbf{y}$). The third step is to apply the transfer function. In the whole process signals are represented as LSF coefficients computed from 15 ms of speech.
+
+Figure~\ref{fig:training_cf} shows the training procedure.
+\begin{figure}[htbp]
+  \centering
+   \begin{tabular}[h]{c}
+	\xymatrix{ 
+\textbf{X}_{LSF}\ar[r] &*+<5mm>[F-,]{\txt{GMM}}\ar[r] &*+<5mm>[F-,]{\mathbf{P},\mathbf{D}} \ar[r] &*+<5mm>[F-,]{\mathbf{\Sigma}^{yx},\boldsymbol{\mu}^y} \\ % end line 1
+\textbf{Y}_{LSF}\ar`[rrru][urrr]&&&
+	}
+  \end{tabular}
+  \caption{Training Procedure of the Conversion Function}
+  \label{fig:training_cf}
+\end{figure}
+
 \section{Alignment} % (fold)
 \label{sec:alignment}
-different alignment methods.
+In the training of the $\boldsymbol{\mu}^y$ vector and the $\mathbf{\Sigma}^{yx}$ matrix, the source and target speech vectors need to med time-aligned. In this process the speech segments in split into 10 ms segments with additional $2.5$ ms overlap in both ends. The segments are analysed with LPC and the coefficients are transformed to a LSF representation, see Section~\ref{sub:line_spectral_frequencies}. The matrices of LSF parameters are used to time align the speech signals with dynamic time warping, Section~\ref{sec:dynamic_time_warping}.
 
-\subsection{Dynamic Time Warping} % (fold)
-\label{sub:dynamic_time_warping}
-Dynamic time warping (DTW).
 \begin{figure}[htbp]
 	\begin{center}
 		\includegraphics[width=.8\textwidth]{fig/dtw.pdf}
@@ -14,9 +26,9 @@ Dynamic time warping (DTW).
 		\label{fig:dtw}
 	\end{center}
 \end{figure}
+Figure~\ref{fig:dtw} shows a distance matrix between two speech signals, where the horizontal axis represent the source signal and the vertical axis represent the target signal. The grey scale indicates the difference between two specific segments where the brighter a square is the more similar the segments are. The red line depicts the shortest path, or the best match, between the two signals. The red lines also denotes which indices from the source vector we should use in time aligned version of the signal.
 
 
-% subsection Dynamic Time Warping (end)
 % section Alignment (end)
 
 \section{Classification} % (fold)
@@ -131,17 +143,6 @@ where $m$ is the number of classes and $n$ is the number of vectors.
 \end{proof} 
 The number of calculations has been reduced by a factor of $p/4$ \cite{stylianou98}.
 
-The variables must be derived sequentially as depicted in Figure~\ref{fig:training_cf}  
-\begin{figure}[htbp]
-  \centering
-   \begin{tabular}[h]{c}
-	\xymatrix{ 
-\textbf{X}_{LSF}\ar[r] &*+<5mm>[F-,]{\txt{GMM}}\ar[r] &*+<5mm>[F-,]{\mathbf{P},\mathbf{D}} \ar[r] &*+<5mm>[F-,]{\mathbf{\Sigma}^{yx},\boldsymbol{\mu}^y} \\ % end line 1
-\textbf{Y}_{LSF}\ar`[rrru][urrr]&&&
-	}
-  \end{tabular}
-  \caption{Training Procedure of the Conversion Function}
-  \label{fig:training_cf}
-\end{figure}
+
 % section Conversion Function (end)
 % chapter Method (end)
