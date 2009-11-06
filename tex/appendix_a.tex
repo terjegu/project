@@ -1,0 +1,81 @@
+\chapter{Proof of matrix multiplication} % (fold)
+\label{cha:proof_of_matrix_multiplication}
+To compute the parameters in the transfer function the dimensions in \eqref{eq:param_computed} with the new variables $\boldsymbol{\mu^y}$, $\boldsymbol{\sigma}^{yx}$ and $\mathbf{D}^{(k)}$ must add up.
+\begin{proof}
+\begin{equation*}
+	\begin{split}
+		\left(  
+	\begin{bmatrix}
+		m \times n \\
+		\dots \\
+		m \times n
+	\end{bmatrix}
+	\begin{bmatrix}
+		n \times m & \vdots & n\times m
+	\end{bmatrix} \right)
+	\begin{bmatrix}
+		m \times 1 \\
+		\dots \\
+		m \times 1 
+	\end{bmatrix}
+	= & 
+	\begin{bmatrix}
+		m \times n \\
+		\dots \\
+		m \times n
+	\end{bmatrix} \mathbf{y^{(k)}}\\ % end line 1
+	\biggl( \begin{bmatrix}
+		2m \times n 
+	\end{bmatrix}
+	\begin{bmatrix}
+		n \times 2m
+	\end{bmatrix} \biggr) 
+	\begin{bmatrix}
+		2m \times 1
+	\end{bmatrix}
+	= & 
+	\begin{bmatrix}
+		2m \times n 
+	\end{bmatrix} \mathbf{y^{(k)}} \\ % end line 2
+	\biggl( \begin{bmatrix}
+		2m \times  2m
+	\end{bmatrix} \biggr) 
+	\begin{bmatrix}
+		2m \times 1 
+	\end{bmatrix}
+	= &
+	\begin{bmatrix}
+		2m \times n 
+	\end{bmatrix} \mathbf{y^{(k)}} \\ % end line 3
+	\begin{bmatrix}
+		2m \times 1
+	\end{bmatrix}
+	= &
+	\biggl(\begin{bmatrix}
+		2m \times  2m
+	\end{bmatrix} \biggr)^{-1} 
+	\begin{bmatrix}
+		2m \times n 
+	\end{bmatrix} \mathbf{y^{(k)}} \\ % end line 4
+	\begin{bmatrix}
+		2m \times p
+	\end{bmatrix}
+	= &
+	\begin{bmatrix}
+		2m \times n 
+	\end{bmatrix} \mathbf{y^{(k)}} \\ % end line 5
+	& \\
+	\Downarrow & \; Dim(\mathbf{y^{(k)}}) = n \times 1 \\ % end line 6
+	& \\
+	\begin{bmatrix}
+		2m \times 1
+	\end{bmatrix}
+	= &
+	\begin{bmatrix}
+		2m \times 1 
+	\end{bmatrix} \\ % end line 7
+	\end{split}
+\end{equation*}
+where $m$ is the number of classes and $n$ is the number of vectors.
+\end{proof}
+% chapter Proof of matrix multiplication (end)
