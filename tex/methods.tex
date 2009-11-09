@@ -1,6 +1,6 @@
 \chapter{Implementation} % (fold)
 \label{cha:implementation}
-The first step of implementation is to fit the source data to a Gaussian mixture model. Obviously the more data the better. However, the choice of number of mixtures is not trivial. When the source data is fitted to the GMM the posterior matrix $\mathbf{P}$ and the $\mathbf{D}$ matrix can be computed to a specific source speech segment ($\mathbf{x}$) which we want to transform. The next step is the compute the unknown parameters $\boldsymbol{\mu}^y$ and $\mathbf{\Sigma}^{yx}$ with $\mathbf{P}$, $\mathbf{D}$ and the target speech segment ($\mathbf{y}$). The third step is to apply the conversion function \eqref{eq:conversion_function}. In the whole process signals are represented as LSF coefficients computed from 15 ms of speech.
+The first step of implementation is to fit the source data to a Gaussian mixture model. Obviously the more data the better. However, the choice of number of mixtures is not trivial. When the source data is fitted to the GMM the posterior matrix $\mathbf{P}$ and the $\mathbf{D}$ matrix can be computed to a specific source speech segment ($\mathbf{x}$) which we want to transform. The next step is the compute the unknown parameters $\boldsymbol{\mu}^y$ and $\mathbf{\Sigma}^{yx}$ with $\mathbf{P}$, $\mathbf{D}$ and the target speech segment ($\mathbf{y}$). The third step is to apply the conversion function \eqref{eq:conversion_function}.
 
 Figure~\ref{fig:training_cf} shows the training procedure.
 \begin{figure}[htbp]
@@ -17,7 +17,7 @@ Figure~\ref{fig:training_cf} shows the training procedure.
 
 \section{Alignment} % (fold)
 \label{sec:alignment}
-In the training of the $\boldsymbol{\mu}^y$ vector and the $\mathbf{\Sigma}^{yx}$ matrix, the source and target speech vectors need to med time-aligned. In this process the speech segments in split into 10 ms segments with additional $2.5$ ms overlap in both ends. The segments are analysed with LPC and the coefficients are transformed to a LSF representation, see Section~\ref{sub:line_spectral_frequencies}. The matrices of LSF parameters are used to time align the speech signals with dynamic time warping, Section~\ref{sec:dynamic_time_warping}.
+In the training of the $\boldsymbol{\mu}^y$ vector and the $\mathbf{\Sigma}^{yx}$ matrix, the source and target speech vectors need to be time-aligned. In this process the speech segments in split into 10 ms segments with additional $2.5$ ms overlap in both ends. The segments are analysed with LPC into a matrix of LP coefficients which are used to time align the speech signals with dynamic time warping, Section~\ref{sec:dynamic_time_warping}.
 
 \begin{figure}[htbp]
 	\begin{center}
@@ -26,14 +26,14 @@ In the training of the $\boldsymbol{\mu}^y$ vector and the $\mathbf{\Sigma}^{yx}
 		\label{fig:dtw}
 	\end{center}
 \end{figure}
-Figure~\ref{fig:dtw} shows a distance matrix between two speech signals of \ca 4 seconds, where the horizontal axis represent the source signal and the vertical axis represent the target signal. The grey scale indicates the difference between two specific segments where the brighter a square is the more similar the segments are. The red line depicts the shortest path, or the best match, between the two signals. The red lines also denotes which indices from the source vector we should use in time aligned version of the signal.
+Figure~\ref{fig:dtw} shows a distance matrix between two speech signals of \ca 4 seconds, where the horizontal axis represent the source signal and the vertical axis represent the target signal. The grey scale indicates the difference between two specific segments where the darker a square is the more similar the segments are. The red line depicts the shortest path, or the best match, between the two signals. The red lines also denotes which indices from the source vector we should use in time aligned version of the signal. Recursion \eqref{eq:dtw_recursion} is used with local constraints $\alpha=1, \beta=2$ and $\gamma=5$ and global constraints as shown in the rightmost plot of Figure~\ref{fig:dtw}.
 % section Alignment (end)
 
 \section{Training Data} % (fold)
 \label{sec:training_data}
 In the training of the Gaussian mixture model it is preferable to use all your source data, \eg 10 minutes of speech. Whilst in the training process of the parameters $\mathbf{P}$, $\mathbf{D}$, $\mathbf{\Sigma}^{yx}$ and $\boldsymbol{\mu}^y$ you only need the data you are going to apply the transformation to.
 
-The initialisation of the GMM affects the convergence rate and possibly the resulting estimate. However, when only diagonal covariance matrices are used, the initialisation does not have a significant effect \cite{reynolds93}. HVA BRUKTE JEG?? HVOR MANGE MIXTURES?
+The initialisation of the GMM affects the convergence rate and possibly the resulting estimate. However, when only diagonal covariance matrices are used, the initialisation does not have a significant effect \cite{reynolds93}. The GMM was initialised with vector quantisation (VQ\abbrev{VQ}{vector quantisation}) where the variance and priors was estimated from the resulting vectors.
 % section Training data (end)
 
 \section{Conversion Function Parameters} % (fold)
@@ -58,7 +58,7 @@ The $\mathbf{D}^{(k)}$ must also be modified to fit this new scheme.
 \end{equation}
 where $p_n(m)=P(C_m\vert \mathbf{x}_n)$.
 
-By introducing diagonal matrices the number of calculations has been reduced by a factor of $p/4$ \cite{stylianou98}.
+A proof that \eqref{eq:param_computed} is solvable by the use of diagonal matrices is shown in Appendix~\ref{cha:proof_of_matrix_multiplication}. By introducing diagonal matrices the number of calculations has been reduced by a factor of $p/4$ \cite{stylianou98}.
 
 
 % section Conversion Function (end)
