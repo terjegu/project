@@ -1,26 +1,25 @@
 \chapter{Theory} % (fold)
 \label{cha:theory}
+The basic idea of the voice conversion is to make a LP analysis of the signal, extract the estimate from the real signal, adapt the coefficients to the new voice and reestimate the signal with the new coefficients as depicted in Figure~\ref{fig:VC}.
 \begin{figure}[htbp]
   \centering
    \begin{tabular}[h]{c}
 \xymatrix{ 
-\mathbf{x} \ar[r] &*+<5mm>[F-,]{\txt{Buffer}} \ar[d]\ar[r] &*+<5mm>[F-,]{1-A(z)}\ar[rr]^{\mathbf{e}}& &*+<5mm>[F-,]{\frac{1}{1-\tilde{A}(z)}} \ar[r] & \mathbf{y}\\
+\mathbf{X} \ar[rr] & \ar[d]\ar[r] &*+<5mm>[F-,]{1-A(z)}\ar[rr]^{\mathbf{e}}& &*+<5mm>[F-,]{\frac{1}{1-\tilde{A}(z)}} \ar[r] & \mathbf{Y}\\ % end line 1
   &*+<5mm>[F-,]{\txt{LPC}} \ar[rr]^<(0.25){A(z)} & \ar[u]&*+<5mm>[F-,]{\txt{CF}}\ar `[ru]^<(0.5){\tilde{A}(z)} [ur]&  &}
   \end{tabular}
   \caption{Conversion System}
   \label{fig:VC}
 \end{figure}
 
-The basic idea of the voice conversion is to make a LP analysis of the signal, extract the estimate from the real signal, adapt the coefficients to the new voice and reestimate the signal with the new coefficients as depicted in Figure~\ref{fig:VC}.
-
 The system includes two parts, training and transformation. The challenge in this procedure is to find the conversion function explained in Section~\ref{sec:conversion_function}. In the training process of the conversion function, depicted in Figure~\ref{fig:VC_training}, the two input signals, source $x$ and target $y$, first need to be aligned in time, Section~\ref{sec:dynamic_time_warping}. The source data is classified into probabilistic Gaussian mixture models (GMM), Section~\ref{sec:gaussian_mixture_model}, and used in a class-specific transform \cite{stylianou09}.
 \begin{figure}[htbp]
 	\centering
 	\begin{tabular}[h]{c}
 		\xymatrix{ 
-\mathbf{x} \ar[r] &*+<5mm>[F-,]{\txt{LPC}}\ar[d] &*+<5mm>[F-,]{\txt{GMM}}\ar `[rd]^{\boldsymbol{\Phi}} [dr] &\\ % end line 1
-&*+<5mm>[F-,]{\txt{DTW}} \ar @<3pt>[rr]^<(0.15){\mathbf{x}} \ar @<-3pt>[rr]_<(0.15){\tilde{\mathbf{y}}} & \ar[u] &*+<5mm>[F-,]{\txt{Train VC}}\\ % end line 2
-\mathbf{y} \ar[r] &*+<5mm>[F-,]{\txt{LPC}}\ar[u]&&}
+\mathbf{X} \ar[r] &*+<5mm>[F-,]{\txt{LPC}}\ar[d] &*+<5mm>[F-,]{\txt{GMM}}\ar `[rd]^{\boldsymbol{\Phi}} [dr] &\\ % end line 1
+&*+<5mm>[F-,]{\txt{DTW}} \ar @<3pt>[rr]^<(0.15){\mathbf{X}} \ar @<-3pt>[rr]_<(0.15){\tilde{\mathbf{Y}}} & \ar[u] &*+<5mm>[F-,]{\txt{Train VC}}\\ % end line 2
+\mathbf{Y} \ar[r] &*+<5mm>[F-,]{\txt{LPC}}\ar[u]&&}
 	\end{tabular}
 	\caption{Training of Voice Conversion Parameters}
 	\label{fig:VC_training}
@@ -54,7 +53,7 @@ and $\mathbf{\Sigma}$ is the cross-covariance matrix
 	\mathbf{\Sigma}^{yx} = E[(\mathbf{y}-\boldsymbol{\mu}^y)(\mathbf{x}-\boldsymbol{\mu}^x)^T].
 \end{equation}
 
-If the gaussian components of the mixture could be separated, the conversion function $\mathcal{F}()$ is modifying the posterior mean and covariance of each component. Since this is not the case in practice the term is weighted by the conditional probability that the observed data $\mathbf{x}_t$ belongs to the component $C_i$.
+If the gaussian components of the mixture could be separated, the conversion function $\mathcal{F}()$ is modifying the posterior mean and covariance of each component. Since this is not the case in practice the term is weighted by the posterior probability, or the conditional probability that the observed data $\mathbf{x}_t$ belongs to the component $C_i$.
 
 The variables $\boldsymbol{\mu}^y$ and $\mathbf{\Sigma}^{yx}$ are unknown and need to be estimated such as the total squared conversion error is minimised
 \begin{equation}
@@ -77,7 +76,7 @@ Equation \eqref{eq:conversion_function} can be reformulated into a single matrix
 		\end{bmatrix}
 	\end{split}
 \end{equation}
-where $\mathbf{y}$ is the target spectral vectors and $\mathbf{P}$ is a $n \times m$ matrix with the conditional probabilities
+where $\mathbf{y}$ is the target spectral vectors and $\mathbf{P}$ is a $n \times m$ matrix with the posterior probabilities
 \begin{equation}
 	\label{eq:P_matrix}
 	\mathbf{P} = \begin{bmatrix}

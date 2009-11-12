@@ -23,7 +23,7 @@ To compute the parameters in the transfer function the dimensions in \eqref{eq:p
 		m \times n \\
 		\dots \\
 		m \times n
-	\end{bmatrix} \mathbf{y^{(k)}}\\ % end line 1
+	\end{bmatrix} \mathbf{y^{(k)}}\\ 	% end line 1
 	\biggl( \begin{bmatrix}
 		2m \times n 
 	\end{bmatrix}
@@ -35,8 +35,8 @@ To compute the parameters in the transfer function the dimensions in \eqref{eq:p
 	\end{bmatrix}
 	= & 
 	\begin{bmatrix}
-		2m \times n 
-	\end{bmatrix} \mathbf{y^{(k)}} \\ % end line 2
+		2m \times n
+	\end{bmatrix} \mathbf{y^{(k)}} \\ 	% end line 2
 	\biggl( \begin{bmatrix}
 		2m \times  2m
 	\end{bmatrix} \biggr) 
@@ -46,7 +46,7 @@ To compute the parameters in the transfer function the dimensions in \eqref{eq:p
 	= &
 	\begin{bmatrix}
 		2m \times n 
-	\end{bmatrix} \mathbf{y^{(k)}} \\ % end line 3
+	\end{bmatrix} \mathbf{y^{(k)}} \\ 	% end line 3
 	\begin{bmatrix}
 		2m \times 1
 	\end{bmatrix}
@@ -56,14 +56,14 @@ To compute the parameters in the transfer function the dimensions in \eqref{eq:p
 	\end{bmatrix} \biggr)^{-1} 
 	\begin{bmatrix}
 		2m \times n 
-	\end{bmatrix} \mathbf{y^{(k)}} \\ % end line 4
+	\end{bmatrix} \mathbf{y^{(k)}} \\ 	% end line 4
 	\begin{bmatrix}
-		2m \times p
+		2m \times 1
 	\end{bmatrix}
 	= &
 	\begin{bmatrix}
 		2m \times n 
-	\end{bmatrix} \mathbf{y^{(k)}} \\ % end line 5
+	\end{bmatrix} \mathbf{y^{(k)}} \\ 	% end line 5
 	& \\
 	\Downarrow & \; Dim(\mathbf{y^{(k)}}) = n \times 1 \\ % end line 6
 	& \\
@@ -73,9 +73,9 @@ To compute the parameters in the transfer function the dimensions in \eqref{eq:p
 	= &
 	\begin{bmatrix}
 		2m \times 1 
-	\end{bmatrix} \\ % end line 7
+	\end{bmatrix} \\ 					% end line 7
 	\end{split}
 \end{equation*}
-where $m$ is the number of classes and $n$ is the number of vectors.
+where $m$ is the number of mixtures and $n$ is the number of vectors.
 \end{proof}
 % chapter Proof of matrix multiplication (end)
