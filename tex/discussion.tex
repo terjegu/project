@@ -4,5 +4,33 @@ explanation
 
 comparison with other research
 
+\section{Diagonal Matrices} % (fold)
+\label{sec:diagonal_matrices}
+In the derivation of the unknown parameters \eqref{eq:param_computed} consist of four matrix multiplications. In the full covariance matrices case it is first a multiplication of a $m(1+p)\times n$ matrix times a $n\times m(1+p)$ matrix yielding $O(n(mp)^2)$ multiplications. The next step is the inverse of the resulting $m(p+1)\times m(p+1)$ matrix which has $O((mp)^3)$ multiplications. The last two multiplications has respectively $O((mp)^2n)$ and $O(mp^2n)$. The total number of multiplications for full covariance matrix is
+\begin{equation}
+	\begin{split}
+		O(\cdot) = & n(mp)^2 + (mp)^3 + (mp)^2n + mp^2n \\
+		= & (mp)^3 + 2n(mp)^2 + nmp^2
+	\end{split}
+\end{equation}
 
+If the matrices are constrained to be diagonal the number of calculations will be respectively $O(nm^2)$, $O(m^3)$, $O(nm^2)$ and $O(nm)$ but all multiplications are used $p$ times.
+\begin{equation}
+	\begin{split}
+		O(\cdot) = & p(nm^2 + m^3 + nm^2 + mn) \\
+		= & pm^3 + 2pnm^2 + pnm
+	\end{split}
+\end{equation}
+The difference is
+\begin{equation}
+	\begin{split}
+		\Delta O(\cdot) = & p^2 + p + p \\
+		= & p^2 +2p
+	\end{split}
+\end{equation}
+
+By introducing diagonal matrices the number of calculations has been reduced by a factor of $p/4$ \cite{stylianou98} with the same number of mixtures. On the other hand, diagonal matrices needs 2 times more mixtures to achieve the same performance. A proof that \eqref{eq:param_computed} is solvable by the use of diagonal matrices is shown in Appendix~\ref{cha:proof_of_matrix_multiplication}. 
+
+
+% section Diagnoal Matrices (end)
 % chapter Discussion (end)

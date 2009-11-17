@@ -5,7 +5,7 @@ The basic idea of the voice conversion is to make a LP analysis of the signal, e
   \centering
    \begin{tabular}[h]{c}
 \xymatrix{ 
-\mathbf{X} \ar[rr] & \ar[d]\ar[r] &*+<5mm>[F-,]{1-A(z)}\ar[rr]^{\mathbf{e}}& &*+<5mm>[F-,]{\frac{1}{1-\tilde{A}(z)}} \ar[r] & \mathbf{Y}\\ % end line 1
+\mathbf{X} \ar[rr] & \ar[d]\ar[r] &*+<5mm>[F-,]{1-A(z)}\ar[rr]^{\mathbf{E}}& &*+<5mm>[F-,]{\frac{1}{1-\tilde{A}(z)}} \ar[r] & \mathbf{Y}\\ % end line 1
   &*+<5mm>[F-,]{\txt{LPC}} \ar[rr]^<(0.25){A(z)} & \ar[u]&*+<5mm>[F-,]{\txt{CF}}\ar `[ru]^<(0.5){\tilde{A}(z)} [ur]&  &}
   \end{tabular}
   \caption{Conversion System}
@@ -34,7 +34,7 @@ The available data for the conversion function is time-aligned source and target
 	\begin{equation}
 		\label{eq:conversion_function}
 		\begin{split}
-		\mathcal{F}(\mathbf{x}_t) =& E[\mathbf{x}_t\vert \mathbf{y}] = E[\mathbf{x}_t]E[\mathbf{y}\vert \mathbf{x}_t]\\
+		\mathcal{F}(\mathbf{x}_t) =& E[\mathbf{y}\vert \mathbf{x}_t]\\
 		 =& \sum_{i=1}^{m}P(C_i \vert \mathbf{x}_t)[\boldsymbol{\mu}_i^y + \mathbf{\Sigma}_i^{yx} \mathbf{\Sigma}_i^{xx^{-1}} (\mathbf{x}_t-\boldsymbol{\mu}_i^x)]
 		\end{split}
 	\end{equation}	
