@@ -1,29 +1,35 @@
 \chapter{Conclusion} % (fold)
 \label{cha:conclusion}
-Further work: non-parallel training \cite{mouchtaris06}. non parallel \cite{ye06} MLE instead of MSE.
+By using GMM instead of VQ we get a more robust and efficient filter transformation because we use a continuous probabilistic model instead of a hard decision model. 
 
-concat segments, smoothing.
+The unknown parameters in conversion function \eqref{eq:conversion_function} are determined by minimum mean square error, \eqref{eq:conversion_error}, which depends on knowing the target vectors, \ie knowing the target speech for the same utterances as we want to convert to. With this scheme we can not convert to arbitrary sentences which of course is desirable. The optimisation methods need to be changed to a method not dependent of the target voice. Maximum likelihood can be used instead of MMSE, discussed in \cite{mouchtaris06,ye06}.
+
+Another shortcoming of the presented scheme is the lack of transforming the source. Time-scale modifications, pitch-modification and intensity modifications can be applied with \eg TD-PSOLA to achieve the desired prosody.
+
+Since the training of the GMM can be be done once and for all the transformation itself is quit fast. 
+
+
+
 \begin{itemize}
+	\item realtime?
+	\item concat segments, smoothing.
 	\item optimal coupling
 	\item interpolation (spectrum, waveform)
 	\item noise masking
+	\item fonem deteksjon - dtw på alt
+	\item window size.
+	\item no phase transform
+	\item relevance for the world
 \end{itemize}
 
-fonem deteksjon - dtw på alt
-
-window size.
 
 
-lag ifilt selv. with memory.
 
 
-$\alpha$ in $\alpha N()$ is prior probability ?
 
 
-no phase transform
 
 
-relevance for the world
 
-recommendations for future research
+
 % chapter Conclusion (end)

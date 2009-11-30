@@ -9,38 +9,60 @@ comparison with other research
 In the derivation of the unknown parameters \eqref{eq:param_computed} consist of four matrix multiplications. In the full covariance matrices case it is first a multiplication of a $m(1+p)\times n$ matrix times a $n\times m(1+p)$ matrix yielding $O(n(mp)^2)$ multiplications. The next step is the inverse of the resulting $m(p+1)\times m(p+1)$ matrix which has $O((mp)^3)$ multiplications. The last two multiplications has respectively $O((mp)^2n)$ and $O(mp^2n)$. The total number of multiplications for full covariance matrix is
 \begin{equation}
 	\begin{split}
-		O(\cdot) = & n(mp)^2 + (mp)^3 + (mp)^2n + mp^2n \\
+		O_f(\cdot) = & n(mp)^2 + (mp)^3 + (mp)^2n + mp^2n \\
 		= & (mp)^3 + 2n(mp)^2 + nmp^2
 	\end{split}
 \end{equation}
 
-If the matrices are constrained to be diagonal the number of calculations will be respectively $O(nm^2)$, $O(m^3)$, $O(nm^2)$ and $O(nm)$ but all multiplications are used $p$ times.
+If the matrices are constrained to be diagonal the number of calculations will be respectively $O(nm^2)$, $O(m^3)$, $O(nm^2)$ and $O(nm)$ but all multiplications are done $p$ times.
 \begin{equation}
 	\begin{split}
-		O(\cdot) = & p(nm^2 + m^3 + nm^2 + mn) \\
+		O_d(\cdot) = & p(nm^2 + m^3 + nm^2 + mn) \\
 		= & pm^3 + 2pnm^2 + pnm
 	\end{split}
 \end{equation}
-The difference is
+The ratio is
 \begin{equation}
 	\begin{split}
-		\Delta O(\cdot) = & p^2 + p + p \\
-		= & p^2 +2p
+		\frac{O_f(\cdot)}{O_d(\cdot)} = & \frac{(mp)^3 + 2n(mp)^2 + nmp^2}{pm^3 + 2pnm^2 + pnm} \\
+		= & \frac{(pm)^2 + 2nmp + np}{m^2 + 2nm + n} \\
+		= & \frac{p(pm^2 + 2nm + n)}{m^2 + 2nm + n}
 	\end{split}
 \end{equation}
 
-By introducing diagonal matrices the number of calculations has been reduced by a factor of $p/4$ \cite{stylianou98} with the same number of mixtures. On the other hand, diagonal matrices needs 2 times more mixtures to achieve the same performance. A proof that \eqref{eq:param_computed} is solvable by the use of diagonal matrices is shown in Appendix~\ref{cha:proof_of_matrix_multiplication}. 
+The ratios for $p=16$, $n=500$ and $m\in \{32,64,128\}$ are shown in Table~\ref{tab:derivation_complexity}. 
+\begin{table}[ht]
+	\begin{center}
+		\topcaption{Number of Multiplications}
+		\begin{tabular}{rrrc}
+			\toprule
+			\multicolumn{1}{c}{$m$} & \multicolumn{1}{c}{$O_f(\cdot)$} & \multicolumn{1}{c}{$O_d(\cdot)$} & \multicolumn{1}{c}{$O_f(\cdot)/O_d(\cdot)$} \\
+			\midrule
+			32 & $782.1 \times 10^3$ & $33.52 \times 10^3$ & 23  \\
+			64 & $2.081 \times 10^6$ & $68.60 \times 10^3$ & 30  \\
+			128 & $6.250 \times 10^6$ & $144.9 \times 10^3$ & 43  \\
+			\bottomrule			
+		\end{tabular}		
+	\end{center}
+\label{tab:derivation_complexity}	
+\end{table}
+
+By introducing diagonal matrices the number of calculations has been reduced by a factor of $\approx m/4$+14 with the same number of vectors and prediction coefficients. On the other hand, diagonal matrices needs 8 times more mixtures to achieve the same performance \cite{stylianou98} if the vectors are correlated. A proof that \eqref{eq:param_computed} is solvable by the use of diagonal matrices is shown in Appendix~\ref{cha:proof_of_matrix_multiplication}. 
 
 
 % section Diagnoal Matrices (end)
 
 \section{Number of Mixture} % (fold)
 \label{sec:number_of_mixture}
+A speech database of 20 000 speech segments of 10ms was used in the training of the GMM. The number of segments should be at least 100 per mixture meaning we could use any number below 200 mixtures.
 
+The number of mixtures can be chosen to achieve the desired quality of the transform. With less mixtures the frequency transform gets more smooth as shown in Figure~\ref{fig:frequency_plots_of_converted_signal}. Table~\ref{tab:derivation_complexity} shows that for diagonal matrices the complexity increase linearly to the number of mixtures which motivates using a high number of mixtures.
+
+ITAKURA DISTANCE.
 % section Number of Mixture (end)
 
 \section{Synthesis} % (fold)
 \label{sec:synthesis}
-
+If the synthesis of the signal with the transformed filter coefficients is done in a straight forward approach the result could get noisy. To coupe with this problem the LPC analysis can be centred around the pitch in the signal. This introduces another problem --- detecting the pitch. The pitch can be detected by finding the highest value of the autocorrelation of the region of interest, discussed in detail in \cite[p. 324]{taletek}. Centring the LPC region about the pitch improves the signal to noise ratio significantly.
 % section Synthesis (end)
 % chapter Discussion (end)
