@@ -1,12 +1,11 @@
 \chapter{Discussion} % (fold)
 \label{cha:discussion}
-explanation
-
-comparison with other research
 
 \section{Diagonal Matrices} % (fold)
 \label{sec:diagonal_matrices}
-In the derivation of the unknown parameters \eqref{eq:param_computed} consist of four matrix multiplications. In the full covariance matrices case it is first a multiplication of a $m(1+p)\times n$ matrix times a $n\times m(1+p)$ matrix yielding $O(n(mp)^2)$ multiplications. The next step is the inverse of the resulting $m(p+1)\times m(p+1)$ matrix which has $O((mp)^3)$ multiplications. The last two multiplications has respectively $O((mp)^2n)$ and $O(mp^2n)$. The total number of multiplications for full covariance matrix is
+The computational complexity can be reduced by introducing diagonal matrices instead of full matrices. In the derivation of the unknown parameters in \eqref{eq:param_computed} consist of four matrix multiplications. The number of multiplications in a matrix multiplication of a $a\times b$ matrix and a $b\times c$ matrix is $O(abc)$.
+
+In the full covariance matrices case it is first a multiplication of a $m(1+p)\times n$ matrix times a $n\times m(1+p)$ matrix yielding $O(n(mp)^2)$ multiplications. The next step is the inverse of the resulting $m(p+1)\times m(p+1)$ matrix which has $O((mp)^3)$ multiplications. The last two multiplications have respectively $O((mp)^2n)$ and $O(mp^2n)$. The total number of multiplications for full covariance matrix is
 \begin{equation}
 	\begin{split}
 		O_f(\cdot) = & n(mp)^2 + (mp)^3 + (mp)^2n + mp^2n \\
@@ -21,7 +20,7 @@ If the matrices are constrained to be diagonal the number of calculations will b
 		= & pm^3 + 2pnm^2 + pnm
 	\end{split}
 \end{equation}
-The ratio is
+The ratio between the two options is
 \begin{equation}
 	\begin{split}
 		\frac{O_f(\cdot)}{O_d(\cdot)} = & \frac{(mp)^3 + 2n(mp)^2 + nmp^2}{pm^3 + 2pnm^2 + pnm} \\
@@ -30,17 +29,33 @@ The ratio is
 	\end{split}
 \end{equation}
 
-The ratios for $p=16$, $n=500$ and $m\in \{32,64,128\}$ are shown in Table~\ref{tab:derivation_complexity}. 
+For the transformation function itself \eqref{eq:conversion_function} the number of multiplications with full covariance matrices is
+\begin{equation}
+	O_f = nm(p^3 + p^2 + p+1)
+\end{equation}
+and for diagnoal matrices
+\begin{equation}
+	O_d = nmp^2.
+\end{equation}
+The ratio for these calculations is
+\begin{equation}
+	\begin{split}
+		\frac{O_f(\cdot)}{O_d(\cdot)} = & \frac{nm(p^3 + p^2 + p)}{nmp^2} \\
+		= & \frac{p^3 + p^2 + p+1}{p^2}
+	\end{split}
+\end{equation}
+
+The total number of multiplications and the ratios for $p=16$, $n=500$ and $m\in \{32,64,128\}$ are shown in Table~\ref{tab:derivation_complexity}. 
 \begin{table}[ht]
 	\begin{center}
 		\topcaption{Number of Multiplications}
-		\begin{tabular}{rrrc}
+		\begin{tabular}{rllc}
 			\toprule
 			\multicolumn{1}{c}{$m$} & \multicolumn{1}{c}{$O_f(\cdot)$} & \multicolumn{1}{c}{$O_d(\cdot)$} & \multicolumn{1}{c}{$O_f(\cdot)/O_d(\cdot)$} \\
 			\midrule
-			32 & $782.1 \times 10^3$ & $33.52 \times 10^3$ & 23  \\
-			64 & $2.081 \times 10^6$ & $68.60 \times 10^3$ & 30  \\
-			128 & $6.250 \times 10^6$ & $144.9 \times 10^3$ & 43  \\
+			32 & $4.7 \times 10^8$ & $2.1 \times 10^7$ & 23  \\
+			64 & $2.2 \times 10^9$ & $7.8 \times 10^7$ & 30  \\
+			128 & $1.3 \times 10^{10}$ & $3.1 \times 10^8$ & 43  \\
 			\bottomrule			
 		\end{tabular}		
 	\end{center}
@@ -48,21 +63,34 @@ The ratios for $p=16$, $n=500$ and $m\in \{32,64,128\}$ are shown in Table~\ref{
 \end{table}
 
 By introducing diagonal matrices the number of calculations has been reduced by a factor of $\approx m/4$+14 with the same number of vectors and prediction coefficients. On the other hand, diagonal matrices needs 8 times more mixtures to achieve the same performance \cite{stylianou98} if the vectors are correlated. A proof that \eqref{eq:param_computed} is solvable by the use of diagonal matrices is shown in Appendix~\ref{cha:proof_of_matrix_multiplication}. 
-
-
 % section Diagnoal Matrices (end)
 
-\section{Number of Mixture} % (fold)
+\section{Number of Mixtures} % (fold)
 \label{sec:number_of_mixture}
-A speech database of 20 000 speech segments of 10ms was used in the training of the GMM. The number of segments should be at least 100 per mixture meaning we could use any number below 200 mixtures.
+A speech database of 20 000 speech segments of 10ms was used in the training of the GMM. The number of segments should be at least 100 per mixture meaning we could use any number below 200 mixtures. If the amount of training data small the covariance in the mixture models will get small and there could be a underflow issue when determine the inverse of the covariance matrix.
 
-The number of mixtures can be chosen to achieve the desired quality of the transform. With less mixtures the frequency transform gets more smooth as shown in Figure~\ref{fig:frequency_plots_of_converted_signal}. Table~\ref{tab:derivation_complexity} shows that for diagonal matrices the complexity increase linearly to the number of mixtures which motivates using a high number of mixtures.
+The number of mixtures can be chosen to achieve the desired quality of the transform. With less mixtures the resulting frequency spectrum is more smooth as shown in Figure~\ref{fig:1_comparison}. Table~\ref{tab:derivation_complexity} shows that for diagonal matrices the complexity increase linearly to the number of mixtures which motivates using a high number of mixtures.
 
-ITAKURA DISTANCE.
+The impact of the number of mixtures are depicted in Figure~\ref{fig:frequency_plots_1}, \ref{fig:frequency_plots_2} and \ref{fig:frequency_plots_3}. Fore some frames the transformation is perfect for only 64 mixtures while most of the transformed spectrum gets smoothed out with a low number of mixtures. WHY????
+
+Table~\ref{tab:accuracy_comparison} shows a Itakura distance comparison of different number of mixtures. The LP coefficients are identical if the distance is 0. The results clearly shows that the transformation is improved with a larger number of mixture components.
 % section Number of Mixture (end)
 
 \section{Synthesis} % (fold)
 \label{sec:synthesis}
 If the synthesis of the signal with the transformed filter coefficients is done in a straight forward approach the result could get noisy. To coupe with this problem the LPC analysis can be centred around the pitch in the signal. This introduces another problem --- detecting the pitch. The pitch can be detected by finding the highest value of the autocorrelation of the region of interest, discussed in detail in \cite[p. 324]{taletek}. Centring the LPC region about the pitch improves the signal to noise ratio significantly.
+
+A full speech transformations system includes a source modification as well, Figure~\ref{fig:VC_full}. The source modifications can be done by PSOLA \cite[p.820]{taletek} to alter the prosody of the speech signal.
+
+\begin{figure}[htbp]
+  \centering
+   \begin{tabular}[h]{c}
+\xymatrix{ 
+\mathbf{x} \ar[rr] & \ar[d]\ar[r] &*+<5mm>[F-,]{1-A(z)} \ar[r]^{\mathbf{e}}&*+<5mm>[F-,]{\txt{SM}} \ar[r]^(0.35){\mathbf{\tilde{e}}} &*+<5mm>[F-,]{\frac{1}{1-\tilde{A}(z)}} \ar[r] & \mathbf{y}\\  % end line 1
+  &*+<5mm>[F-,]{\txt{LPC}} \ar[rr]^<(0.25){A(z)} & \ar[u]&*+<5mm>[F-,]{\txt{FM}}\ar `[ru]^<(0.5){\tilde{A}(z)} [ur]&  &}
+  \end{tabular}
+  \caption{Full Transformation System}
+  \label{fig:VC_full}
+\end{figure}
 % section Synthesis (end)
 % chapter Discussion (end)

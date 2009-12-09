@@ -1,44 +1,145 @@
 \chapter{Theory} % (fold)
 \label{cha:theory}
-The basic idea of the voice conversion is to make a LP analysis of the signal, extract the estimate from the real signal, adapt the coefficients to the new voice and reestimate the signal with the new coefficients as depicted in Figure~\ref{fig:VC}.
+The basic idea of the voice transformation is to make a linear prediction analysis of the signal, extract the estimate from the real signal to yield a source-filter separation. The filter coefficients can then be mapped to the new voice and speech signal can be reestimate with the new filter coefficients and the new excitation signal as depicted in Figure~\ref{fig:VC}.
 \begin{figure}[htbp]
   \centering
    \begin{tabular}[h]{c}
 \xymatrix{ 
-\mathbf{X} \ar[rr] & \ar[d]\ar[r] &*+<5mm>[F-,]{1-A(z)}\ar[rr]^{\mathbf{E}}& &*+<5mm>[F-,]{\frac{1}{1-\tilde{A}(z)}} \ar[r] & \mathbf{Y}\\ % end line 1
-  &*+<5mm>[F-,]{\txt{LPC}} \ar[rr]^<(0.25){A(z)} & \ar[u]&*+<5mm>[F-,]{\txt{CF}}\ar `[ru]^<(0.5){\tilde{A}(z)} [ur]&  &}
+\mathbf{x} \ar[rr] & \ar[d]\ar[r] &*+<5mm>[F-,]{1-A(z)} \ar[rr]^{\mathbf{e}}& &*+<5mm>[F-,]{\frac{1}{1-\tilde{A}(z)}} \ar[r] & \mathbf{y}\\  % end line 1
+  &*+<5mm>[F-,]{\txt{LPC}} \ar[rr]^<(0.25){A(z)} & \ar[u]&*+<5mm>[F-,]{\txt{FM}}\ar `[ru]^<(0.5){\tilde{A}(z)} [ur]&  &}
   \end{tabular}
-  \caption{Conversion System}
+  \caption{Transformation System}
   \label{fig:VC}
 \end{figure}
 
-The system includes two parts, training and transformation. The challenge in this procedure is to find the conversion function explained in Section~\ref{sec:conversion_function}. In the training process of the conversion function, depicted in Figure~\ref{fig:VC_training}, the two input signals, source $x$ and target $y$, first need to be aligned in time, Section~\ref{sec:dynamic_time_warping}. The source data is classified into probabilistic Gaussian mixture models (GMM), Section~\ref{sec:gaussian_mixture_model}, and used in a class-specific transform \cite{stylianou09}.
+The challenge in this procedure is to find the filter mapping function explained in Section~\ref{sec:conversion_function}. The system includes two parts, training and transformation. 
 \begin{figure}[htbp]
 	\centering
 	\begin{tabular}[h]{c}
 		\xymatrix{ 
-\mathbf{X} \ar[r] &*+<5mm>[F-,]{\txt{LPC}}\ar[d] &*+<5mm>[F-,]{\txt{GMM}}\ar `[rd]^{\boldsymbol{\Phi}} [dr] &\\ % end line 1
-&*+<5mm>[F-,]{\txt{DTW}} \ar @<3pt>[rr]^<(0.15){\mathbf{X}} \ar @<-3pt>[rr]_<(0.15){\tilde{\mathbf{Y}}} & \ar[u] &*+<5mm>[F-,]{\txt{Train VC}}\\ % end line 2
-\mathbf{Y} \ar[r] &*+<5mm>[F-,]{\txt{LPC}}\ar[u]&&}
+\mathbf{x} \ar[r] &*+<5mm>[F-,]{\txt{LPC}}\ar[d]\ar @{=>}[r] &*+<5mm>[F-,]{\txt{GMM}}\ar `[rd]^{\boldsymbol{\Phi}} [dr] &\\ % end line 1
+&*+<5mm>[F-,]{\txt{DTW}} \ar @<3pt>[rr]^<(0.15){\mathbf{x}} \ar @<-3pt>[rr]_<(0.15){\tilde{\mathbf{y}}} & &*+<5mm>[F-,]{\txt{Train TF}}\\ % end line 2
+\mathbf{y} \ar[r] &*+<5mm>[F-,]{\txt{LPC}}\ar[u]&&}
 	\end{tabular}
-	\caption{Training of Voice Conversion Parameters}
+	\caption{Training of Filter Mapping Parameters}
 	\label{fig:VC_training}
 \end{figure}
+In the training process of the conversion function, depicted in Figure~\ref{fig:VC_training}, the two input signals, source $x$ and target $y$, first need to be aligned in time, Section~\ref{sec:dynamic_time_warping}. The source data is classified into probabilistic Gaussian mixture models (GMM), Section~\ref{sec:gaussian_mixture_model}, and used in a class-specific transform \cite{stylianou09}.
 
 
-\section{Conversion Function} % (fold)
+\section{Gaussian Mixture Model} % (fold)
+\label{sec:gaussian_mixture_model}
+The GMM is a classical parametric model used in many pattern recognition techniques \cite{stylianou98}. Because of the wide variety of speech sound, a single global transform would require enormous complexity of both training data and the transformation function. A probabilistic Gaussian mixture models is a simpler and faster approach. A GMM can represent the source with only a few parameters which there are well defined methods of estimating \cite{taletek}.
+
+The GMM assumes that the probability distribution of the observed parameters takes the following parametric form
+\begin{equation}
+	\label{eq:gmm}
+	p(\mathbf{x}) = \sum_{i=1}^{m} \alpha_i N(\mathbf{x}; \boldsymbol{\mu}_i, \mathbf{\Sigma}_i)
+\end{equation}
+where $m$ is the number of mixture models and $N(\mathbf{x}; \boldsymbol{\mu}_i, \mathbf{\Sigma}_i)$ denotes the p-dimensional normal distribution with the mean vector $\boldsymbol{\mu}_i$ and covariance matrix $\mathbf{\Sigma}_i$ defined by
+\begin{equation}
+	N(\mathbf{x}; \boldsymbol{\mu}, \mathbf{\Sigma}) = \frac{1}{\sqrt{(2\pi)^p\abs{\mathbf{\Sigma}}}} \exp\left[ -\frac{1}{2} (\mathbf{x} -\boldsymbol{\mu})^T \mathbf{\Sigma}^{-1} (\mathbf{x} -\boldsymbol{\mu})\right]
+\end{equation}
+and $\alpha_i$ in \eqref{eq:gmm} is the prior probability of class $i$ with constraints $\sum_{i=1}^{M}\alpha_i = 1$ and $\alpha_i \geq 0$. The input vectors, $\mathbf{x_i}$, are assumed to be independent \cite{stylianou98}.
+
+The conditional probability that a given observation vector $\mathbf{x}$ belongs to the component $C_i$ of the GMM is given by Bayes' rule \cite{statistikk} as
+\begin{equation}
+	\label{eq:bayes}
+	P(C_i\vert \mathbf{x}) = \frac{\alpha_i N(\mathbf{x}; \boldsymbol{\mu}_i, \mathbf{\Sigma}_i)}{\sum_{j=1}^{m}\alpha_j N(\mathbf{x}; \boldsymbol{\mu}_j, \mathbf{\Sigma}_j)}.
+\end{equation}
+
+The parameters $\boldsymbol{\alpha}, \boldsymbol{\mu}$ and $ \mathbf{\Sigma}$ can be estimated with the expectation maximisation (EM) algorithm \cite{taletek,mclachlan97}.
+
+% section Gaussian Mixture Model (end)
+
+% 
+% \section{Expectation Maximisation} % (fold)
+% \label{sec:expectation_maximisation}
+% The expectation maximisation, EM \abbrev{EM}{expectation maximisation}, algorithm is an iterative algorithm for unsupervised learning in which component information is unavailable or only partly available \cite{taletek}. It estimates the model parameters by maximising the log-likelihood of incomplete data and maximising the expectation of log-likelihood from complete data.
+% 
+% We need to determine the parameter $\mathbf{\Phi} = \{\boldsymbol{\alpha}, \boldsymbol{\mu}, \mathbf{\Sigma}\}$ which maximises $P(Y=y\vert \mathbf{\Phi})$ where $y$ is the observed training data. We assume some parameter vector $\mathbf{\Phi}$ and estimate the probability of some unknown data $x$ occurred in the generation of $y$. We then compute a new $\bar{\mathbf{\Phi}}$ which is the maximum likelihood of $\mathbf{\Phi}$ and set the new $\bar{\mathbf{\Phi}}$ to be $\mathbf{\Phi}$ and repeat the process iteratively until the process converges \cite{taletek}. The process will converge if we choose $\bar{\mathbf{\Phi}}$ such that 
+% \begin{equation}
+% 	\label{eq:q_criteria}
+% 	Q(\mathbf{\Phi},\bar{\mathbf{\Phi}})\geq Q(\mathbf{\Phi},\mathbf{\Phi})
+% \end{equation}
+% where 
+% \begin{equation}
+% 	\label{eq:q_function}
+% 	Q(\mathbf{\Phi},\bar{\mathbf{\Phi}}) = E[\log P(X,Y=y\vert \bar{\mathbf{\Phi}})].
+% \end{equation}
+% % section Estimation Maximasation (end)
+
+\section{Dynamic Time Warping} % (fold)
+\label{sec:dynamic_time_warping}
+Feature comparison of two signals gives more sense if they are aligned in time. If the signals are not aligned they will not appear as equal if they are in fact equal. Dynamic time warping (DTW\abbrev{DTW}{dynamic time warping}) is an dynamic programming concept to warp two sequence such as the difference in the signals are minimised. The signals are segmented into small parts which are compared and given a similarity-score. There are many ways to assign this score, \eg the \emph{Itakura distance} \cite{itakura90},
+\begin{equation}
+	\label{eq:dtw_distance}
+		d(\mathbf{a},\mathbf{b}) = \log\frac{\mathbf{a}^T \mathbf{R}_s \mathbf{a}}{\mathbf{b}^T \mathbf{R}_s \mathbf{b}}
+\end{equation}
+where $\mathbf{a}$ is a column vector of LP coefficients of one segment from the source signal, $\mathbf{b}$ is a column vector of LP coefficients of one segments from the target vector and $\mathbf{R}_s$ is the autocorrelation matrix of the source signal. The numerator of \eqref{eq:dtw_distance} is the residual, or the energy of the error, from the LP of the source signal with the source coefficients $\mathbf{a}$ whilst the denominator is the residual from the LP of the \emph{source} signal with the \emph{target} coefficients $\mathbf{b}$. 
+
+The minimum distance between the two signals can be found by solving the recursion \cite{taletek}
+\begin{equation}
+	\label{eq:dtw_recursion}
+	\begin{split}
+		D(i,j) = \min \bigl[&D(i-1,j-1)+\alpha d(\mathbf{A}_i,\mathbf{B}_j),\\
+		& D(i-1,j)+\beta d(\mathbf{A}_i,\mathbf{B}_j),\\
+		& D(i,j-1)+\beta d(\mathbf{A}_i,\mathbf{B}_j),\\
+		& D(i-2,j-1)+\gamma d(\mathbf{A}_i,\mathbf{B}_j),\\
+		& D(i-1,j-2)+\gamma d(\mathbf{A}_i,\mathbf{B}_j)\bigr]		
+	\end{split}
+\end{equation}
+where $\mathbf{A}_i$ and $\mathbf{B}_i$ denotes the LP coefficients of segment $i$ from the two signals. 
+% I.e. the shortest path from $A$ to $C$ is the shortest path from $A$ to $B$ plus the shortest path from $B$ to $C$. 
+The problem is broken down into simpler subproblems, hence dynamic programming. 
+
+The possible paths are shown in Figure~\ref{fig:dtw_shortest_path}. The weights $\alpha,\beta$ and $\gamma$, called local constraints, are optional and could have a significant effect on the outcome. For instance, the $\beta$ weights can be assigned a larger weight to avoid multiple skipping or repetition of frames. Global constraints can be applied in addition to the local constraints which limits the resulting path by a borders to guarantee a maximum modification of the signals.
+\begin{figure}[htbp]
+	\begin{center}
+		\setlength{\unitlength}{0.8cm}
+		\begin{picture}(8,8)(0,0)
+		\put(0,0){\vector(1,0){8}}
+		\put(7,-0.5){$\mathbf{A}$}
+		\put(-0.5,7){$\mathbf{B}$}
+		\put(0,0){\vector(0,1){8}}
+		\put(7,7){\circle*{0.3}}
+		\put(4,4){\vector(1,1){2.8}}
+		\put(4,7){\vector(1,0){2.8}}
+		\put(7,4){\vector(0,1){2.8}}
+		\put(1,4){\vector(2,1){5.8}}
+		\put(4,1){\vector(1,2){2.9}}
+		\put(5,4){$\gamma$}
+		\put(3.7,5.7){$\gamma$}
+		\put(7.1,5){$\beta$}
+		\put(5,7.1){$\beta$}
+		\put(5,5.4){$\alpha$}
+		\put(2.6,7){\tiny{$(i-1,j)$}}
+		\put(6.6,3.7){\tiny{$(i,j-1)$}}
+		\put(0.1,3.7){\tiny{$(i-2,j-1)$}}
+		\put(3.1,0.7){\tiny{$(i-1,j-2)$}}
+		\put(3,3.7){\tiny{$(i-1,j-1)$}}
+		\end{picture}
+		\caption{DTW shortest path calculations}
+		\label{fig:dtw_shortest_path}
+	\end{center}
+\end{figure}
+
+The resulting shortest path is used to duplicate and/or delete frames in the target to get a time-aligned version of the target vector of the same length as the source vector.
+% section Dynamic Time Warping (end)
+
+
+\section{Filter Mapping} % (fold)
 \label{sec:conversion_function}
-The available data for the conversion function is time-aligned source and target vectors, Section~\ref{sec:dynamic_time_warping}, which are of the same length $n$ and the pre-trained Gaussian mixture models, Section~\ref{sec:gaussian_mixture_model}. A conversion function suggested by Yannis Stylianou \etal \cite{stylianou95} is used in this paper:
-\begin{defn}
-	\label{defn:conversion_function}
-	\begin{equation}
-		\label{eq:conversion_function}
-		\begin{split}
+The available data for the filter mapping function, or the conversion function, are time-aligned source and target vectors of the same linguistic content and the same length $n$, and pre-trained Gaussian mixture models fitted to the source speaker. 
+
+A conversion function suggested by Yannis Stylianou \etal \cite{stylianou95} is used in this paper
+\begin{equation}
+	\label{eq:conversion_function}
+	\begin{split}
 		\mathcal{F}(\mathbf{x}_t) =& E[\mathbf{y}\vert \mathbf{x}_t]\\
-		 =& \sum_{i=1}^{m}P(C_i \vert \mathbf{x}_t)[\boldsymbol{\mu}_i^y + \mathbf{\Sigma}_i^{yx} \mathbf{\Sigma}_i^{xx^{-1}} (\mathbf{x}_t-\boldsymbol{\mu}_i^x)]
-		\end{split}
-	\end{equation}	
-\end{defn}
+		=& \sum_{i=1}^{m}P(C_i \vert \mathbf{x}_t)[\boldsymbol{\mu}_i^y + \mathbf{\Sigma}_i^{yx} \mathbf{\Sigma}_i^{xx^{-1}} (\mathbf{x}_t-\boldsymbol{\mu}_i^x)]
+	\end{split}
+\end{equation}	
 The conversion function is a weighted sum of minimum mean square error (MMSE\abbrev{MMSE}{minimum mean square error}) estimate of the target vector $\mathbf{y}_t$ given the observed value of $\mathbf{x}_t$, which are jointly Gaussian \cite{stylianou98}. The MMSE is given by \cite{taletek}
 \begin{equation}
 	\label{eq:mmse}
@@ -165,108 +266,40 @@ Equation \eqref{eq:least_square_problem} is a least-square problem which can be 
 \end{equation}
 % section Conversion Function (end)
 
-\section{Dynamic Time Warping} % (fold)
-\label{sec:dynamic_time_warping}
-Feature comparison of two signals gives more sense if they are aligned in time. If the signals are not aligned they will not appear as equal if they are in fact equal. Dynamic time warping (DTW\abbrev{DTW}{dynamic time warping}) is an dynamic programming concept to warp two sequence such as the difference in the signals are minimised. The signals are segmented into small parts which are compared and given a similarity-score. There are many ways to assign this score, \eg the \emph{Itakura distance} \cite{itakura90},
-\begin{equation}
-	\label{eq:dtw_distance}
-		d(\mathbf{a},\mathbf{b}) = \log\frac{\mathbf{a}^T \mathbf{R}_s \mathbf{a}}{\mathbf{b}^T \mathbf{R}_s \mathbf{b}}
-\end{equation}
-where $\mathbf{a}$ is a column vector of LP coefficients of one segment from the source signal, $\mathbf{b}$ is a column vector of LP coefficients of one segments from the target vector and $\mathbf{R}_s$ is the autocorrelation matrix of the source signal. The numerator of \eqref{eq:dtw_distance} is the residual, or the energy of the error, from the LP of the source signal with the source coefficients $\mathbf{a}$ whilst the denominator is the residual from the LP of the \emph{source} signal with the \emph{target} coefficients $\mathbf{b}$. 
 
-The minimum distance between the two signals can be found by solving the recursion \cite{taletek}
-\begin{equation}
-	\label{eq:dtw_recursion}
-	\begin{split}
-		D(i,j) = \min \bigl[&D(i-1,j-1)+\alpha d(\mathbf{A}_i,\mathbf{B}_j),\\
-		& D(i-1,j)+\beta d(\mathbf{A}_i,\mathbf{B}_j),\\
-		& D(i,j-1)+\beta d(\mathbf{A}_i,\mathbf{B}_j),\\
-		& D(i-2,j-1)+\gamma d(\mathbf{A}_i,\mathbf{B}_j),\\
-		& D(i-1,j-2)+\gamma d(\mathbf{A}_i,\mathbf{B}_j)\bigr]		
-	\end{split}
-\end{equation}
-where $\mathbf{A}_i$ denotes the LP coefficients of segment $i$. 
-% I.e. the shortest path from $A$ to $C$ is the shortest path from $A$ to $B$ plus the shortest path from $B$ to $C$. 
-The problem is broken down into simpler subproblems, hence dynamic programming. 
-
-The possible paths are shown in Figure~\ref{fig:dtw_shortest_path}. The weights $\alpha,\beta$ and $\gamma$, called local constraints, are optional and could have a significant effect on the outcome. For instance, the $\beta$ weights can be assigned a larger weight to avoid multiple skipping or repetition of frames. Global constraints can be applied in addition to the local constraints which limits the resulting path by a borders to guarantee a maximum modification of the signals.
-
-\begin{figure}[htbp]
-	\begin{center}
-		\setlength{\unitlength}{0.8cm}
-		\begin{picture}(8,8)(0,0)
-		\put(0,0){\vector(1,0){8}}
-		\put(7,-0.5){$\mathbf{A}$}
-		\put(-0.5,7){$\mathbf{B}$}
-		\put(0,0){\vector(0,1){8}}
-		\put(7,7){\circle*{0.3}}
-		\put(4,4){\vector(1,1){2.8}}
-		\put(4,7){\vector(1,0){2.8}}
-		\put(7,4){\vector(0,1){2.8}}
-		\put(1,4){\vector(2,1){5.8}}
-		\put(4,1){\vector(1,2){2.9}}
-		\put(5,4){$\gamma$}
-		\put(3.7,5.7){$\gamma$}
-		\put(7.1,5){$\beta$}
-		\put(5,7.1){$\beta$}
-		\put(5,5.4){$\alpha$}
-		\put(2.6,7){\tiny{$(i-1,j)$}}
-		\put(6.6,3.7){\tiny{$(i,j-1)$}}
-		\put(0.1,3.7){\tiny{$(i-2,j-1)$}}
-		\put(3.1,0.7){\tiny{$(i-1,j-2)$}}
-		\put(3,3.7){\tiny{$(i-1,j-1)$}}
-		\end{picture}
-		\caption{DTW shortest path calculations}
-		\label{fig:dtw_shortest_path}
-	\end{center}
-\end{figure}
-
-% section Dynamic Time Warping (end)
-
-\section{Gaussian Mixture Model} % (fold)
-\label{sec:gaussian_mixture_model}
-Because of the wide variety of speech sound, a single global transform would require enormous complexity of both training data and the transformation function. A probabilistic Gaussian mixture models is a simpler and faster approach. The GMM is a classical parametric model used in many pattern recognition techniques \cite{stylianou98}. The GMM assumes that the probability distribution of the observed parameters takes the following parametric form
-\begin{equation}
-	\label{eq:gmm}
-	p(\mathbf{x}) = \sum_{i=1}^{m} \alpha_i N(\mathbf{x}; \boldsymbol{\mu}_i, \mathbf{\Sigma}_i)
-\end{equation}
-where $m$ is the number of mixture models and $N(\mathbf{x}; \boldsymbol{\mu}_i, \mathbf{\Sigma}_i)$ denotes the p-dimensional normal distribution with the mean vector $\boldsymbol{\mu}_i$ and covariance matrix $\mathbf{\Sigma}_i$ defined by
-\begin{equation}
-	N(\mathbf{x}; \boldsymbol{\mu}, \mathbf{\Sigma}) = \frac{1}{\sqrt{(2\pi)^p\abs{\mathbf{\Sigma}}}} \exp\left[ -\frac{1}{2} (\mathbf{x} -\boldsymbol{\mu})^T \mathbf{\Sigma}^{-1} (\mathbf{x} -\boldsymbol{\mu})\right]
-\end{equation}
-and $\alpha_i$ in \eqref{eq:gmm} is the prior probability of class $i$ with constraints $\sum_{i=1}^{M}\alpha_i = 1$ and $\alpha_i \geq 0$. The input vectors, $\mathbf{x_i}$, are assumed to be independent \cite{stylianou98}.
-
-The conditional probability that a given observation vector $\mathbf{x}$ belongs to the component $C_i$ of the GMM is given by Bayes' rule \cite{statistikk} as
-\begin{equation}
-	\label{eq:bayes}
-	P(C_i\vert \mathbf{x}) = \frac{\alpha_i N(\mathbf{x}; \boldsymbol{\mu}_i, \mathbf{\Sigma}_i)}{\sum_{j=1}^{m}\alpha_j N(\mathbf{x}; \boldsymbol{\mu}_j, \mathbf{\Sigma}_j)}.
-\end{equation}
-
-The parameters $\boldsymbol{\alpha}, \boldsymbol{\mu}$ and $ \mathbf{\Sigma}$ can be estimated with the expectation maximisation algorithm, Section~\ref{sec:expectation_maximisation}.
-
-% section Gaussian Mixture Model (end)
-
-\section{Expectation Maximisation} % (fold)
-\label{sec:expectation_maximisation}
-The expectation maximisation, EM \abbrev{EM}{expectation maximisation}, algorithm is an iterative algorithm for unsupervised learning in which component information is unavailable or only partly available \cite{taletek}. It estimates the model parameters by maximising the log-likelihood of incomplete data and maximising the expectation of log-likelihood from complete data.
-
-We need to determine the parameter $\mathbf{\Phi} = \{\boldsymbol{\alpha}, \boldsymbol{\mu}, \mathbf{\Sigma}\}$ which maximises $P(Y=y\vert \mathbf{\Phi})$ where $y$ is the observed training data. We assume some parameter vector $\mathbf{\Phi}$ end estimate the probability of some unknown data $x$ occurred in the generation of $y$. We then compute a new $\bar{\mathbf{\Phi}}$ which is the maximum likelihood of $\mathbf{\Phi}$ and set the new $\bar{\mathbf{\Phi}}$ to be $\mathbf{\Phi}$ and repeat the process iteratively until the process converges \cite{taletek}. The process will converge if we choose $\bar{\mathbf{\Phi}}$ such that 
-\begin{equation}
-	\label{eq:q_criteria}
-	Q(\mathbf{\Phi},\bar{\mathbf{\Phi}})\geq Q(\mathbf{\Phi},\mathbf{\Phi})
-\end{equation}
-where 
-\begin{equation}
-	\label{eq:q_function}
-	Q(\mathbf{\Phi},\bar{\mathbf{\Phi}}) = E[\log P(X,Y=y\vert \bar{\mathbf{\Phi}})].
-\end{equation}
-% section Estimation Maximasation (end)
+% \section{Source Mapping} % (fold)
+% \label{sec:source_mapping}
+% LANGT FRA FERDIG
+% 
+% Source mapping intends to change to prosody of the source speaker to match a target speaker. The goal is to alter the pitch and duration of the signal without affecting the spectral characteristics. 
+% 
+% If the source is voiced it can be represented as a function of pitch cycles
+% \begin{equation}
+% 	x(n)=\sum_{i=-\infty}^{\infty}x_i(n-t_x(i))
+% \end{equation}
+% where the pitch period in samples at $t_s(i)$ is
+% \begin{equation}
+% 	P_x(i)=t_x(i)-t_x(i-1)
+% \end{equation}
+% 
+% One pitch cycle can be represented by applying a Hamming window, $w$, of length two pitch periods to the signal. The term ``overlap and add'' comes from the use of overlapping windowed segments.
+% \begin{equation}
+% 	x_i(n)=w_i(n)x(n)
+% \end{equation}
+% If we replace the source timing instances, $t_x$, with the ones from the target, $t_y$, and replacing the pitch cycles $x$ with the target $y$ we get the desired prosody \cite{taletek}.
+% \begin{equation}
+% 	y(n)=\sum_{j=-\infty}^{\infty}x_j(n-t_y(j)) % should have been y_j
+% \end{equation}
+% 
+% The target pitch cycles, $y$, can be obtained by mapping the closest corresponding pitch cycles from $x$ by \eg DTW. The presented method will work for unvoiced speech as well if the spacing is smaller than 10 ms \cite{taletek}. 
+% \cite{moulines95}
+% % section Source Mapping (end)
 
 \section{Signal Representation} % (fold)
 \label{sec:signal_representation}
-The main signal representation of choice is linear predictive coding (LPC\abbrev{LPC}{linear predictive coding}) also known as auto-regressive (AR\abbrev{AR}{auto-regressive}) modelling. 
+The main signal representation of choice is linear predictive coding (LPC\abbrev{LPC}{linear predictive coding}). 
 
-While the LPC representation is a delicate representations of speech signals, it is not the best choice when it comes to manipulating the parameters in the voice conversion because they are not necessarily stable. A number of equivalent representations can be used instead for this purpose such as line spectrum frequencies (LSF\abbrev{LSF}{line spectrum frequencies}) \cite{taletek}.
+While the LPC representation is a delicate representations of speech signals, it is not the best choice when it comes to manipulating the parameters in the filter mapping procedure because they are not necessarily stable. A number of equivalent representations can be used instead for this purpose such as line spectrum frequencies (LSF\abbrev{LSF}{line spectrum frequencies}) \cite{taletek}.
 
 \subsection{Linear Predictive Coding} % (fold)
 \label{sub:lpc}
@@ -311,7 +344,7 @@ In the voice conversion we can therefor transform the LP coefficients to LSF coe
 	\centering
 	\begin{tabular}[h]{c}
 		\xymatrix{ 
-		A(z) \ar[r] &*+<5mm>[F-,]{ LPC\rightarrow LSF} \ar[r] &*+<5mm>[F-,]{	VC}\ar[r] &*+<5mm>[F-,]{LSF\rightarrow LPC} \ar[r] & \hat{A}(z)}    
+		A(z) \ar[r] &*+<5mm>[F-,]{ LPC\rightarrow LSF} \ar[r] &*+<5mm>[F-,]{	\txt{FM}}\ar[r] &*+<5mm>[F-,]{LSF\rightarrow LPC} \ar[r] & \hat{A}(z)}    
 	\end{tabular}
 	\caption{LPC to LSF Transformation in Voice Conversion}
 	\label{fig:lpc_to_lsf}

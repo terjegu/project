@@ -9,8 +9,10 @@ Voice transformation or conversion refers to the various modifications one may a
 
 \section{Motivation} % (fold)
 \label{sec:motivation}
-In text-to-speech (TTS\abbrev{TTS}{test-to-speech}) systems the users may want to have a choice between several voices to which they find most soothing to listen to. To create a new voice for a TTS system from scratch requires a lot of work and money, which may not be in the system providers best interest. If it were possible to only create one synthetic voice and then transform that voice to other voices with only limited training data, say 5 minutes, the system provider could produce any number of voices with ease. 
+In text-to-speech (TTS\abbrev{TTS}{text-to-speech}) systems the users may want to have a choice between several voices to which they find most soothing to listen to. To create a new voice for a TTS system from scratch requires a lot of work and money, which may not be in the system provider's best interest. If it were possible to only create one synthetic voice and then transform that voice to other voices with only limited training data, say 5 minutes, the system provider could produce any number of voices with ease. 
 
+Another application of voice transformation is speech prosthesis. If a person has limited ability of speaking or is going to loose his ability to speak, he can record some utterances of his voice and create a speech synthesis with his own voice.
+ 
 Voice transformation could also be used to disguise your voice if you wish to keep your identification secret during a conversation, like cryptography for your voice. 
 % section Motivation (end)
 
@@ -20,9 +22,9 @@ When working on a speech signal it is often convenient to refer to the source-fi
 
 \subsection{Source Modification} % (fold)
 \label{sub:source_modification}
-The source, which can be modelled as white noise for unvoiced speech and a pulse train for voice speech, can modify the pace, pitch and intensity of a voice. 
+The source, which can be modelled as white noise for unvoiced speech and a pulse train for voiced speech, can modify the pace, pitch and intensity of a voice. 
 
-Time- and pitch-scale modifications can be done with the pitch-synchronous overlap-add (PSOLA\abbrev{PSOLA}{pitch-synchronous overlap-add}) procedure. PSOLA splits the signals into windowed parts and re-synthesises the parts with the overlap-add procedure by duplicating or deleting frames to alter the pace of the voice and adjusting the spacing of windows to alter the pitch.
+Time- and pitch-scale modifications can be done with the pitch synchronous overlap and add (PSOLA) procedure. PSOLA splits the signals into two pitch periods long windowed parts and re-synthesises the parts with the overlap-add procedure by duplicating or deleting frames to alter the pace of the voice and adjusting the spacing of windows to alter the pitch.
 % subsection Source Modification (end)
 
 \subsection{Filter Modification} % (fold)
@@ -34,7 +36,7 @@ The filter can modify the magnitude spectrum of the frequency response of the vo
 
 \subsection{Voice Transformation} % (fold)
 \label{sub:voice_transformation}
-Voice transformation is usually done by a combination of source and filter modifications. However, this paper will not cover source modifications.
+Voice transformation is usually done by a combination of source and filter modifications. However, this paper will not explain source modifications in detail.
 % subsection Voice Transformation (end)
 % section Synthesis methods (end)
 

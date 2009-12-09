@@ -1,6 +1,6 @@
 \chapter{Implementation} % (fold)
 \label{cha:implementation}
-The first step of implementation is to fit the source data to a Gaussian mixture model. Obviously the more data the better. However, the choice of number of mixtures is not trivial. When the source data is fitted to the GMM the posterior matrix $\mathbf{P}$ and the $\mathbf{D}$ matrix can be computed to a specific source speech segment ($\mathbf{x}$) which we want to transform. The next step is the compute the unknown parameters $\boldsymbol{\mu}^y$ and $\mathbf{\Sigma}^{yx}$ with $\mathbf{P}$, $\mathbf{D}$ and the target speech segment ($\mathbf{y}$). The third step is to apply the conversion function \eqref{eq:conversion_function}.
+The first step of implementation is to fit the source data to a Gaussian mixture model. Obviously the more data the better. However, the choice of number of mixtures is not trivial. When the source data is fitted to the GMM the posterior matrix $\mathbf{P}$ and the $\mathbf{D}$ matrix can be computed to a specific source speech segment $\mathbf{x}$ which we want to transform. The next step is the compute the unknown parameters $\boldsymbol{\mu}^y$ and $\mathbf{\Sigma}^{yx}$ with $\mathbf{P}$, $\mathbf{D}$ and the target speech segment ($\mathbf{y}$). The third step is to apply the conversion function \eqref{eq:conversion_function}.
 
 Figure~\ref{fig:training_cf} shows the training procedure.
 \begin{figure}[htbp]
@@ -33,7 +33,7 @@ Figure~\ref{fig:dtw} shows a distance matrix between two speech signals of \ca 4
 \label{sec:training_data}
 In the training of the Gaussian mixture model it is preferable to use as much training data as possible. 20 000 vectors of 10 ms where fitted to the GMM. This can be done once and for all. In the training process of the parameters $\mathbf{P}$, $\mathbf{D}$, $\mathbf{\Sigma}^{yx}$ and $\boldsymbol{\mu}^y$ the only data needed is the source data that are going to be converted and the target data.
 
-The initialisation of the GMM affects the convergence rate and possibly the resulting estimate. However, when only diagonal covariance matrices are used, the initialisation does not have a significant effect \cite{reynolds93}. The GMM was initialised with vector quantisation (VQ\abbrev{VQ}{vector quantisation}) where the variance and priors was estimated from the quantised vectors.
+The initialisation of the GMM affects the convergence rate and possibly the resulting estimate. However, when only diagonal covariance matrices are used, the initialisation does not have a significant effect \cite{reynolds93}. The GMM was initialised with vector quantisation (VQ) where the variance and priors was estimated from the quantised vectors.
 % section Training data (end)
 
 \section{Conversion Function Parameters} % (fold)

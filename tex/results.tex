@@ -1,22 +1,74 @@
 \chapter{Results} % (fold)
 \label{cha:results}
-% no explanations.
+Figure~\ref{fig:frequency_plots_1}, \ref{fig:frequency_plots_2}, \ref{fig:frequency_plots_3} shows filter transformation results for three different segments of 10 ms. Different number of mixture components are compared to the target spectrum.
 \begin{figure}[htbp]
 	\begin{center}
-	\subfigure[32 Mixtures]
+	\subfigure[128 Mixtures Conversion]
 	{
-		\includegraphics[width = .45\textwidth]{fig/frame_140_gmm32}
-		\label{fig:32_mixtures}
+		\includegraphics[width = .45\textwidth]{fig/frame_50_gmm128}
+		\label{fig:1_128_mixtures}
 	}
-	\subfigure[64 Mixtures]
+	\subfigure[Mixture Comparison]
 	{
-		\includegraphics[width = .45\textwidth]{fig/frame_140_gmm64}
-		\label{fig:64_mixtures}
+		\includegraphics[width = .45\textwidth]{fig/frame_50_comparison}
+		\label{fig:1_comparison}
 	}
-	\caption{Frequency Plots of a Random Segment of $15$ ms}
-	\label{fig:frequency_plots_of_converted_signal}
+	\caption{Frequency plots of conversion results of a $10$ ms}
+	\label{fig:frequency_plots_1}
 	\end{center}
 \end{figure}
 
+\begin{figure}[htbp]
+	\begin{center}
+	\subfigure[128 Mixtures Conversion]
+	{
+		\includegraphics[width = .45\textwidth]{fig/frame_330_gmm128}
+		\label{fig:2_128_mixtures}
+	}
+	\subfigure[Mixture Comparison]
+	{
+		\includegraphics[width = .45\textwidth]{fig/frame_330_comparison}
+		\label{fig:2_comparison}
+	}
+	\caption{More conversion plots of a $10$ ms segment}
+	\label{fig:frequency_plots_2}
+	\end{center}
+\end{figure}
+
+\begin{figure}[htbp]
+	\begin{center}
+	\subfigure[128 Mixtures Conversion]
+	{
+		\includegraphics[width = .45\textwidth]{fig/frame_400_gmm128}
+		\label{fig:3_128_mixtures}
+	}
+	\subfigure[Mixture Comparison]
+	{
+		\includegraphics[width = .45\textwidth]{fig/frame_400_comparison}
+		\label{fig:3_comparison}
+	}
+	\caption{Even more conversion plots of a $10$ ms segment}
+	\label{fig:frequency_plots_3}
+	\end{center}
+\end{figure}
+
+\clearpage
+Table~\ref{tab:accuracy_comparison} shows a accuracy comparison of different number of mixtures of a sample speech signal of 4 second derived from the average Itakura distance \eqref{eq:dtw_distance}.
+\begin{table}[ht]
+	\begin{center}
+		\topcaption{Accuracy comparison of different number of mixtures}
+		\begin{tabular}{cc}
+			\toprule
+			\multicolumn{1}{c}{\emph{Number of mixtures}} & \multicolumn{1}{c}{\emph{Average distance}}\\
+			\midrule
+			16 & 0.9579 \\
+			32 & 0.8772 \\
+			64 & 0.7748 \\
+			128 & 0.5694 \\
+			\bottomrule			
+		\end{tabular}		
+	\end{center}
+\label{tab:accuracy_comparison}	
+\end{table}
 
 % chapter Results (end)
