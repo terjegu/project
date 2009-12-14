@@ -1,14 +1,14 @@
 \chapter{Theory} % (fold)
 \label{cha:theory}
-The basic idea of the voice transformation is to make a linear prediction analysis of the signal, extract the estimate from the real signal to yield a source-filter separation. The filter coefficients can then be mapped to the new voice and speech signal can be reestimate with the new filter coefficients and the new excitation signal as depicted in Figure~\ref{fig:VC}.
+The basic idea of the voice transformation is to make a linear prediction analysis of the signal, extract the estimate from the real signal to yield a source-filter separation. The filter coefficients can then be transformed to the new voice and speech signal can be reestimate with the new filter coefficients as depicted in Figure~\ref{fig:VC}.
 \begin{figure}[htbp]
   \centering
    \begin{tabular}[h]{c}
 \xymatrix{ 
 \mathbf{x} \ar[rr] & \ar[d]\ar[r] &*+<5mm>[F-,]{1-A(z)} \ar[rr]^{\mathbf{e}}& &*+<5mm>[F-,]{\frac{1}{1-\tilde{A}(z)}} \ar[r] & \mathbf{y}\\  % end line 1
-  &*+<5mm>[F-,]{\txt{LPC}} \ar[rr]^<(0.25){A(z)} & \ar[u]&*+<5mm>[F-,]{\txt{FM}}\ar `[ru]^<(0.5){\tilde{A}(z)} [ur]&  &}
+  &*+<5mm>[F-,]{\txt{LPC}} \ar[rr]^<(0.25){A(z)} & \ar[u]&*+<5mm>[F-,]{\txt{FT}}\ar `[ru]^<(0.5){\tilde{A}(z)} [ur]&  &}
   \end{tabular}
-  \caption{Transformation System}
+  \caption{Filter Transformation System}
   \label{fig:VC}
 \end{figure}
 
@@ -21,15 +21,15 @@ The challenge in this procedure is to find the filter mapping function explained
 &*+<5mm>[F-,]{\txt{DTW}} \ar @<3pt>[rr]^<(0.15){\mathbf{x}} \ar @<-3pt>[rr]_<(0.15){\tilde{\mathbf{y}}} & &*+<5mm>[F-,]{\txt{Train TF}}\\ % end line 2
 \mathbf{y} \ar[r] &*+<5mm>[F-,]{\txt{LPC}}\ar[u]&&}
 	\end{tabular}
-	\caption{Training of Filter Mapping Parameters}
+	\caption{Training of Filter Transformation Parameters}
 	\label{fig:VC_training}
 \end{figure}
-In the training process of the conversion function, depicted in Figure~\ref{fig:VC_training}, the two input signals, source $x$ and target $y$, first need to be aligned in time, Section~\ref{sec:dynamic_time_warping}. The source data is classified into probabilistic Gaussian mixture models (GMM), Section~\ref{sec:gaussian_mixture_model}, and used in a class-specific transform \cite{stylianou09}.
+In the training process of the conversion function, depicted in Figure~\ref{fig:VC_training}, the two input signals, source $x$ and target $y$, first need to be aligned in time, Section~\ref{sec:dynamic_time_warping}. The source data is classified into probabilistic Gaussian mixture models (GMM), Section~\ref{sec:gaussian_mixture_model}, and used in a class-specific transform \cite{stylianou09}. The parameters in the transformation function are derived from a set of source vectors and corresponding time aligned target vectors, and the GMM fitted to the source.
 
 
 \section{Gaussian Mixture Model} % (fold)
 \label{sec:gaussian_mixture_model}
-The GMM is a classical parametric model used in many pattern recognition techniques \cite{stylianou98}. Because of the wide variety of speech sound, a single global transform would require enormous complexity of both training data and the transformation function. A probabilistic Gaussian mixture models is a simpler and faster approach. A GMM can represent the source with only a few parameters which there are well defined methods of estimating \cite{taletek}.
+The GMM is a classical parametric model used in many pattern recognition techniques \cite{stylianou98}. Because of the wide variety of speech sound, a single global transform would require enormous complexity of both training data and the transformation function. A probabilistic Gaussian mixture models is a simpler and faster approach. GMM classifies a set of vectors into a smaller number of classes. But instead of only represent the classes with their mean value, as VQ, GMM represents the class as a Gaussian distribution. A GMM can represent the source with only a few parameters which there are well defined methods of estimating \cite{taletek}.
 
 The GMM assumes that the probability distribution of the observed parameters takes the following parametric form
 \begin{equation}
@@ -42,20 +42,20 @@ where $m$ is the number of mixture models and $N(\mathbf{x}; \boldsymbol{\mu}_i,
 \end{equation}
 and $\alpha_i$ in \eqref{eq:gmm} is the prior probability of class $i$ with constraints $\sum_{i=1}^{M}\alpha_i = 1$ and $\alpha_i \geq 0$. The input vectors, $\mathbf{x_i}$, are assumed to be independent \cite{stylianou98}.
 
-The conditional probability that a given observation vector $\mathbf{x}$ belongs to the component $C_i$ of the GMM is given by Bayes' rule \cite{statistikk} as
+The conditional probability that a given observation vector $\mathbf{x}$ belongs to the component $C_i$ of the GMM is given by Bayes' rule \cite{statistikk}
 \begin{equation}
 	\label{eq:bayes}
 	P(C_i\vert \mathbf{x}) = \frac{\alpha_i N(\mathbf{x}; \boldsymbol{\mu}_i, \mathbf{\Sigma}_i)}{\sum_{j=1}^{m}\alpha_j N(\mathbf{x}; \boldsymbol{\mu}_j, \mathbf{\Sigma}_j)}.
 \end{equation}
 
-The parameters $\boldsymbol{\alpha}, \boldsymbol{\mu}$ and $ \mathbf{\Sigma}$ can be estimated with the expectation maximisation (EM) algorithm \cite{taletek,mclachlan97}.
+The parameters $\boldsymbol{\alpha}, \boldsymbol{\mu}$ and $ \mathbf{\Sigma}$ can be estimated with the expectation maximisation (EM\abbrev{EM}{expectation maximisation}) algorithm. The EM algorithm is an iterative algorithm for unsupervised learning in which component information is unavailable. The initial values for the parameters of the GMM can be computed from the VQ representation of the source vectors. The next step is to find the expectation of the log-likelihood of the latent data given the current estimate of the parameters. A new estimate of the parameters is found by maximising the expected log-likelihood and the process is repeated until convergence \cite{taletek}.
 
 % section Gaussian Mixture Model (end)
 
 % 
 % \section{Expectation Maximisation} % (fold)
 % \label{sec:expectation_maximisation}
-% The expectation maximisation, EM \abbrev{EM}{expectation maximisation}, algorithm is an iterative algorithm for unsupervised learning in which component information is unavailable or only partly available \cite{taletek}. It estimates the model parameters by maximising the log-likelihood of incomplete data and maximising the expectation of log-likelihood from complete data.
+% 
 % 
 % We need to determine the parameter $\mathbf{\Phi} = \{\boldsymbol{\alpha}, \boldsymbol{\mu}, \mathbf{\Sigma}\}$ which maximises $P(Y=y\vert \mathbf{\Phi})$ where $y$ is the observed training data. We assume some parameter vector $\mathbf{\Phi}$ and estimate the probability of some unknown data $x$ occurred in the generation of $y$. We then compute a new $\bar{\mathbf{\Phi}}$ which is the maximum likelihood of $\mathbf{\Phi}$ and set the new $\bar{\mathbf{\Phi}}$ to be $\mathbf{\Phi}$ and repeat the process iteratively until the process converges \cite{taletek}. The process will converge if we choose $\bar{\mathbf{\Phi}}$ such that 
 % \begin{equation}
@@ -71,12 +71,12 @@ The parameters $\boldsymbol{\alpha}, \boldsymbol{\mu}$ and $ \mathbf{\Sigma}$ ca
 
 \section{Dynamic Time Warping} % (fold)
 \label{sec:dynamic_time_warping}
-Feature comparison of two signals gives more sense if they are aligned in time. If the signals are not aligned they will not appear as equal if they are in fact equal. Dynamic time warping (DTW\abbrev{DTW}{dynamic time warping}) is an dynamic programming concept to warp two sequence such as the difference in the signals are minimised. The signals are segmented into small parts which are compared and given a similarity-score. There are many ways to assign this score, \eg the \emph{Itakura distance} \cite{itakura90},
+Feature comparison of two signals gives more sense if they are aligned in time. If the signals are not aligned they will not appear as equal if they are in fact equal but with a time shift. Dynamic time warping (DTW\abbrev{DTW}{dynamic time warping}) is an dynamic programming concept to warp two sequence such as the difference in the signals are minimised. The signals are segmented into small parts which are compared and given a similarity-score. For LP parameters a good similarity-score is the \emph{Itakura distance} \cite{itakura90},
 \begin{equation}
 	\label{eq:dtw_distance}
 		d(\mathbf{a},\mathbf{b}) = \log\frac{\mathbf{a}^T \mathbf{R}_s \mathbf{a}}{\mathbf{b}^T \mathbf{R}_s \mathbf{b}}
 \end{equation}
-where $\mathbf{a}$ is a column vector of LP coefficients of one segment from the source signal, $\mathbf{b}$ is a column vector of LP coefficients of one segments from the target vector and $\mathbf{R}_s$ is the autocorrelation matrix of the source signal. The numerator of \eqref{eq:dtw_distance} is the residual, or the energy of the error, from the LP of the source signal with the source coefficients $\mathbf{a}$ whilst the denominator is the residual from the LP of the \emph{source} signal with the \emph{target} coefficients $\mathbf{b}$. 
+where $\mathbf{a}$ is a column vector of LP coefficients of one segment from the source signal, $\mathbf{b}$ is a column vector of LP coefficients of one segments from the target vector and $\mathbf{R}_s$ is the autocorrelation matrix of the source signal. The numerator of \eqref{eq:dtw_distance} is the residual, or the energy of the error, from the LP analysis of the source signal with the source coefficients $\mathbf{a}$ whilst the denominator is the residual from the LP analysis of the \emph{source} signal with the \emph{target} coefficients $\mathbf{b}$. 
 
 The minimum distance between the two signals can be found by solving the recursion \cite{taletek}
 \begin{equation}
@@ -130,20 +130,13 @@ The resulting shortest path is used to duplicate and/or delete frames in the tar
 
 \section{Filter Mapping} % (fold)
 \label{sec:conversion_function}
-The available data for the filter mapping function, or the conversion function, are time-aligned source and target vectors of the same linguistic content and the same length $n$, and pre-trained Gaussian mixture models fitted to the source speaker. 
-
-A conversion function suggested by Yannis Stylianou \etal \cite{stylianou95} is used in this paper
+The process of filter mapping consist altering the filter coefficients of the source speaker to match a target speakers coefficients. Given a set of time-aligned source and target vectors of the same length, we want to define transformation function which yields the most likely target vector given a new source vector.
 \begin{equation}
-	\label{eq:conversion_function}
-	\begin{split}
-		\mathcal{F}(\mathbf{x}_t) =& E[\mathbf{y}\vert \mathbf{x}_t]\\
-		=& \sum_{i=1}^{m}P(C_i \vert \mathbf{x}_t)[\boldsymbol{\mu}_i^y + \mathbf{\Sigma}_i^{yx} \mathbf{\Sigma}_i^{xx^{-1}} (\mathbf{x}_t-\boldsymbol{\mu}_i^x)]
-	\end{split}
-\end{equation}	
-The conversion function is a weighted sum of minimum mean square error (MMSE\abbrev{MMSE}{minimum mean square error}) estimate of the target vector $\mathbf{y}_t$ given the observed value of $\mathbf{x}_t$, which are jointly Gaussian \cite{stylianou98}. The MMSE is given by \cite{taletek}
+	\mathcal{F}(\mathbf{x}) = E[\mathbf{y}\vert \mathbf{x}].
+\end{equation}
+If we assume that the source and target vectors are jointly Gaussian the likelihood of $\mathbf{y}$ given $\mathbf{x}$ for a single component GMM can be expressed as \cite{kay93}
 \begin{equation}
-	\label{eq:mmse}
-	E[\mathbf{y}\vert \mathbf{x}=\mathbf{x}_t] = \boldsymbol{\mu}^y + \mathbf{\Sigma}^{yx} \mathbf{\Sigma}^{xx^{-1}} (\mathbf{x}_t-\boldsymbol{\mu}^x)
+	E[\mathbf{y}\vert \mathbf{x}] = \boldsymbol{\mu}^y + \mathbf{\Sigma}^{yx} \mathbf{\Sigma}^{xx^{-1}} (\mathbf{x}-\boldsymbol{\mu}^x)
 \end{equation}
 where $E$ denotes the expectation, $\boldsymbol{\mu}$ is the mean
 \begin{equation}
@@ -154,19 +147,27 @@ and $\mathbf{\Sigma}$ is the cross-covariance matrix
 	\mathbf{\Sigma}^{yx} = E[(\mathbf{y}-\boldsymbol{\mu}^y)(\mathbf{x}-\boldsymbol{\mu}^x)^T].
 \end{equation}
 
-If the gaussian components of the mixture could be separated, the conversion function $\mathcal{F}()$ is modifying the posterior mean and covariance of each component. Since this is not the case in practice the term is weighted by the posterior probability, or the conditional probability that the observed data $\mathbf{x}_t$ belongs to the component $C_i$.
+Stylianou \etal \cite{stylianou95} suggested using this formula for a multicomponent GMM
+\begin{equation}
+	\label{eq:conversion_function}
+	\begin{split}
+		\mathcal{F}(\mathbf{x}_t) =& E[\mathbf{y}\vert \mathbf{x}_t]\\
+		=& \sum_{i=1}^{m}P(C_i \vert \mathbf{x}_t)[\boldsymbol{\mu}_i^y + \mathbf{\Sigma}_i^{yx} \mathbf{\Sigma}_i^{xx^{-1}} (\mathbf{x}_t-\boldsymbol{\mu}_i^x)].
+	\end{split}
+\end{equation}
+where the likelihoods are weighted with the conditional probabilities of $\mathbf{x}$ belonging to component $C$.
 
-The variables $\boldsymbol{\mu}^y$ and $\mathbf{\Sigma}^{yx}$ are unknown and need to be estimated such as the total squared conversion error is minimised
+The mean and covariance of the source vector $\mathbf{x}$ are derived from the GMM but the mean of the target vectors $\boldsymbol{\mu}^y$ and cross-covariance matrix $\mathbf{\Sigma}^{yx}$ are unknown and need to be estimated such as the total squared conversion error $\epsilon$ is minimised
 \begin{equation}
 	\label{eq:conversion_error}
 	\epsilon = \sum_{t} \norm{\mathbf{y}_t - \mathcal{F}(\mathbf{x}_t)}^2.
 \end{equation}
 
-Equation \eqref{eq:conversion_function} can be reformulated into a single matrix equation:
+This can be achieved by reformulating equation \eqref{eq:conversion_function} into a single matrix equation
 \begin{equation}
 	\label{eq:least_square_problem}
 	\begin{split}
-		\mathbf{y} = &\mathbf{P}\boldsymbol{\mu^y} + \mathbf{D}\mathbf{\Sigma}^{yx} \\
+		\mathbf{Y} = &\mathbf{P}\boldsymbol{\mu^y} + \mathbf{D}\mathbf{\Sigma}^{yx} \\
 		= & \begin{bmatrix}
 			\mathbf{P}& \vdots &\mathbf{D}
 		\end{bmatrix}
@@ -177,7 +178,7 @@ Equation \eqref{eq:conversion_function} can be reformulated into a single matrix
 		\end{bmatrix}
 	\end{split}
 \end{equation}
-where $\mathbf{y}$ is the target spectral vectors and $\mathbf{P}$ is a $n \times m$ matrix with the posterior probabilities
+where $\mathbf{Y}$ is the training set of the target spectral vectors with dimensions $n\times p$ and $\mathbf{P}$ is a $n \times m$ matrix with the posterior probabilities
 \begin{equation}
 	\label{eq:P_matrix}
 	\mathbf{P} = \begin{bmatrix}
@@ -239,7 +240,7 @@ Equation \eqref{eq:least_square_problem} is a least-square problem which can be 
 			\dots \\
 			\mathbf{D}^T
 		\end{bmatrix}
-		\mathbf{y} \\ % end line 1
+		\mathbf{Y} \\ % end line 1
 		\begin{bmatrix}
 			\boldsymbol{\mu}^y \\
 			\dots \\
@@ -261,7 +262,7 @@ Equation \eqref{eq:least_square_problem} is a least-square problem which can be 
 			\dots \\
 			\mathbf{D}^T
 		\end{bmatrix}
-		\mathbf{y} \\ % end line 2
+		\mathbf{Y}. \\ % end line 2
 	\end{split}
 \end{equation}
 % section Conversion Function (end)
@@ -297,13 +298,11 @@ Equation \eqref{eq:least_square_problem} is a least-square problem which can be 
 
 \section{Signal Representation} % (fold)
 \label{sec:signal_representation}
-The main signal representation of choice is linear predictive coding (LPC\abbrev{LPC}{linear predictive coding}). 
-
-While the LPC representation is a delicate representations of speech signals, it is not the best choice when it comes to manipulating the parameters in the filter mapping procedure because they are not necessarily stable. A number of equivalent representations can be used instead for this purpose such as line spectrum frequencies (LSF\abbrev{LSF}{line spectrum frequencies}) \cite{taletek}.
+The main signal representation of choice is linear predictive coding (LPC\abbrev{LPC}{linear predictive coding}). While the LPC representation is a delicate representations of speech signals, it is not the best choice when it comes to manipulating the parameters in the filter mapping procedure because they are not necessarily stable. A number of equivalent representations can be used instead for this purpose such as line spectrum frequencies (LSF\abbrev{LSF}{line spectrum frequencies}) \cite{taletek}.
 
 \subsection{Linear Predictive Coding} % (fold)
 \label{sub:lpc}
-LPC approximates the signal as an all-pole filter with a sufficient number of poles, \eg $p=16$, by predicting the current sample as a linear combination of its last $p$ samples \cite{digsig}
+LPC approximates the signal as a $p$-th all-pole filter by predicting the current sample as a linear combination of its last $p$ samples \cite{digsig}
 \begin{equation}
 	\tilde{x}[n] = \sum_{k=1}^{p}a_k x[n-k].
 \end{equation}
@@ -315,7 +314,7 @@ The prediction error by this representation is
 	\end{split}
 \end{equation}
 
-The predictor coefficients, $a_k$, can be estimated by the minimum mean square technique which chooses the coefficients that minimise the total prediction error $E$.
+The prediction coefficients, $a_k$, can be estimated by the minimum mean square technique which chooses the coefficients that minimise the total prediction error $E$.
 \begin{equation}
 	\label{eq:prediction_error}
 	\begin{split}
@@ -323,12 +322,12 @@ The predictor coefficients, $a_k$, can be estimated by the minimum mean square t
 		= & \sum_{n}\left( x[n]-\sum_{k=1}^{p}a_k x[n-k] \right)^2
 	\end{split}
 \end{equation}
-This can be obtained by taking the derivative of \eqref{eq:prediction_error} with respect to $a_i$ and equating to $0$. This yields a set of $p$ linear equations with $p$ unknown parameters \cite{digsig} which easily can be solved.
+The coefficients can be obtained by taking the derivative of \eqref{eq:prediction_error} with respect to $a_i$ and equating to 0. This yields a set of $p$ linear equations with $p$ unknown parameters which easily can be solved \cite{digsig}.
 % subsection Linear Predictive Coding (end)
 
 \subsection{Line Spectral Frequencies} % (fold)
 \label{sub:line_spectral_frequencies}
-LSF is an equivalent representation of LPC witch can be directly derived from the LP coefficients $A(z)$ and back again. It is derived from the roots of the polynomials $P(z)$ and $Q(z)$ 
+LSF is an equivalent representation of LPC which easily can be controlled for stability. It can be converted from the LP coefficients $A(z)$ and back again. It is derived from the roots of the polynomials $P(z)$ and $Q(z)$ 
 \begin{equation}
 	\label{eq:p_z}
 	P(z) = A(z)+z^{-(p+1)}A(z^{-1})
@@ -337,16 +336,17 @@ LSF is an equivalent representation of LPC witch can be directly derived from th
 	\label{eq:q_z}
 	Q(z) = A(z)-z^{-(p+1)}A(z^{-1}).
 \end{equation}
-The derivation of the first LSF coefficients are shown in \cite[p. 304]{taletek}.
+The zeros of $P(z)$ and $Q(z)$ are respectively symmetric and anti-symmetric. When $A(z)$ is minimum phase the zeros of $P(z)$ and $Q(z)$ are all on the unit circle and the polynomials can thus be written in product for of
+$1-z^{-1}\exp(-j\omega_k)$ where $\omega_k$ is the LSF frequencies. The derivation of the first LSF coefficients is shown in \cite[p. 304]{taletek}.
 
-In the voice conversion we can therefor transform the LP coefficients to LSF coefficients before the adaption and back agin before the re-estimation of the signal depicted in Figure~\ref{fig:lpc_to_lsf}.
+LSF is used in the transformation function, as depicted in Figure~\ref{fig:lpc_to_lsf}, to guarantee stability.
 \begin{figure}[htbp]
 	\centering
 	\begin{tabular}[h]{c}
 		\xymatrix{ 
 		A(z) \ar[r] &*+<5mm>[F-,]{ LPC\rightarrow LSF} \ar[r] &*+<5mm>[F-,]{	\txt{FM}}\ar[r] &*+<5mm>[F-,]{LSF\rightarrow LPC} \ar[r] & \hat{A}(z)}    
 	\end{tabular}
-	\caption{LPC to LSF Transformation in Voice Conversion}
+	\caption{LPC to LSF Conversion Used in Filter Transformation}
 	\label{fig:lpc_to_lsf}
 \end{figure}
 % subsection Line Spectral Frequencies (end)

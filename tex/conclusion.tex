@@ -1,34 +1,19 @@
 \chapter{Conclusion} % (fold)
 \label{cha:conclusion}
-By using GMM instead of VQ we get a more robust and efficient filter transformation because we use a continuous probabilistic model instead of a hard decision model. 
+Representing the source signal as Gaussian mixture models gives a good representation with a small set of parameters compared to a vector quantisation model presented in earlier studies \cite{abe88}. GMM was used in a continuous probabilistic transform which enables a soft decision filter mapping
 
-The unknown parameters in conversion function \eqref{eq:conversion_function} are determined by minimum mean square error, \eqref{eq:conversion_error}, which depends on knowing the target vectors, \ie knowing the target speech for the same utterances as we want to convert to. With this scheme we can not convert to arbitrary sentences which of course is desirable. The optimisation methods need to be changed to a method not dependent of the target voice. Maximum likelihood can be used instead of MMSE, discussed in \cite{mouchtaris06,ye06}.
+
+The unknown parameters in conversion function \eqref{eq:conversion_function} are determined by minimum mean square error, \eqref{eq:conversion_error}, which depends on a set of time-aligned source and target vector of the same linguistic content. The optimisation methods need to be changed to a method not dependent of the target voice. Maximum likelihood can be used instead of MMSE, discussed in \cite{mouchtaris06,ye06}.
 
 Another shortcoming of the presented scheme is the lack of transforming the source. Time-scale modifications, pitch-modification and intensity modifications can be applied with \eg TD-PSOLA to achieve the desired prosody.
 
-Since the training of the GMM can be be done once and for all the transformation itself is quit fast. 
+Since the training of the GMM and the transformation parameters can be be done off line the transformation itself is fast is it very likely that it can be applied in real time if implemented with a low level programming language as \emph{C} \cite{kernighan88}. 
 
-
+Either due to implementation error or to the choice of implementation differences from Stylianou, the presented scheme failed to achieve the same results as Stylianou.
 
 \begin{itemize}
-	\item realtime?
-	\item concat segments, smoothing.
-	\item optimal coupling
-	\item interpolation (spectrum, waveform)
-	\item noise masking
-	\item fonem deteksjon - dtw på alt
-	\item window size.
-	\item no phase transform
 	\item relevance for the world
 \end{itemize}
-
-
-
-
-
-
-
-
 
 
 
