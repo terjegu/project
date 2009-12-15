@@ -12,11 +12,14 @@
 % DOCUMENT
 %
 \begin{document}
+\pagestyle{empty}
 \pagenumbering{roman}
 \input{tex/titlepage.tex}
+\setcounter{page}{0}
 \cleardoublepage
 \input{tex/abstract.tex}
 \cleardoublepage
+\pagestyle{plain}
 \tableofcontents
 \listoffigures
 \addcontentsline{toc}{chapter}{List of Figures}

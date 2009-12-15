@@ -1,6 +1,6 @@
 \chapter{Results} % (fold)
 \label{cha:results}
-Figure~\ref{fig:frequency_plots_1} shows filter transformation results for a random segments of one pitch period length (\ca 10 ms). Figure~\ref{fig:256_mixtures} shows the source, target and converted envelope for a 245 mixture GMM. Figure~\ref{fig:comparison} compares the transformation with differnet number of mixture components.
+Figure~\ref{fig:frequency_plots_1} shows filter transformation results for a random segments of 10 ms. Figure~\ref{fig:256_mixtures} shows the source, target and converted envelope for a 245 mixture GMM. Figure~\ref{fig:comparison} compares the transformation with different number of mixture components.
 \begin{figure}[htbp]
 	\begin{center}
 	\subfigure[Transformation comparison]
@@ -18,7 +18,7 @@ Figure~\ref{fig:frequency_plots_1} shows filter transformation results for a ran
 	\end{center}
 \end{figure}
 
-Figure~\ref{fig:frequency_plots_2} depicts two successful transformations of $10$ ms segments with $m=256$ mixture components and $n=40\times 10^3$ training vectors, where , $d$ is the Itakura distance between the converted and the target LP coefficients. Figure~\ref{fig:frequency_plots_3} shows two less successful transformation with the same training setup as in Figure~\ref{fig:frequency_plots_2}.
+Figure~\ref{fig:frequency_plots_2} depicts two successful transformations of $10$ ms segments with $m=256$ mixture components and $n=40\times 10^3$ training vectors, where $d$ is the Itakura distance between the converted and the target LP coefficients. Figure~\ref{fig:frequency_plots_3} shows two less successful transformation with the same training setup as in Figure~\ref{fig:frequency_plots_2}.
 \begin{figure}[htbp]
 	\begin{center}
 	\subfigure[$d = 0.1460$]
@@ -31,7 +31,7 @@ Figure~\ref{fig:frequency_plots_2} depicts two successful transformations of $10
 		\includegraphics[width = .47\textwidth]{fig/s074162_256_d01292}
 		\label{fig:freq_2}
 	}
-	\caption{Frequency plots of successful transformation}
+	\caption{Frequency plots of successful transformations}
 	\label{fig:frequency_plots_2}
 	\end{center}
 \end{figure}
@@ -47,7 +47,7 @@ Figure~\ref{fig:frequency_plots_2} depicts two successful transformations of $10
 		\includegraphics[width = .47\textwidth]{fig/s074162_256_d31590}
 		\label{fig:freq_4}
 	}
-	\caption{Frequency plots of less successful transformation}
+	\caption{Frequency plots of less successful transformations}
 	\label{fig:frequency_plots_3}
 	\end{center}
 \end{figure}
@@ -55,20 +55,20 @@ Figure~\ref{fig:frequency_plots_2} depicts two successful transformations of $10
 
 
 \clearpage
-Table~4.1 -- 4.4 show an accuracy comparison of the filter transformation for different number of mixture components and training vectors. In Table~4.1 the test set $S_{test}$ and training set $S_{training}$ consisted of the same 600 LSF vectors. The distance measure is the average Itakura distance \eqref{eq:dtw_distance} of the LP coefficients. Table~4.2 -- 4.4 show results from a transformation trained with respectively $10\times 10^3$, $20\times 10^3$ and $40\times 10^3$ vectors and tested with the same $6\times 10^3$ vectors, both with test set included in the training set, $S_{test} \in S_{training}$, and test set outside the training set, $S_{test} \notin S_{training}$. The average distance between the source vectors and the target vectors outside the training set was 1.9554. The average distance between the target vectors and it self, which would be a perfect transformation, is $\approx 0$.
+Table~4.1 -- 4.4 show an accuracy comparison of the filter transformation for different number of mixture components and training vectors. In Table~4.1 the test set $S_{test}$ and training set $S_{training}$ consisted of the same 600 LSF vectors. The distance measure is the average Itakura distance \eqref{eq:dtw_distance} of the LP coefficients. Table~4.2 -- 4.4 show results from a transformation trained with respectively $10\times 10^3$, $20\times 10^3$ and $40\times 10^3$ vectors and tested with the same $6\times 10^3$ vectors, both with test set included in the training set, $S_{test} \in S_{training}$, and test set outside the training set, $S_{test} \notin S_{training}$. The average distance between the source and target vectors was 1.9554, for $S_{test} \notin S_{training}$. The average distance between the target vectors and it self, which would be a perfect transformation, is $\approx 0$.
 
 \begin{table}[htbp]
 	\begin{center}
 		\topcaption{Accuracy comparison of different number of mixtures with test set equal to training set of 600 vectors}
-		\begin{tabular}{rc}
+		\begin{tabular}{r|c}
 			\toprule
-			\multicolumn{1}{c}{\emph{Number of}} & \multicolumn{1}{c}{\emph{Average Itakura}}\\
-						\multicolumn{1}{c}{\emph{mixtures}} & \multicolumn{1}{c}{\emph{distance}}\\
+			\multicolumn{1}{c}{\emph{Number of}} & \multicolumn{1}{c}{\emph{Average Itakura}} \\
+\multicolumn{1}{c}{\emph{mixtures}} &  \multicolumn{1}{c}{\emph{distance}} \\
 			\midrule
-			16 & 0.9580\\
-			32 & 0.8777\\
-			64 & 0.7748\\
-			128 & 0.5692\\
+			16 & 0.9580 \\
+			32 & 0.8777 \\
+			64 & 0.7748 \\
+			128 & 0.5692 \\
 			\bottomrule			
 		\end{tabular}		
 	\end{center}
@@ -95,6 +95,7 @@ Table~4.1 -- 4.4 show an accuracy comparison of the filter transformation for di
 \begin{table}[htbp]
 	\begin{center}
 		\topcaption{Accuracy comparison of different number of mixtures with $10\times 10^3$ training vectors}
+		\label{tab:accuracy_comparison_10k}	
 		\begin{tabular}{r|c|cc}
 			\toprule
 				\multicolumn{1}{c}{\emph{Number of}} & \multicolumn{1}{c}{\emph{Average distance,}} & \multicolumn{1}{c}{\emph{Average distance,}} & \multicolumn{1}{c}{\emph{Standard}} \\
@@ -107,12 +108,12 @@ Table~4.1 -- 4.4 show an accuracy comparison of the filter transformation for di
 			\bottomrule			
 		\end{tabular}		
 	\end{center}
-	\label{tab:accuracy_comparison_10k}	
 \end{table}
 
 \begin{table}[htbp]
 	\begin{center}
 		\topcaption{Accuracy comparison of different number of mixtures with $20\times 10^3$ training vectors}
+		\label{tab:accuracy_comparison_20k}	
 		\begin{tabular}{r|c|cc}
 			\toprule
 			\multicolumn{1}{c}{\emph{Number of}} & \multicolumn{1}{c}{\emph{Average distance,}} & \multicolumn{1}{c}{\emph{Average distance,}} & \multicolumn{1}{c}{\emph{Standard}} \\
@@ -125,12 +126,12 @@ Table~4.1 -- 4.4 show an accuracy comparison of the filter transformation for di
 			\bottomrule			
 		\end{tabular}		
 	\end{center}
-	\label{tab:accuracy_comparison_20k}	
 \end{table}
 
 \begin{table}[htbp]
 	\begin{center}
 		\topcaption{Accuracy comparison of different number of mixtures with $40\times 10^3$ training vectors}
+		\label{tab:accuracy_comparison_40k}	
 		\begin{tabular}{r|c|cc}
 			\toprule
 			\multicolumn{1}{c}{\emph{Number of}} & \multicolumn{1}{c}{\emph{Average distance,}} & \multicolumn{1}{c}{\emph{Average distance,}} & \multicolumn{1}{c}{\emph{Standard}} \\
@@ -143,7 +144,6 @@ Table~4.1 -- 4.4 show an accuracy comparison of the filter transformation for di
 			\bottomrule			
 		\end{tabular}		
 	\end{center}
-	\label{tab:accuracy_comparison_20k}	
 \end{table}
 
 

@@ -3,7 +3,7 @@
 
 \section{Diagonal Matrices} % (fold)
 \label{sec:diagonal_matrices}
-The computational complexity can be reduced by introducing diagonal matrices instead of full matrices. In the derivation of the unknown parameters in \eqref{eq:param_computed} there is a huge difference in using diagonal matrices compared to full matrices, but these derivations are done off line and therefor there is nothing to gain in this step by introducing diagonal matrices.
+The computational complexity can be reduced by introducing diagonal matrices instead of full matrices. In the derivation of the unknown parameters in \eqref{eq:param_computed} there is a huge difference in using diagonal matrices compared to full matrices. However, these derivations are done off line and therefor there is nothing to gain in this step by introducing diagonal matrices.
 
 % consist of four matrix multiplications. The number of multiplications in a matrix multiplication of a $a\times b$ matrix and a $b\times c$ matrix is $O(abc)$.
 % 
@@ -31,21 +31,21 @@ The computational complexity can be reduced by introducing diagonal matrices ins
 % 	\end{split}
 % \end{equation}
 
-The transformation function is applied on line, hence there could be a gain from the use of diagonal matrices. In the transformation function \eqref{eq:conversion_function} both methods have to calculate the conditional probability matrix $P(C\vert \mathbf{x})$. Besides the $P$ matrix the derivation consist two matrix multiplications if the inversion of the covariance matrix $\mathbf{\Sigma}^{xx}$ is done off line.
+The transformation function is applied on line, hence there could be a gain from the use of diagonal matrices. In the transformation function \eqref{eq:conversion_function} both methods have to calculate the conditional probability matrix $P(C\vert \mathbf{x})$. Besides the $P$ matrix the derivation consist of a summation of two matrix multiplications for each input vector, if the inversion of the covariance matrix $\mathbf{\Sigma}^{xx}$ is done off line.
 
 In the full matrix case the number of multiplications is
 \begin{equation}
-	O_f = nm(p^3 + p^2)
+	O_f = nm(p^3 + p^2+p)
 \end{equation}
-and for diagonal matrices all elements in the summation is variables instead of matrices and vectors, but the summation has to be computed $p$ times
+and for diagonal matrices all elements in the summation are variables instead of matrices and vectors, but the summation has to be computed $p$ times
 \begin{equation}
-	O_d = nmp.
+	O_d = nmp\times3
 \end{equation}
 The ratio of the complexities is
 \begin{equation}
 	\begin{split}
-		\frac{O_f}{O_d} = & \frac{nm(p^3 + p^2)}{nmp} \\
-		= & p^2 + p.
+		\frac{O_f}{O_d} = & \frac{nm(p^3 + p^2+p)}{3nmp} \\
+		= & \frac{p^2 + p+1}{3}
 	\end{split}
 \end{equation}
 
@@ -57,41 +57,39 @@ The total number of multiplications and the ratios for $p=16$, $n=600$ and $m\in
 			\toprule
 			\multicolumn{1}{c}{$m$} & \multicolumn{1}{c}{$O_f(\cdot)$} & \multicolumn{1}{c}{$O_d(\cdot)$} \\
 			\midrule
-			16 & $4.18 \times 10^7$ & $1.54 \times 10^5$ \\
-			32 & $8.36 \times 10^7$ & $3.07 \times 10^5$ \\
-			64 & $1.67 \times 10^8$ & $6.14 \times 10^5$ \\
-			128 & $3.34 \times 10^8$ & $1.23 \times 10^6$ \\
-			256 & $6.68 \times 10^8$ & $2.56 \times 10^6$ \\
+			16 & $4.19 \times 10^7$ & $4.61 \times 10^5$ \\
+			32 & $8.39 \times 10^7$ & $9.22 \times 10^5$ \\
+			64 & $1.68 \times 10^8$ & $1.84 \times 10^6$ \\
+			128 & $3.35 \times 10^8$ & $3.69 \times 10^6$ \\
+			256 & $6.71 \times 10^8$ & $7.37 \times 10^6$ \\
 			\bottomrule			
 		\end{tabular}		
 	\end{center}
 \label{tab:derivation_complexity}	
 \end{table}
 
-By introducing diagonal matrices the number of calculations has been reduced by a factor of $p^2+p$ only dependent of the number of prediction coefficients. On the other hand, diagonal matrices needs 8 times more mixtures to achieve the same performance as a full matrix system if the vectors are correlated, yielding a complexity decrease factor of $(p^2+p)/8$ \cite{stylianou98}. A proof that \eqref{eq:param_computed} is solvable by the use of diagonal matrices is shown in Appendix~\ref{cha:proof_of_matrix_multiplication}. 
+By introducing diagonal matrices the number of calculations has been reduced by a factor of $(p^2+p+1)/3$ only dependent of the number of prediction coefficients. On the other hand, diagonal matrices needs 8 times more mixtures to achieve the same performance as a full matrix system if the vectors are correlated, yielding a complexity decrease factor of $(p^2+p+1)/24$ \cite{stylianou98}. A proof that \eqref{eq:param_computed} is solvable by the use of diagonal matrices is shown in Appendix~\ref{cha:proof_of_matrix_multiplication}. 
 % section Diagnoal Matrices (end)
 
 
-\section{Number of Mixtures and Training Data} % (fold)
+\section{Number of Mixtures and Training Vectors} % (fold)
 \label{sec:number_of_mixture}
-A speech database of 40 000 LSF vectors derived from 7 minutes of speech was used in the training of the GMM. Each vector was a linear prediction of \ca 10 ms. If the amount training vectors per mixture is small, \eg $<100$, the covariance in the mixture models will get small and there could be a underflow issue when determine the inverse of the covariance matrix. However, a lower bound for the covariance matrices was set to $10^{-5}$ in ensure convergence in the parameter estimation.
+A speech database of 40 000 LSF vectors derived from approximately 6 minutes of speech was used in the training of the GMM. Each vector was a linear prediction of 10 ms with an analysis window of two pitch periods. If the amount training vectors per mixture is small, \eg $<100$, the covariance in the mixture models will get small, and there could be a underflow issue when determining the inverse of the covariance matrix. However, a lower bound for the covariance matrices was set to $10^{-5}$ in ensure convergence in the parameter estimation. The parameter estimation also needs a high number of training vectors per mixture, approximately 100, to achieve a reasonable result.
 
-The number of mixtures can be chosen to achieve the desired quality of the transformation. Table~\ref{tab:derivation_complexity} shows that for diagonal matrices the complexity of the transformation function increases linearly with the number of mixtures which motivates using a high number of mixtures.
+The number of mixtures can be chosen to achieve the desired quality of the transformation. Table~\ref{tab:derivation_complexity} shows that for diagonal matrices the complexity of the transformation function increases linearly with the number of mixtures, which motivates using a high number of mixtures.
 
-For the test with vectors from the training set, Table~4.1 shows clearly the increase in performance by utilising more mixture components. With less mixtures the resulting frequency spectrum is more smoothed out as shown in Figure~\ref{fig:comparison}. Table~4.2 -- 4.4 show that increasing the training data decreases the accuracy when the test data is taken from the training set. Since the only thing done in the training is estimating the expectation of the target vectors and the cross-covariance between the source and the target, it is naturally that the best estimate comes from a training set only containing the test data.
+For the test with vectors from the training set, Table~4.1 shows clearly the increase in performance by utilising more mixture components. With less mixtures the resulting frequency spectrum is more smoothed out as shown in Figure~\ref{fig:comparison}. Table~4.2 -- 4.4 show that increasing the training data improves the accuracy slightly when the test data is taken from the training set. Since the only thing done in the training is estimating the expectation of the target vectors and the cross-covariance between the source and the target, it is naturally that the best estimate comes from a training set only containing the test data. There is also a improvement in increasing the number of mixture components. Increasing the number of mixtures can be seen as an analogy of increasing the size of the codebook in a VQ system, the number of possible outcomes is increased. 
 
-In a real system we are only interested in test data outside the training set. The impact of the number of mixtures for this kind of test is depicted in Figure~\ref{fig:frequency_plots_1} and the accuracy is measured in Table~4.2 -- 4.4. Stylianou \etal \cite{stylianou98} showed in their work that the performance should increase with the number of mixture components, however they did not test the effect of the size of the training data. The presented results are shows the opposite. The effect of increasing the number of mixture models decreases the accuracy for test data outside the training setm which seems inaccurate. While the performance increases when the amount of training data is increased, which was anticipated. Furthermore the results from the test where the test set was taken from the training set was almost as bad as the test with test vectors outside the training set, when the size of the training set was large. However, the accuracy of the transform has a very large standard deviation. For the test with 256 mixture components and $40\times 10^3$ training vectors had a distance range of 0.0700 -- 4.8292, \ie some vectors were transformed almost perfect. The standard deviation does decrease when the number of training vectors increases, which is intuitive. 
+In a real system the only interesting test is a test with data not included in the training. The impact of the number of mixtures for this kind of test is depicted in Figure~\ref{fig:frequency_plots_1} and the accuracy is measured in Table~4.2 -- 4.4. Stylianou \etal \cite{stylianou98} showed in their work that the performance should increase with the number of mixture components, however they did not test the effect of altering the amount of training data. The presented results are shows the opposite for $S_{test}\notin S_{training}$. The effect of increasing the number of mixture models degrades the accuracy for test data outside the training set which seems inaccurate. The performance was increased when the amount of training data was increased, which was anticipated. Furthermore the results from the test of $S_{test}\in S_{training}$ was almost as bad as the test with $S_{test}\notin S_{training}$, when the size of the training set was large. This can be interpreted to say that the training set is representative for the possible frequency spectra of the source speaker. However, the accuracy of the transform has a very large standard deviation. The test with 256 mixture components and $40\times 10^3$ training vectors, had a dynamic range of 0.0700 -- 4.8292, \ie some vectors were transformed almost perfect. The standard deviation was decrease when the number of training vectors increases, which is intuitive. 
 
-It seems to be little or no correlation between the number of training vectors and the transformation accuracy for $S_{test}\notin S_{training}$. Increasing the number of mixture components decreases the accuracy for $S_{test}\notin S_{training}$, while increasing the number of training vectors increases the performance.
-
-Compared to Stylianou's work \cite{stylianou98} the presented implementation does not work properly. The non-consistent results presented above could be due to errors in the implementation. Most probably the system needs more training data and higher order of mixture components to achieve an acceptable quality. There could be a timing issue in the dynamic time warping. The DTW could for instance be enhanced by using phonetic labelling of the training data. Another issue could be the training data which were chosen randomly, while Stylianou used hand picked data which where representative for all diphones in his test language. Stylianou did not use line spectral frequencies as signal representation but a Harmonic Noise Model with cepstral coefficients and the transformation was only applied to voiced sounds. 
+Compared to Stylianou's work \cite{stylianou98} the presented implementation does not work properly. Increasing the number of mixture models should increase the transformation accuracy. The inconsistent results presented above could be due to errors in the implementation. Most probably the system needs more training data and higher order of mixture components to achieve an acceptable quality. Stylianou used up to 1024 mixture components with diagonal matrices which requires more computational power than were used in the presented test. There could be a timing issue in the dynamic time warping. The DTW could have been tested and tuned more for the feature comparison in question, for instance the DTW could be enhanced by using phonetic labelling and using a phone comparison. Another issue could be the training data which were chosen randomly, while Stylianou used hand picked data which where representative for all diphones in his test language. Stylianou did not use line spectral frequencies as signal representation but a Harmonic Noise Model with cepstral coefficients and the transformation was only applied to voiced sounds. The impact of the choice of signal representation were not tested.
 % section Number of Mixture (end)
 
 
 
 \section{Synthesis} % (fold)
 \label{sec:synthesis}
-If the synthesis of the signal with the transformed filter coefficients is done in a straight forward approach the result of the synthesis has a very low signal to noise ratio. To cope with this problem the LPC analysis was centred around the pitch pulses in the signal. This introduces another problem --- detecting the pitch. The pitch can be detected by finding the highest value of the autocorrelation of the region of interest, discussed in detail in \cite[p. 324]{taletek}. In the presented test result the pitch pulsed of the training data were pre-labelled. A of a perfect transformation, \ie synthesis with the target parameters, proved that pitch synchronous filtering improved the signal to noise ratio significantly. However, for the transformed filter parameters the timing is not correct and noise is not suppressed.
+If the synthesis of the signal with the transformed filter coefficients is done in a straight forward approach the result of the synthesis has a very low signal to noise ratio. To cope with this problem the LPC analysis was centred around the pitch pulses in the signal. This introduces another problem --- detecting the pitch. The pitch can be detected by finding the highest value of the autocorrelation of the region of interest, discussed in detail in \cite[p. 324]{taletek}. In the presented test result the pitch pulsed of the training data were pre-labelled. A test of a perfect transformation, \ie synthesis with the target parameters, proved that pitch synchronous filtering improved the signal to noise ratio significantly. However, for the transformed filter parameters the timing is not correct and the noise is not suppressed.
 
 A full speech transformations system includes a source modification as well, Figure~\ref{fig:VC_full}. The source modifications can be done by PSOLA \cite[p.820]{taletek} to alter the pitch and time-scale  of the speech signal.
 \begin{figure}[htbp]
@@ -101,10 +99,10 @@ A full speech transformations system includes a source modification as well, Fig
 \mathbf{x} \ar[rr] & \ar[d]\ar[r] &*+<5mm>[F-,]{1-A(z)} \ar[r]^{\mathbf{e}}&*+<5mm>[F-,]{\txt{SM}} \ar[r]^(0.35){\mathbf{\tilde{e}}} &*+<5mm>[F-,]{\frac{1}{1-\tilde{A}(z)}} \ar[r] & \mathbf{y}\\  % end line 1
   &*+<5mm>[F-,]{\txt{LPC}} \ar[rr]^<(0.25){A(z)} & \ar[u]&*+<5mm>[F-,]{\txt{FT}}\ar `[ru]^<(0.5){\tilde{A}(z)} [ur]&  &}
   \end{tabular}
-  \caption{Full Transformation System}
+  \caption{Full transformation system}
   \label{fig:VC_full}
 \end{figure}
-A source modification with PSOLA would solve the timing issue and increase the sound quality. This feature was however not implemented in the presented system. To further improve the sound quality one could apply advance concatenation of segments. In stead of just adding one segment after another one could interpolate or smoothen the concatenation \cite{chappell02}.
+A source modification with PSOLA would solve the timing issue and increase the sound quality. This feature was however not implemented in the presented system. To further improve the sound quality one could apply advance concatenation of segments. Instead of just adding one segment after another one could interpolate or smoothen the concatenation \cite{chappell02}.
 
 Even though there was a lot of noise in the output signal the transformed spectrum was audible. Naturally, with the presented transformation accuracy is was not possible to identify the synthesised sound signal as the target speaker.
 

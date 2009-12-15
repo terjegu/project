@@ -1,6 +1,6 @@
 \chapter{Implementation} % (fold)
 \label{cha:implementation}
-The first step of implementation is to fit the source data to a Gaussian mixture model. Obviously the more data the better. When the source data is fitted to the GMM the posterior matrix $\mathbf{P}$ and the $\mathbf{D}$ matrix can be computed with the desired number of training vectors. The next step is the compute the unknown parameters $\boldsymbol{\mu}^y$ and $\mathbf{\Sigma}^{yx}$ with $\mathbf{P}$, $\mathbf{D}$ and time-aligned target vectors $\mathbf{Y}_{LSF}$ corresponding to the source vectors $\mathbf{X}_{LSF}$. The third step is to apply the conversion function \eqref{eq:conversion_function}.
+The first step of implementation is to fit the source data to a Gaussian mixture model. It is desirable to use as much data as possible to cover all possible filter parameters. When the source data is fitted to the GMM the posterior matrix $\mathbf{P}$ and the $\mathbf{D}$ matrix can be computed with the desired number of training vectors. The next step is the compute the unknown parameters $\boldsymbol{\mu}^y$ and $\mathbf{\Sigma}^{yx}$ with $\mathbf{P}$, $\mathbf{D}$ and time-aligned target vectors $\mathbf{Y}_{LSF}$ corresponding to the source vectors $\mathbf{X}_{LSF}$. The third step is to apply the conversion function \eqref{eq:conversion_function}.
 
 % Figure~\ref{fig:training_cf} shows the training procedure.
 % \begin{figure}[htbp]
@@ -17,28 +17,28 @@ The first step of implementation is to fit the source data to a Gaussian mixture
 
 \section{Alignment} % (fold)
 \label{sec:alignment}
-In the training of the $\boldsymbol{\mu}^y$ vector and the $\mathbf{\Sigma}^{yx}$ matrix, the source and target speech vectors need to be time-aligned. In this process the speech signals are split into segments of one pitch period length with additional one pitch period overlap. The segments are analysed with LPC into a matrix of LP coefficients which are used in the dynamic time warping algorithm, Section~\ref{sec:dynamic_time_warping}.
+In the training of the $\boldsymbol{\mu}^y$ vector and the $\mathbf{\Sigma}^{yx}$ matrix, the source and target speech vectors need to be time-aligned. In this process the speech signals are split into segments of 10 ms with an analysis window of two pitch periods, centred around a pitch pulse. The segments are analysed with LPC into a matrix of LP coefficients which are used in the dynamic time warping algorithm, Section~\ref{sec:dynamic_time_warping}.
 
 \begin{figure}[htbp]
 	\begin{center}
 		\includegraphics[width=.8\textwidth]{fig/dtw.pdf}
-		\caption{Distance Matrix used in Dynamic Time Warping}
+		\caption{Distance matrix used in dynamic time warping}
 		\label{fig:dtw}
 	\end{center}
 \end{figure}
-Figure~\ref{fig:dtw} shows a distance matrix between two speech signals of \ca 4 seconds, where the horizontal axis represents the source signal and the vertical axis represents the target signal. The grey scale indicates the difference between two specific segments where a dark square indicates that the segments are equal. The red line depicts the shortest path, or the best match, between the two signals. The red lines also denotes which indices in the new time-aligned version of the target vector. Recursion \eqref{eq:dtw_recursion} is used with local constraints $\alpha=1, \beta=2$ and $\gamma=5$ and global constraints as shown in the rightmost plot in Figure~\ref{fig:dtw}.
+Figure~\ref{fig:dtw} shows a distance matrix between two speech signals of approximately 4 seconds, where the horizontal axis represents the source signal and the vertical axis represents the target signal. The grey scale indicates the difference between two specific segments where a dark square indicates that the segments are equal. The red line depicts the shortest path, or the best match, between the two signals. The red lines also denotes the indices to use in the new time-aligned version of the target vector. Recursion \eqref{eq:dtw_recursion} is used with local constraints $\alpha=1, \beta=2$ and $\gamma=5$ and global constraints as shown in the rightmost plot in Figure~\ref{fig:dtw}.
 % section Alignment (end)
 
 \section{Training Data} % (fold)
 \label{sec:training_data}
-In the training of the Gaussian mixture models it is preferable to use as much training data as possible. 40 000 LSF vectors from \ca 5 minutes of speech, where fitted to the GMM. In the training process of the parameters $\mathbf{\Sigma}^{yx}$ and $\boldsymbol{\mu}^y$ 5, 10 and 20 thousand training vectors where tested. 16, 32, 64, 128 and 256 mixture components in the GMM was tested as well.
+In the training of the Gaussian mixture models it is preferable to use as much training data as possible. 40 000 LSF vectors from approximately 6 minutes of speech, where fitted to the GMM. In the training process of the parameters $\mathbf{\Sigma}^{yx}$ and $\boldsymbol{\mu}^y$, 10, 20 and 40 thousand training vectors where tested with 16, 32, 64, 128 and 256 mixture components in the GMM.
 
 The initialisation of the GMM affects the convergence rate and possibly the resulting estimate. The GMM was initialised with vector quantisation (VQ) where the variance and prior of a component were estimated from the quantised vectors. However, when only diagonal covariance matrices are used, the initialisation does not have a significant effect \cite{reynolds93}.
 % section Training data (end)
 
 \section{Conversion Function Parameters} % (fold)
 \label{sec:conversion_function_parameters}
-The matrices in \eqref{eq:param_computed} could get really huge with a large amount of mixture models and large amount of training vectors. To simplify the computational complexity the covariance matrices were constrained to be diagonal. $\mathbf{\Sigma}^{yx}$ will become a $m\times p$ matrix and $\mathbf{D}$ will have dimension $n\times m$. The new transfer function will then become
+The matrices in \eqref{eq:param_computed} could get really huge with a large amount of mixture models and training vectors. To simplify the computational complexity the covariance matrices were constrained to be diagonal. $\mathbf{\Sigma}^{yx}$ will become a $m\times p$ matrix and $\mathbf{D}$ will have dimension $n\times m$. The new transfer function will then become
 \begin{equation}
 	\mathcal{F}(x_t^{(k)}) = \sum_{i=1}^{m}P(C_i \vert \mathbf{x}_t)[\mu_i^{y^{(k)}}+\sigma_i^{yx^{(k)}}  (x_t^{(k)}-\mu_i^{x^{(k)}})/\sigma_i^{xx^{(k)}}]
 \end{equation}
@@ -46,7 +46,7 @@ where $k=1,\dots,p$ and denotes one LSF parameter.
 
 The optimisation problem is divided into $p$ independent problems where the unknown vectors $\boldsymbol{\sigma}^{yx}$ and $\boldsymbol{\mu}^{y}$ have to calculate for each $k$. Both will have dimensions $m\times 1$.
 
-The $\mathbf{D}^{(k)}$ matrix needs to be modified to fit the new scheme.
+The modified $\mathbf{D}^{(k)}$ matrix is defined as
 \begin{equation}
 	\label{eq:D_matrix_new}
 	\mathbf{D}^{(k)} = \begin{bmatrix}
