@@ -4,38 +4,32 @@
 
 \section{Definition} % (fold)
 \label{sec:definition}
-Voice transformation or conversion refers to the various modifications one may apply to the sound produced by a person, speaking or singing \cite{stylianou08}. More specifically, in this papers voice transformation refers to the process of modifying the speech signal from a speaker so that it sounds like it has been pronounced by a specific target speaker. 
+Voice transformation, or conversion, refers to the various modifications that can be applied to the sound produced by a person, either speaking or singing \cite{stylianou08}. More specific, in this paper voice transformation refers to the process of modifying the speech signal from a person so that it sounds like it has been produced by a certain other person. 
 % section Definition (end)
 
 \section{Motivation} % (fold)
 \label{sec:motivation}
-In text-to-speech (TTS\abbrev{TTS}{text-to-speech}) systems the users may want to have a choice between several voices to which they find most soothing to listen to. To create a new voice for a TTS system from scratch requires a lot of work and money, which may not be in the system provider's best interest. If it was possible to create only one synthetic voice and then transform that voice to other voices with only limited training data, \eg 5 minutes, the system provider could produce any number of voices with ease. 
+Users of a text-to-speech (TTS\abbrev{TTS}{text-to-speech}) system often wants to have a choice between several synthetic voices, if they are not satisfied with the default voice. To create a new voice for a TTS system from scratch requires a lot of work and money. If it were possible to create only one synthetic voice and then transform that voice to other voices with only a few minutes of  training data, the system provider could produce any number of voices with ease. 
 
-Another application of voice transformation is speech prosthesis. If a person has limited ability of speaking or is going to loose his ability to speak, he can record some utterances of his voice and create a speech synthesis with his own voice.
- 
-Voice transformation could also be used to disguise your voice if you wish to keep your identification secret during a conversation, like cryptography for your voice. 
+Another application of voice transformation is speech prosthesis. If a person has limited ability of producing speech or is going to loose his ability to speak, he can record some utterances of his voice and create a speech synthesis with his own voice.
 % section Motivation (end)
 
 \section{Modification Methods} % (fold)
 \label{sec:synthesis_methods}
-When working on a speech signal it is often convenient to refer to the source-filter model \cite{taletek}. This model says that speech is produced by passing a glottal excitation (source) through a time-varying linear filter that models the resonant characteristics of the vocal tract (filter). The signal can be separated into source and filter by doing a linear prediction (LP) analysis and subtract the predicted signal from the real signal. By doing this you will end up with the filter described as LP coefficients and the source as the excitation from the subtracted signal.
+The production of speech can be modelled as a source of glottal excitation passing through the vocal tract which acts as a filter, called the source-filter model \cite{taletek}. The filter is a linear time-varying filter which can be assumed to be stationary for short time intervals, \eg 10 ms. The signal can be separated into a source and a filter by applying a linear prediction (LP \abbrev{LP}{linear prediction}) analysis and subtracting the predicted signal from the real signal. Yielding a filter described as LP coefficients and the source as the excitation from the subtracted signal.
 
-\subsection{Source Modification} % (fold)
-\label{sub:source_modification}
-The source can be modelled as white noise for unvoiced speech and a pulse train for voiced speech. Source modifications can modify the pace, pitch and intensity of a voice. 
-
-Time- and pitch-scale modifications can be done with the pitch synchronous overlap and add (PSOLA) procedure. PSOLA splits the signals into two pitch periods long windowed parts and re-synthesises the parts with the overlap-add procedure by duplicating or deleting frames to alter the pace of the voice and adjusting the spacing of windows to alter the pitch.
+% \subsection{Source Modification} % (fold)
+% \label{sub:source_modification}
+The source signal can be modelled as white noise for unvoiced speech and a pulse train for voiced speech. Source modifications can modify the pace, pitch and intensity of a voice. Time- and pitch-scale modifications can be done with the pitch synchronous overlap and add (PSOLA) procedure. PSOLA splits the signals into two pitch periods long windowed parts and re-synthesises the parts with the overlap-add procedure, by duplicating or deleting frames to alter the pace of the voice and adjusting the spacing of windows to alter the pitch.
 % subsection Source Modification (end)
 
-\subsection{Filter Modification} % (fold)
-\label{sub:filter_modification}
-One of the earliest implementations of speech conversion utilises vector quantisation (VQ\abbrev{VQ}{vector quantisation}) for mapping spectral properties with discrete source and target classes \cite{abe88}. By training codebooks to represent which filter characteristics match of the source and target speaker, the transformation is simply to look up in the codebook which filter parameters to swap. In contrast, the Gaussian mixture model (GMM\abbrev{GMM}{Gaussian mixture model}) method uses continuous probability density mapping \cite{stylianou98}. This method transform speaker specific features from the source speaker to the target speaker according to a transformation function. Another mapping approach is the use of Artificial Neural Networks (ANN\abbrev{ANN}{artificial neural networks}) which tries to mimic the computational mechanism of the human brain \cite{desai09,young75}.
-
-The filter can modify the magnitude spectrum of the frequency response of the vocal tract \cite{nguyen09}. The filter is often modelled as a linear prediction (LP\abbrev{LP}{linear prediction}) filter with a small set of filter coefficients. These coefficients can be altered to change the shape of frequency spectrum. The magnitude spectrum carries information of speaker individuality \cite{stylianou09}. The phase is not altered in this approach which is unfortunate for the quality of the transformation. The spectral parameters of the source speaker is modelled as Gaussian mixture models.
+% \subsection{Filter Modification} % (fold)
+% \label{sub:filter_modification}
+One of the earliest implementations of speech transformation utilises vector quantization (VQ\abbrev{VQ}{vector quantisation}) for mapping spectral properties with discrete source and target classes \cite{abe88}. By training codebooks to represent which filter characteristics match of the source and target speaker, the transformation is simply to look up in the codebook and map the filter parameters. In contrast, the Gaussian mixture model (GMM\abbrev{GMM}{Gaussian mixture model}) method uses continuous probability density mapping \cite{stylianou98}. This method transform speaker specific features from the source speaker to the target speaker according to a transformation function. Another mapping approach is the use of Artificial Neural Networks (ANN\abbrev{ANN}{artificial neural networks}) which tries to mimic the computational mechanism of the human brain \cite{desai09,young75}. Filter modifications can modify the magnitude spectrum of the frequency response of the vocal tract \cite{nguyen09}. The LP coefficients can be altered to change the shape of frequency spectrum, which carries information of speaker individuality \cite{stylianou09}. The phase is not altered in this approach which is unfortunate for the quality of the transformation. 
 % subsection Filter Modification (end)
 
-\subsection{Voice Transformation} % (fold)
-\label{sub:voice_transformation}
+% \subsection{Voice Transformation} % (fold)
+% \label{sub:voice_transformation}
 Voice transformation is usually done by a combination of source and filter modifications. However, this paper will not cover source modifications.
 % subsection Voice Transformation (end)
 % section Synthesis methods (end)

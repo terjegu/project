@@ -1,16 +1,15 @@
 \chapter{Conclusion} % (fold)
 \label{cha:conclusion}
-Representing the source signal as Gaussian mixture models gives a good representation with a small set of parameters compared to a vector quantisation model presented in earlier studies \cite{abe88}. GMM was used in a continuous probabilistic transform which enables a soft decision filter mapping. As a consequence the set of possible output features is not finite.
+Representing the source signal as Gaussian mixture models gives a good representation with a small set of parameters compared to a vector quantization model presented in earlier studies \cite{abe88}. GMM was used in a continuous probabilistic transform which enables a soft decision filter mapping. As a consequence, the set of possible output features is not finite.
 
-
-The unknown parameters in conversion function \eqref{eq:conversion_function} are determined by minimum mean square error, \eqref{eq:conversion_error}, which depends on a set of time-aligned source and target vector of the same linguistic content, were the time alignment is critical. To relax this issue of both gathering a parallel corpus and the time alignment, a non-parallel training procedure has been presented \cite{mouchtaris06,ye06}.
+The unknown parameters in conversion function \eqref{eq:conversion_function} are determined by minimum mean square error, which depends on a set of time-aligned source and target vectors of the same linguistic content, where the time-alignment is critical. To relax this issue of both gathering a parallel corpus and the time alignment, a non-parallel training procedure has been suggested \cite{mouchtaris06,ye06}.
 
 Another shortcoming of the presented scheme is the lack of source transformation. Time-scale modifications, pitch-modification and intensity modifications can be applied with \eg TD-PSOLA to achieve the desired prosody and greatly enhanced synthesised speech.
 
-Since the training of the GMM and the transformation parameters can be be done off line the transformation itself is fast. It very likely that the transformation can be applied in real time if implemented with a low level programming language as \emph{C} \cite{kernighan88}. 
+Since the training of the GMM and the transformation parameters can be be done off line, the transformation itself is fast. It very likely that the transformation can be applied in real time if implemented with a low level programming language as \emph{C} \cite{kernighan88}. 
 
-Either due to implementation error or to the choice of implementation differences from Stylianou, the presented scheme failed to achieve the same results as Stylianou. However, the filter transformation did work to a certain degree, but with a large discrepancy. Increasing the size of training data improved the transformation accuracy, but increasing the number of mixture models degraded the average transformation quality, which is highly unlikely.
+Either due to implementation error or to the choice of implementation differences from Stylianou, the presented scheme failed to achieve the same results as Stylianou. However, the filter transformation did work to a certain degree, but with a large discrepancy. Increasing the size of training data improved the transformation accuracy, but increasing the number of mixture models degraded the average transformation quality, which seems inaccurate.
 
-By implementing source transformation an further tweak the filter transformation, there is no doubt that the presented voice transformation procedure can be used in a real world application. Manufacturing synthetic voices can be greatly simplified and people with a speech handicap can get their voice back.
+By implementing source transformation and further tuning of the filter transformation, there is no doubt that the presented voice transformation procedure can be used in a real world application. Manufacturing synthetic voices can be greatly simplified and people with a speech handicap can get their voice back.
 
 % chapter Conclusion (end)

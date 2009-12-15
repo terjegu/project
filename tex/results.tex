@@ -1,6 +1,6 @@
 \chapter{Results} % (fold)
 \label{cha:results}
-Figure~\ref{fig:frequency_plots_1} shows filter transformation results for a random segments of 10 ms. Figure~\ref{fig:256_mixtures} shows the source, target and converted envelope for a 245 mixture GMM. Figure~\ref{fig:comparison} compares the transformation with different number of mixture components.
+Figure~\ref{fig:frequency_plots_1} shows filter transformation results for a random segments of 10 ms. Figure~\ref{fig:256_mixtures} shows the source, target and converted envelope for a 256 mixture GMM. Figure~\ref{fig:comparison} compares the transformation with different number of mixture components.
 \begin{figure}[htbp]
 	\begin{center}
 	\subfigure[Transformation comparison]
@@ -55,7 +55,7 @@ Figure~\ref{fig:frequency_plots_2} depicts two successful transformations of $10
 
 
 \clearpage
-Table~4.1 -- 4.4 show an accuracy comparison of the filter transformation for different number of mixture components and training vectors. In Table~4.1 the test set $S_{test}$ and training set $S_{training}$ consisted of the same 600 LSF vectors. The distance measure is the average Itakura distance \eqref{eq:dtw_distance} of the LP coefficients. Table~4.2 -- 4.4 show results from a transformation trained with respectively $10\times 10^3$, $20\times 10^3$ and $40\times 10^3$ vectors and tested with the same $6\times 10^3$ vectors, both with test set included in the training set, $S_{test} \in S_{training}$, and test set outside the training set, $S_{test} \notin S_{training}$. The average distance between the source and target vectors was 1.9554, for $S_{test} \notin S_{training}$. The average distance between the target vectors and it self, which would be a perfect transformation, is $\approx 0$.
+Table~4.1 -- 4.4 show an accuracy comparison of the filter transformation for different number of mixture components and training vectors. In Table~4.1 the test set $S_{test}$ and training set $S_{training}$ consisted of the same 600 LSF vectors. The distance measure is the average Itakura distance \eqref{eq:dtw_distance} of the LP coefficients. Table~4.2 -- 4.4 show results from a transformation trained with respectively $10\times 10^3$, $20\times 10^3$ and $40\times 10^3$ vectors and tested with the same $6\times 10^3$ vectors, both with test set included in the training set, $S_{test} \in S_{training}$, and test set outside the training set, $S_{test} \notin S_{training}$. The average distance between the source and target vectors was 1.9554, for $S_{test} \notin S_{training}$. The Itakura distance between two equal vectors, \ie the case of perfect transformation, is 0.
 
 \begin{table}[htbp]
 	\begin{center}

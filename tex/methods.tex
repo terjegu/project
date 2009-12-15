@@ -26,14 +26,14 @@ In the training of the $\boldsymbol{\mu}^y$ vector and the $\mathbf{\Sigma}^{yx}
 		\label{fig:dtw}
 	\end{center}
 \end{figure}
-Figure~\ref{fig:dtw} shows a distance matrix between two speech signals of approximately 4 seconds, where the horizontal axis represents the source signal and the vertical axis represents the target signal. The grey scale indicates the difference between two specific segments where a dark square indicates that the segments are equal. The red line depicts the shortest path, or the best match, between the two signals. The red lines also denotes the indices to use in the new time-aligned version of the target vector. Recursion \eqref{eq:dtw_recursion} is used with local constraints $\alpha=1, \beta=2$ and $\gamma=5$ and global constraints as shown in the rightmost plot in Figure~\ref{fig:dtw}.
+Figure~\ref{fig:dtw} depicts a distance matrix between two speech signals of approximately 4 seconds, where the horizontal axis represents the source signal and the vertical axis represents the target signal. The grey scale indicates the difference between two specific segments where a dark square indicates that the segments are equal. The red line depicts the shortest path, or the best match, between the two signals. The red lines also denotes the indices to use in the new time-aligned version of the target vector. Recursion \eqref{eq:dtw_recursion} is used with local constraints $\alpha=1, \beta=2$ and $\gamma=5$ and global constraints as shown in the rightmost plot in Figure~\ref{fig:dtw}.
 % section Alignment (end)
 
 \section{Training Data} % (fold)
 \label{sec:training_data}
-In the training of the Gaussian mixture models it is preferable to use as much training data as possible. 40 000 LSF vectors from approximately 6 minutes of speech, where fitted to the GMM. In the training process of the parameters $\mathbf{\Sigma}^{yx}$ and $\boldsymbol{\mu}^y$, 10, 20 and 40 thousand training vectors where tested with 16, 32, 64, 128 and 256 mixture components in the GMM.
+In the training of the Gaussian mixture models it is preferable to use as much training data as possible. 40 000 LSF vectors from about 6 minutes of speech, were fitted to the GMM. In the training process of the parameters $\mathbf{\Sigma}^{yx}$ and $\boldsymbol{\mu}^y$, 10, 20 and 40 thousand training vectors where tested with 16, 32, 64, 128 and 256 mixture components in the GMM.
 
-The initialisation of the GMM affects the convergence rate and possibly the resulting estimate. The GMM was initialised with vector quantisation (VQ) where the variance and prior of a component were estimated from the quantised vectors. However, when only diagonal covariance matrices are used, the initialisation does not have a significant effect \cite{reynolds93}.
+The initialisation of the GMM affects the convergence rate and possibly the resulting estimate. The GMM was initialised with vector quantization (VQ) where the variance and prior of a component were estimated from the quantised vectors. However, when only diagonal covariance matrices are used, the initialisation does not have a significant effect \cite{reynolds93}.
 % section Training data (end)
 
 \section{Conversion Function Parameters} % (fold)
@@ -44,7 +44,7 @@ The matrices in \eqref{eq:param_computed} could get really huge with a large amo
 \end{equation}
 where $k=1,\dots,p$ and denotes one LSF parameter.
 
-The optimisation problem is divided into $p$ independent problems where the unknown vectors $\boldsymbol{\sigma}^{yx}$ and $\boldsymbol{\mu}^{y}$ have to calculate for each $k$. Both will have dimensions $m\times 1$.
+The optimisation problem is divided into $p$ independent problems where the unknown vectors $\boldsymbol{\sigma}^{yx}$ and $\boldsymbol{\mu}^{y}$ have to be calculated for each $k$. Both will have dimension $m\times 1$.
 
 The modified $\mathbf{D}^{(k)}$ matrix is defined as
 \begin{equation}
