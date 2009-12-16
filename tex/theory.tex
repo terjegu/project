@@ -8,23 +8,23 @@ The basic idea of the voice transformation is to make a linear prediction analys
 \mathbf{x} \ar[rr] & \ar[d]\ar[r] &*+<5mm>[F-,]{1-A(z)} \ar[rr]^{\mathbf{e}}& &*+<5mm>[F-,]{\frac{1}{1-\tilde{A}(z)}} \ar[r] & \mathbf{y}\\  % end line 1
   &*+<5mm>[F-,]{\txt{LPC}} \ar[rr]^<(0.25){A(z)} & \ar[u]&*+<5mm>[F-,]{\txt{FT}}\ar `[ru]^<(0.5){\tilde{A}(z)} [ur]&  &}
   \end{tabular}
-  \caption{Filter transformation system}
+  \caption{Filter transformation system.}
   \label{fig:VC}
 \end{figure}
 
 The challenge in this procedure is to find the filter transformation function explained in Section~\ref{sec:conversion_function}. The system includes two parts, training and transformation. 
-\begin{figure}[htbp]
-	\centering
-	\begin{tabular}[h]{c}
-		\xymatrix{ 
-\mathbf{x} \ar[r] &*+<5mm>[F-,]{\txt{LPC}}\ar[d]\ar @{=>}[r] &*+<5mm>[F-,]{\txt{GMM}}\ar `[rd]^{\boldsymbol{\Phi}} [dr] &\\ % end line 1
-&*+<5mm>[F-,]{\txt{DTW}} \ar @<3pt>[rr]^<(0.15){\mathbf{x}} \ar @<-3pt>[rr]_<(0.15){\tilde{\mathbf{y}}} & &*+<5mm>[F-,]{\txt{Train TF}}\\ % end line 2
-\mathbf{y} \ar[r] &*+<5mm>[F-,]{\txt{LPC}}\ar[u]&&}
-	\end{tabular}
-	\caption{Training of filter transformation parameters}
-	\label{fig:VC_training}
-\end{figure}
-In the training process of the conversion function, depicted in Figure~\ref{fig:VC_training}, the two input signals, source $x$ and target $y$, first need to be aligned in time, Section~\ref{sec:dynamic_time_warping}. The source data is classified into probabilistic Gaussian mixture models (GMM), Section~\ref{sec:gaussian_mixture_model}, and used in a class-specific transform \cite{stylianou09}. The parameters in the transformation function are derived from a set of source vectors and corresponding time aligned target vectors, and a GMM fitted to the source.
+% \begin{figure}[htbp]
+% 	\centering
+% 	\begin{tabular}[h]{c}
+% 		\xymatrix{ 
+% \mathbf{x} \ar[r] &*+<5mm>[F-,]{\txt{LPC}}\ar[d]\ar @{=>}[r] &*+<5mm>[F-,]{\txt{GMM}}\ar `[rd]^{\boldsymbol{\Phi}} [dr] &\\ % end line 1
+% &*+<5mm>[F-,]{\txt{DTW}} \ar @<3pt>[rr]^<(0.15){\mathbf{x}} \ar @<-3pt>[rr]_<(0.15){\tilde{\mathbf{y}}} & &*+<5mm>[F-,]{\txt{FT training}}\\ % end line 2
+% \mathbf{y} \ar[r] &*+<5mm>[F-,]{\txt{LPC}}\ar[u]&&}
+% 	\end{tabular}
+% 	\caption{Training of filter transformation parameters.}
+% 	\label{fig:VC_training}
+% \end{figure}
+In the training process of the conversion function the two input signals, source $x$ and target $y$, first need to be aligned in time, Section~\ref{sec:dynamic_time_warping}. The source data is classified into probabilistic Gaussian mixture models (GMM), Section~\ref{sec:gaussian_mixture_model}, and used in a class-specific transform \cite{stylianou09}. The parameters in the transformation function are derived from a set of source vectors and corresponding time aligned target vectors, and a GMM fitted to the source.
 
 
 \section{Gaussian Mixture Model} % (fold)
@@ -42,13 +42,13 @@ where $m$ is the number of mixture models and $N(\mathbf{x}; \boldsymbol{\mu}_i,
 \end{equation}
 $\alpha_i$ in \eqref{eq:gmm} is the prior probability of class $i$ with constraints $\sum_{i=1}^{M}\alpha_i = 1$ and $\alpha_i \geq 0$. The input vectors $\mathbf{x}_i$ are assumed to be independent \cite{stylianou98}.
 
-The conditional probability that a given observation vector $\mathbf{x}$ belongs to the component $C_i$ of the GMM is given by Bayes' rule \cite{statistikk}
+The conditional probability that a given observation vector $\mathbf{x}$ belongs to the component $C_i$ of the GMM, is given by Bayes' rule \cite{statistikk}
 \begin{equation}
 	\label{eq:bayes}
 	P(C_i\vert \mathbf{x}) = \frac{\alpha_i N(\mathbf{x}; \boldsymbol{\mu}_i, \mathbf{\Sigma}_i)}{\sum_{j=1}^{m}\alpha_j N(\mathbf{x}; \boldsymbol{\mu}_j, \mathbf{\Sigma}_j)}
 \end{equation}
 
-The parameters $\boldsymbol{\alpha}, \boldsymbol{\mu}$ and $ \mathbf{\Sigma}$ can be estimated with the expectation maximisation (EM\abbrev{EM}{expectation maximisation}) algorithm. The EM algorithm is an iterative algorithm for unsupervised learning in which component information is unavailable. EM tries to find the parameters in the GMM that gives the maximum likelihood of the observed data $\mathbf{X}$. The initial values for the parameters of the GMM can be computed from the VQ representation of the source vectors. The next step is to find the expectation of the log-likelihood of the latent data given the current estimate of the parameters. A new estimate of the parameters is found by maximising the expected log-likelihood and the process is repeated until convergence \cite{taletek}.
+The parameters $\boldsymbol{\alpha}, \boldsymbol{\mu}$ and $ \mathbf{\Sigma}$ can be estimated with the expectation maximisation (EM\abbrev{EM}{expectation maximisation}) algorithm. The EM algorithm is an iterative algorithm for unsupervised learning in which component information is unavailable. The EM algorithm tries to find the parameters in the GMM that gives the maximum likelihood of the observed data $\mathbf{X}$. The initial values for the parameters of the GMM can be computed from the VQ representation of the source vectors. The next step is to find the expectation of the log-likelihood of the latent data given the current estimate of the parameters. A new estimate of the parameters is found by maximising the expected log-likelihood and the process is repeated until convergence \cite{taletek}.
 
 % section Gaussian Mixture Model (end)
 
@@ -71,7 +71,7 @@ The parameters $\boldsymbol{\alpha}, \boldsymbol{\mu}$ and $ \mathbf{\Sigma}$ ca
 
 \section{Dynamic Time Warping} % (fold)
 \label{sec:dynamic_time_warping}
-Feature comparison of two signals gives more sense if they are aligned in time. If the only difference in two signals is a time shift, they will not appear as equal if they are not aligned in time. Dynamic time warping (DTW\abbrev{DTW}{dynamic time warping}) is an dynamic programming concept to warp two sequence such that the difference in the signals are minimised. The signals are segmented into small parts which are compared and given a similarity-score. For LP parameters a good similarity-score is the \emph{Itakura distance} \cite{itakura90},
+Feature comparison of two signals gives more sense if they are aligned in time. If the only difference in two signals is a time shift, they will not appear as equal if they are not aligned in time. Dynamic time warping (DTW\abbrev{DTW}{dynamic time warping}) is a dynamic programming concept to warp two sequence such that the difference in the signals are minimised. The signals are segmented into small parts which are compared and given a similarity-score. For LP parameters a good similarity-score is the \emph{Itakura distance} \cite{itakura90},
 \begin{equation}
 	\label{eq:dtw_distance}
 		d(\mathbf{a},\mathbf{b}) = \log\left(\frac{\mathbf{a}^T \mathbf{R}_s \mathbf{a}}{\mathbf{b}^T \mathbf{R}_s \mathbf{b}}\right)	
@@ -89,7 +89,7 @@ The minimum distance between the two signals can be found by choosing the shorte
 		& D(i-1,j-2)+\gamma d(\mathbf{A}_i,\mathbf{B}_j)\bigr]		
 	\end{split}
 \end{equation}
-where $\mathbf{A}_i$ and $\mathbf{B}_i$ denotes the LP coefficients of segment $i$ from the two signals. 
+where $\mathbf{A}_i$ and $\mathbf{B}_i$ denote the LP coefficients of segment $i$ from the two signals. 
 % I.e. the shortest path from $A$ to $C$ is the shortest path from $A$ to $B$ plus the shortest path from $B$ to $C$. 
 The problem is broken down into simpler subproblems, hence dynamic programming. 
 
@@ -119,7 +119,7 @@ The possible paths are shown in Figure~\ref{fig:dtw_shortest_path}.
 		\put(3.1,0.7){\tiny{$(i-1,j-2)$}}
 		\put(3,3.7){\tiny{$(i-1,j-1)$}}
 		\end{picture}
-		\caption{DTW shortest path calculations}
+		\caption{DTW shortest path calculations.}
 		\label{fig:dtw_shortest_path}
 	\end{center}
 \end{figure}
@@ -131,7 +131,19 @@ The resulting shortest path is used to duplicate and/or delete frames in the tar
 
 \section{Filter Transformation} % (fold)
 \label{sec:conversion_function}
-The process of filter transformation consist of altering the filter coefficients of the source to match a target coefficients. Given a set of time-aligned source and target vectors, we want to define a transformation function which yields the most likely target vector given a new source vector
+The process of filter transformation consists of altering the filter coefficients of the source, to match the target coefficients. Given a set of time-aligned source and target vectors and a GMM fitted to the source, as depicted in Figure~\ref{fig:VC_training}, 
+\begin{figure}[htbp]
+	\centering
+	\begin{tabular}[h]{c}
+		\xymatrix{ 
+\mathbf{x} \ar[r] &*+<5mm>[F-,]{\txt{LPC}}\ar[d]\ar @{=>}[r] &*+<5mm>[F-,]{\txt{GMM}}\ar `[rd]^{\boldsymbol{\Phi}} [dr] &\\ % end line 1
+&*+<5mm>[F-,]{\txt{DTW}} \ar @<3pt>[rr]^<(0.15){\mathbf{x}} \ar @<-3pt>[rr]_<(0.15){\tilde{\mathbf{y}}} & &*+<5mm>[F-,]{\txt{FT training}}\\ % end line 2
+\mathbf{y} \ar[r] &*+<5mm>[F-,]{\txt{LPC}}\ar[u]&&}
+	\end{tabular}
+	\caption{Training of filter transformation parameters.}
+	\label{fig:VC_training}
+\end{figure}
+we want to define a transformation function which yields the most likely target vector given a new source vector
 \begin{equation}
 	\mathcal{F}(\mathbf{x}) = E[\mathbf{y}\vert \mathbf{x}]
 \end{equation}
@@ -323,7 +335,7 @@ The prediction coefficients $a_k$ can be estimated by the minimum mean square er
 		= & \sum_{n}\left( x[n]-\sum_{k=1}^{p}a_k x[n-k] \right)^2
 	\end{split}
 \end{equation}
-The coefficients can be obtained by taking the derivative of \eqref{eq:prediction_error} with respect to $a_i$, and equating to 0. This yields a set of $p$ linear equations with $p$ unknown parameters, which easily can be solved \cite{digsig}. The resulting $a_k$ coefficients are the linear prediction coefficients which represents the signal.
+The coefficients can be obtained by taking the derivative of \eqref{eq:prediction_error} with respect to $a_i$, and equating to 0. This yields a set of $p$ linear equations with $p$ unknown parameters, which easily can be solved \cite{digsig}. The resulting $a_k$ coefficients are the linear prediction coefficients which represent the signal.
 % subsection Linear Predictive Coding (end)
 
 \subsection{Line Spectral Frequencies} % (fold)
@@ -346,7 +358,7 @@ $1-z^{-1}\exp(-j\omega_k)$, where $\omega_k$ is the LSF frequencies. The derivat
 		\xymatrix{ 
 		A(z) \ar[r] &*+<5mm>[F-,]{ LPC\rightarrow LSF} \ar[r] &*+<5mm>[F-,]{	\txt{FT}}\ar[r] &*+<5mm>[F-,]{LSF\rightarrow LPC} \ar[r] & \hat{A}(z)}    
 	\end{tabular}
-	\caption{LPC to LSF conversion used in filter transformation}
+	\caption{LPC to LSF conversion used in filter transformation.}
 	\label{fig:lpc_to_lsf}
 \end{figure}
 LSF is used in the transformation function, as depicted in Figure~\ref{fig:lpc_to_lsf}, to guarantee stability.
